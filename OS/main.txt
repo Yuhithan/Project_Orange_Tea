@@ -1,0 +1,10 @@
+==========================================
+Welcome to ORT_OS, the new rival of Windows
+=========================================
+
+shell%ORT$>echo hello
+hello
+shelll%ORT$>apt install sudo
+intalling sudo..
+bla bla bla
+sucess_pkg >><< sudo

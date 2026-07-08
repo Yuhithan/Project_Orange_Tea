@@ -8,3 +8,17 @@ shelll%ORT$>apt install sudo
 intalling sudo..
 bla bla bla
 sucess_pkg >><< sudo
+
+
+::::::::::::::inputKey:::::::::::::::::::::::::
+while (1) {
+        int h = keyboard_getchar();
+        if (h == '\n') {
+            imp_text("\n");
+        } else if (h == '\b') {
+            // rudimentary backspace handling: print backspace and space and backspace
+            imp_text("\b \b");
+        } else {
+            imp_char((char)h);
+        }
+    }

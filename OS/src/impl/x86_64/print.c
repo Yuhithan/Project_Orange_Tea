@@ -45,7 +45,7 @@ void imp_Nl() {
         }
     }
 
-    clear_row(NUM_COLS - 1);
+    clear_row(NUM_ROWS - 1);
 }
 
 void imp_char(char character) {
@@ -54,7 +54,7 @@ void imp_char(char character) {
         return;
     }
 
-    if (col > NUM_COLS) {
+    if (col >= NUM_COLS) {
         imp_Nl();
     }
 

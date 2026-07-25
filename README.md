@@ -26,7 +26,7 @@ Current features include:
 * Display support
 * Keyboard input
 * GRUB bootloader support
-* Basic shell
+* Basic shell (V1)
 
 ## Fixed Goal
 

@@ -37,3 +37,7 @@ ORTos is designed to be fully modular, allowing users to:
 * Build their own functionality and extensions with minimal overhead.
 
 Our goal is to create a fast, flexible, and educational operating system that gives developers complete control over the software stack.
+
+<img width="361" height="202" alt="Screenshot 2026-07-25 at 17 29 39" src="https://github.com/user-attachments/assets/dbec7191-1ce5-4da3-a6f6-e37c6c6793b3" />
+
+

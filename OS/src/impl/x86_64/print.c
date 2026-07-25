@@ -25,6 +25,9 @@ void clear_row(size_t row) {
 }
 
 void imp_cls() {
+    col = 0;
+    row = 0;
+
     for (size_t i = 0; i < NUM_ROWS; i++) {
         clear_row(i);
     }
@@ -51,6 +54,28 @@ void imp_Nl() {
 void imp_char(char character) {
     if (character == '\n') {
         imp_Nl();
+        return;
+    }
+
+    if (character == '\b') {
+        if (col > 0) {
+            col--;
+        } else if (row > 0) {
+            row--;
+            col = NUM_COLS - 1;
+        }
+
+        buffer[col + NUM_COLS * row] = (struct Char) {
+            character: ' ',
+            color: color,
+        };
+        return;
+    }
+
+    if (character == '\t') {
+        for (int i = 0; i < 4; i++) {
+            imp_char(' ');
+        }
         return;
     }
 

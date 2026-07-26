@@ -48,14 +48,59 @@ static const char shift_map[128] = {
 
 static volatile int shift_state = 0;
 static volatile int caps_lock = 0;
+static const char* active_layout = "en-us";
+
+static const char fr_base_map[128] = {
+	[0x02] = '1', [0x03] = '2', [0x04] = '3', [0x05] = '4', [0x06] = '5',
+	[0x07] = '6', [0x08] = '7', [0x09] = '8', [0x0A] = '9', [0x0B] = '0',
+	[0x0C] = '-', [0x0D] = '=',
+	[0x10] = 'a', [0x11] = 'z', [0x12] = 'e', [0x13] = 'r', [0x14] = 't',
+	[0x15] = 'y', [0x16] = 'u', [0x17] = 'i', [0x18] = 'o', [0x19] = 'p',
+	[0x1A] = '^', [0x1B] = '$', [0x1C] = '\n',
+	[0x1E] = 'q', [0x1F] = 's', [0x20] = 'd', [0x21] = 'f', [0x22] = 'g',
+	[0x23] = 'h', [0x24] = 'j', [0x25] = 'k', [0x26] = 'l', [0x27] = 'm', [0x28] = '*', [0x29] = '`',
+	[0x2B] = '\\',
+	[0x2C] = 'w', [0x2D] = 'x', [0x2E] = 'c', [0x2F] = 'v', [0x30] = 'b',
+	[0x31] = 'n', [0x32] = ',', [0x33] = ';', [0x34] = '.', [0x35] = '/',
+	[0x39] = ' ', [0x0E] = '\b'
+};
+
+static const char fr_shift_map[128] = {
+	[0x02] = '!', [0x03] = '@', [0x04] = '#', [0x05] = '$', [0x06] = '%',
+	[0x07] = '^', [0x08] = '&', [0x09] = '*', [0x0A] = '(', [0x0B] = ')',
+	[0x0C] = '_', [0x0D] = '+',
+	[0x10] = 'A', [0x11] = 'Z', [0x12] = 'E', [0x13] = 'R', [0x14] = 'T',
+	[0x15] = 'Y', [0x16] = 'U', [0x17] = 'I', [0x18] = 'O', [0x19] = 'P',
+	[0x1A] = 0x22, [0x1B] = 0x7C, [0x1C] = '\n',
+	[0x1E] = 'Q', [0x1F] = 'S', [0x20] = 'D', [0x21] = 'F', [0x22] = 'G',
+	[0x23] = 'H', [0x24] = 'J', [0x25] = 'K', [0x26] = 'L', [0x27] = 'M', [0x28] = 0x7E, [0x29] = 0x7E,
+	[0x2B] = '|',
+	[0x2C] = 'W', [0x2D] = 'X', [0x2E] = 'C', [0x2F] = 'V', [0x30] = 'B',
+	[0x31] = 'N', [0x32] = '?', [0x33] = '.', [0x34] = '/', [0x35] = '\\',
+	[0x39] = ' ', [0x0E] = '\b'
+};
+
+static inline const char* layout_base_map(void) {
+	if (active_layout[0] == 'f' && active_layout[1] == 'r') {
+		return fr_base_map;
+	}
+	return base_map;
+}
+
+static inline const char* layout_shift_map(void) {
+	if (active_layout[0] == 'f' && active_layout[1] == 'r') {
+		return fr_shift_map;
+	}
+	return shift_map;
+}
 
 static inline char scancode_to_ascii(uint8_t sc) {
 	if (sc >= 128) return 0;
 	char c = 0;
 	if (shift_state)
-		c = shift_map[sc];
+		c = layout_shift_map()[sc];
 	else
-		c = base_map[sc];
+		c = layout_base_map()[sc];
 
 	// If letter, apply caps lock (XOR shift)
 	if (c >= 'a' && c <= 'z') {
@@ -81,6 +126,14 @@ void enable_key_input() {
 
 void disable_key_input() {
 	kb_enabled = 0;
+}
+
+void keyboard_set_layout(const char* layout) {
+	if (layout != NULL && layout[0] == 'f' && layout[1] == 'r') {
+		active_layout = "fr";
+	} else {
+		active_layout = "en-us";
+	}
 }
 
 int keyboard_has_char() {

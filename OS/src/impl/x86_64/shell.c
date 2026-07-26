@@ -1,11 +1,11 @@
 #include "shell.h"
 #include "keyboard.h"
 #include "imp.h"
+#include "storage.h"
 
 #define MAX_CMD 128
 #define MAX_HISTORY 16
 #define MAX_ALIASES 8
-#define MAX_ENTRIES 32
 
 static char cmd[MAX_CMD];
 static char history[MAX_HISTORY][MAX_CMD];
@@ -15,15 +15,6 @@ static int alias_count = 0;
 static char current_dir[32] = "/";
 static char current_layout[16] = "en-us";
 static int shell_seed = 1337;
-
-struct shell_entry {
-    char name[16];
-    char type;
-    char content[64];
-};
-
-static struct shell_entry entries[MAX_ENTRIES];
-static int entry_count = 0;
 
 static int shell_streq(const char* a, const char* b)
 {
@@ -113,62 +104,6 @@ static void shell_add_alias(const char* name, const char* value)
     aliases[index][i + 1 + j] = '\0';
 }
 
-static int shell_find_entry(const char* name)
-{
-    for (int i = 0; i < entry_count; i++)
-    {
-        if (shell_streq(entries[i].name, name))
-        {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
-static void shell_add_entry(const char* name, char type, const char* content)
-{
-    if (entry_count >= MAX_ENTRIES)
-    {
-        return;
-    }
-
-    int index = entry_count++;
-    int i = 0;
-
-    while (name[i] != '\0' && i < 15)
-    {
-        entries[index].name[i] = name[i];
-        i++;
-    }
-    entries[index].name[i] = '\0';
-    entries[index].type = type;
-
-    int j = 0;
-    while (content[j] != '\0' && j < 63)
-    {
-        entries[index].content[j] = content[j];
-        j++;
-    }
-    entries[index].content[j] = '\0';
-}
-
-static void shell_remove_entry(const char* name)
-{
-    int index = shell_find_entry(name);
-    if (index < 0)
-    {
-        return;
-    }
-
-    for (int i = index; i + 1 < entry_count; i++)
-    {
-        entries[i] = entries[i + 1];
-    }
-
-    entry_count--;
-}
-
 static void shell_print_help(void)
 {
     imp_text("Available commands:\n");
@@ -217,10 +152,103 @@ static void shell_print_help(void)
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
 }
 
+static void shell_set_current_dir(const char* path)
+{
+    int i = 0;
+    while (path[i] != '\0' && i < 31)
+    {
+        current_dir[i] = path[i];
+        i++;
+    }
+    current_dir[i] = '\0';
+}
+
+static void shell_go_to_parent(void)
+{
+    int len = 0;
+    while (current_dir[len] != '\0' && len < 31)
+    {
+        len++;
+    }
+
+    if (len <= 1)
+    {
+        shell_set_current_dir("/");
+        return;
+    }
+
+    int slash = len - 1;
+    while (slash > 0 && current_dir[slash] != '/')
+    {
+        slash--;
+    }
+
+    if (slash <= 0)
+    {
+        shell_set_current_dir("/");
+        return;
+    }
+
+    current_dir[slash] = '\0';
+    if (current_dir[0] == '\0')
+    {
+        shell_set_current_dir("/");
+    }
+}
+
+static void shell_enter_directory(const char* name)
+{
+    int len = 0;
+    while (current_dir[len] != '\0' && len < 31)
+    {
+        len++;
+    }
+
+    if (len <= 1)
+    {
+        shell_set_current_dir("/");
+        len = 1;
+    }
+
+    if (current_dir[0] == '/' && current_dir[1] == '\0')
+    {
+        if (len + 1 < 31)
+        {
+            current_dir[len] = '/';
+            current_dir[len + 1] = '\0';
+            len++;
+        }
+    }
+    else if (current_dir[len - 1] != '/')
+    {
+        if (len + 1 < 31)
+        {
+            current_dir[len] = '/';
+            current_dir[len + 1] = '\0';
+            len++;
+        }
+    }
+
+    int i = 0;
+    while (name[i] != '\0' && len + i < 31)
+    {
+        current_dir[len + i] = name[i];
+        i++;
+    }
+    current_dir[len + i] = '\0';
+}
+
 static void shell_print_current_directory(void)
 {
     imp_text(current_dir);
     imp_char('\n');
+}
+
+static void shell_print_prompt(void)
+{
+    imp_text("ORT$");
+    imp_text(current_dir);
+    imp_char('>');
 }
 
 static void shell_execute_command(void)
@@ -281,6 +309,7 @@ static void shell_execute_command(void)
             current_layout[0] = 'f';
             current_layout[1] = 'r';
             current_layout[2] = '\0';
+            keyboard_set_layout(current_layout);
         }
         else if (shell_streq(argument, "en-us"))
         {
@@ -291,6 +320,7 @@ static void shell_execute_command(void)
             current_layout[3] = 'u';
             current_layout[4] = 's';
             current_layout[5] = '\0';
+            keyboard_set_layout(current_layout);
         }
         else
         {
@@ -339,9 +369,9 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "ls"))
     {
-        for (int i = 0; i < entry_count; i++)
+        for (int i = 0; i < storage_get_entry_count(); i++)
         {
-            imp_text(entries[i].name);
+            imp_text(storage_get_entry_name(i));
             imp_char('\n');
         }
     }
@@ -354,19 +384,17 @@ static void shell_execute_command(void)
         }
         else if (shell_streq(argument, ".."))
         {
-            current_dir[0] = '/';
-            current_dir[1] = '\0';
+            shell_go_to_parent();
         }
         else
         {
-            int index = shell_find_entry(argument);
-            if (index >= 0 && entries[index].type == 'd')
+            int index = storage_find_entry(argument);
+            if (index >= 0 && storage_get_entry_type(index) == 'd')
             {
                 imp_text("Changed directory to ");
                 imp_text(argument);
                 imp_char('\n');
-                current_dir[0] = '/';
-                current_dir[1] = '\0';
+                shell_enter_directory(argument);
             }
             else
             {
@@ -381,10 +409,10 @@ static void shell_execute_command(void)
     else if (shell_starts_with(cmd, "cat"))
     {
         const char* argument = shell_skip_spaces(cmd + 3);
-        int index = shell_find_entry(argument);
-        if (index >= 0 && entries[index].type == 'f')
+        int index = storage_find_entry(argument);
+        if (index >= 0 && storage_get_entry_type(index) == 'f')
         {
-            imp_text(entries[index].content);
+            imp_text(storage_get_entry_content(index));
             imp_char('\n');
         }
         else
@@ -397,7 +425,7 @@ static void shell_execute_command(void)
         const char* argument = shell_skip_spaces(cmd + 5);
         if (argument[0] != '\0')
         {
-            shell_add_entry(argument, 'f', "");
+            storage_create_entry(argument, 'f', "");
             imp_text("File created\n");
         }
         else
@@ -410,7 +438,7 @@ static void shell_execute_command(void)
         const char* argument = shell_skip_spaces(cmd + 5);
         if (argument[0] != '\0')
         {
-            shell_add_entry(argument, 'd', "");
+            storage_create_entry(argument, 'd', "");
             imp_text("Directory created\n");
         }
         else
@@ -423,7 +451,7 @@ static void shell_execute_command(void)
         const char* argument = shell_skip_spaces(cmd + 2);
         if (argument[0] != '\0')
         {
-            shell_remove_entry(argument);
+            storage_remove_entry(argument);
             imp_text("Entry removed\n");
         }
         else
@@ -547,6 +575,10 @@ static void shell_execute_command(void)
             imp_char('\n');
         }
     }
+    else if (shell_streq(cmd, "gui")){
+        imp_text("GUI mode is not implemented in this build in this version.\n");
+        impl_text("please wait for the next version of ORTOS, it will be implemented soon.\n");
+    }
     else
     {
         imp_text("Unknown command. Type 'help' for a list.\n");
@@ -555,11 +587,7 @@ static void shell_execute_command(void)
 
 void shell_init()
 {
-    if (entry_count == 0)
-    {
-        shell_add_entry("bin", 'd', "");
-        shell_add_entry("README", 'f', "ORT kernel shell\n");
-    }
+    storage_init();
 
     imp_text("ORT Shell\n");
     imp_text("Type 'help' for a list of commands.\n");
@@ -569,7 +597,8 @@ void shell_run()
 {
     while (1)
     {
-        imp_text("ORT> ");
+        shell_print_prompt();
+        imp_char(' ');
 
         int pos = 0;
 

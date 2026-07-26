@@ -62,9 +62,9 @@ static void gui_draw_desktop(void)
 {
     gui_draw_rect(0, 0, GUI_WIDTH, GUI_HEIGHT, ' ', PRINT_COLOR_LIGHT_BLUE + (PRINT_COLOR_BLUE << 4));
     gui_draw_rect(0, 23, GUI_WIDTH, 2, ' ', PRINT_COLOR_BLACK + (PRINT_COLOR_GREEN << 4));
-    gui_draw_text(2, 0, "Orange Tea OS Desktop", PRINT_COLOR_WHITE + (PRINT_COLOR_BLUE << 4));
-    gui_draw_text(2, 23, "[Start] Terminal  Ctrl+T  Help", PRINT_COLOR_WHITE + (PRINT_COLOR_GREEN << 4));
-    gui_draw_text(2, 24, "Move: WASD  Quit: Q", PRINT_COLOR_WHITE + (PRINT_COLOR_GREEN << 4));
+    gui_draw_text(2, 0, "ORT-Desktop", PRINT_COLOR_WHITE + (PRINT_COLOR_BLUE << 4));
+    gui_draw_text(2, 23, "[Start] ORT-Shell  Ctrl+T  Help", PRINT_COLOR_WHITE + (PRINT_COLOR_GREEN << 4));
+    gui_draw_text(2, 24, "Move: WASD  Quit: Q(cursor coming soon)", PRINT_COLOR_WHITE + (PRINT_COLOR_GREEN << 4));
 
     gui_draw_rect(gui_state_instance.window_x, gui_state_instance.window_y,
                   gui_state_instance.window_w, gui_state_instance.window_h,
@@ -81,7 +81,7 @@ static void gui_draw_desktop(void)
 
     char title[32];
     int title_len = 0;
-    const char* base = "ORT Terminal";
+    const char* base = "ORT-Shell";
     while (base[title_len] != '\0' && title_len < 30)
     {
         title[title_len] = base[title_len];

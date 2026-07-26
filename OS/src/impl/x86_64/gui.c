@@ -1,6 +1,7 @@
 #include "gui.h"
 #include "keyboard.h"
 #include "imp.h"
+#include "network.h"
 #include <stdint.h>
 #include <stddef.h>
 
@@ -147,6 +148,58 @@ void gui_enter(void)
                 else if (input[0] == 'e' && input[1] == 'x' && input[2] == 'i' && input[3] == 't' && input[4] == '\0')
                 {
                     break;
+                }
+                else if (input[0] == 'w' && input[1] == 'i' && input[2] == 'f' && input[3] == 'i')
+                {
+                    if (input[4] == ' ')
+                    {
+                        const char* text = input + 5;
+                        if (text[0] == 'c' && text[1] == 'o' && text[2] == 'n' && text[3] == 'n' && text[4] == 'e' && text[5] == 'c' && text[6] == 't' && text[7] == ' ')
+                        {
+                            const char* ssid = text + 8;
+                            if (ssid[0] != '\0')
+                            {
+                                network_connect_wifi(ssid);
+                                gui_draw_rect(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, gui_state_instance.window_w - 4, 4, ' ', PRINT_COLOR_LIGHT_GRAY + (PRINT_COLOR_BLACK << 4));
+                                gui_draw_text(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, "Wi-Fi connected to ", PRINT_COLOR_LIGHT_GREEN + (PRINT_COLOR_BLACK << 4));
+                                gui_draw_text(gui_state_instance.window_x + 26, gui_state_instance.window_y + 8, ssid, PRINT_COLOR_LIGHT_GREEN + (PRINT_COLOR_BLACK << 4));
+                            }
+                            else
+                            {
+                                gui_draw_rect(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, gui_state_instance.window_w - 4, 4, ' ', PRINT_COLOR_LIGHT_GRAY + (PRINT_COLOR_BLACK << 4));
+                                gui_draw_text(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, "Usage: wifi connect <ssid>", PRINT_COLOR_LIGHT_CYAN + (PRINT_COLOR_BLACK << 4));
+                            }
+                        }
+                        else if (text[0] == 'd' && text[1] == 'i' && text[2] == 's' && text[3] == 'c' && text[4] == 'o' && text[5] == 'n' && text[6] == 'n' && text[7] == 'e' && text[8] == 'c' && text[9] == 't' && text[10] == '\0')
+                        {
+                            network_disconnect_wifi();
+                            gui_draw_rect(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, gui_state_instance.window_w - 4, 4, ' ', PRINT_COLOR_LIGHT_GRAY + (PRINT_COLOR_BLACK << 4));
+                            gui_draw_text(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, "Wi-Fi disconnected", PRINT_COLOR_LIGHT_GREEN + (PRINT_COLOR_BLACK << 4));
+                        }
+                        else if (text[0] == 's' && text[1] == 't' && text[2] == 'a' && text[3] == 't' && text[4] == 'u' && text[5] == 's' && text[6] == '\0')
+                        {
+                            gui_draw_rect(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, gui_state_instance.window_w - 4, 4, ' ', PRINT_COLOR_LIGHT_GRAY + (PRINT_COLOR_BLACK << 4));
+                            if (network_is_wifi_connected())
+                            {
+                                gui_draw_text(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, "Wi-Fi connected to ", PRINT_COLOR_LIGHT_GREEN + (PRINT_COLOR_BLACK << 4));
+                                gui_draw_text(gui_state_instance.window_x + 26, gui_state_instance.window_y + 8, network_get_wifi_ssid(), PRINT_COLOR_LIGHT_GREEN + (PRINT_COLOR_BLACK << 4));
+                            }
+                            else
+                            {
+                                gui_draw_text(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, "Wi-Fi disconnected", PRINT_COLOR_LIGHT_GREEN + (PRINT_COLOR_BLACK << 4));
+                            }
+                        }
+                        else
+                        {
+                            gui_draw_rect(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, gui_state_instance.window_w - 4, 4, ' ', PRINT_COLOR_LIGHT_GRAY + (PRINT_COLOR_BLACK << 4));
+                            gui_draw_text(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, "Usage: wifi connect <ssid> | disconnect | status", PRINT_COLOR_LIGHT_CYAN + (PRINT_COLOR_BLACK << 4));
+                        }
+                    }
+                    else
+                    {
+                        gui_draw_rect(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, gui_state_instance.window_w - 4, 4, ' ', PRINT_COLOR_LIGHT_GRAY + (PRINT_COLOR_BLACK << 4));
+                        gui_draw_text(gui_state_instance.window_x + 2, gui_state_instance.window_y + 8, "Usage: wifi connect <ssid> | disconnect | status", PRINT_COLOR_LIGHT_CYAN + (PRINT_COLOR_BLACK << 4));
+                    }
                 }
                 else
                 {

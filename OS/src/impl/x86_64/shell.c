@@ -3,6 +3,7 @@
 #include "imp.h"
 #include "storage.h"
 #include "gui.h"
+#include "network.h"
 
 #define MAX_CMD 128
 #define MAX_HISTORY 16
@@ -309,6 +310,8 @@ static void shell_print_help(void)
     imp_text("  history     - historique des commandes\n");
     imp_text("  alias       - crée un alias\n");
     imp_text("  env         - variables d'environnement\n");
+    imp_text("  ping        - test réseau (ping <host> [eth|wifi])\n");
+    imp_text("  wifi        - wifi connect/disconnect/status\n");
     imp_text("  gui         - mode graphique\n");
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
 }
@@ -994,6 +997,82 @@ static void shell_execute_command(void)
         imp_text("PATH=/bin\nLANG=");
         imp_text(current_layout);
         imp_char('\n');
+    }
+    else if (shell_starts_with(cmd, "ping"))
+    {
+        const char* cursor = shell_skip_spaces(cmd + 4);
+        char host[MAX_CMD];
+        char mode[MAX_CMD];
+        cursor = shell_read_token(cursor, host, sizeof(host));
+        cursor = shell_skip_spaces(cursor);
+        shell_read_token(cursor, mode, sizeof(mode));
+
+        if (host[0] == '\0')
+        {
+            imp_text("Usage: ping <host> [eth|wifi]\n");
+        }
+        else if (mode[0] != '\0' && !shell_streq(mode, "eth") && !shell_streq(mode, "wifi"))
+        {
+            imp_text("Usage: ping <host> [eth|wifi]\n");
+        }
+        else if (shell_streq(mode, "wifi") && !network_is_wifi_connected())
+        {
+            imp_text("Wi-Fi not connected\n");
+        }
+        else if (!shell_streq(mode, "wifi") && !network_has_ethernet())
+        {
+            imp_text("Ethernet not available\n");
+        }
+        else
+        {
+            network_ping(host, shell_streq(mode, "wifi"));
+        }
+    }
+    else if (shell_starts_with(cmd, "wifi"))
+    {
+        const char* cursor = shell_skip_spaces(cmd + 4);
+        char subcmd[MAX_CMD];
+        cursor = shell_read_token(cursor, subcmd, sizeof(subcmd));
+
+        if (shell_streq(subcmd, "connect"))
+        {
+            char ssid[MAX_CMD];
+            cursor = shell_skip_spaces(cursor);
+            shell_read_token(cursor, ssid, sizeof(ssid));
+            if (ssid[0] == '\0')
+            {
+                imp_text("Usage: wifi connect <ssid>\n");
+            }
+            else
+            {
+                network_connect_wifi(ssid);
+                imp_text("Wi-Fi connected to ");
+                imp_text(ssid);
+                imp_char('\n');
+            }
+        }
+        else if (shell_streq(subcmd, "disconnect"))
+        {
+            network_disconnect_wifi();
+            imp_text("Wi-Fi disconnected\n");
+        }
+        else if (shell_streq(subcmd, "status"))
+        {
+            if (network_is_wifi_connected())
+            {
+                imp_text("Wi-Fi connected to ");
+                imp_text(network_get_wifi_ssid());
+                imp_char('\n');
+            }
+            else
+            {
+                imp_text("Wi-Fi disconnected\n");
+            }
+        }
+        else
+        {
+            imp_text("Usage: wifi connect <ssid> | disconnect | status\n");
+        }
     }
     else if (shell_streq(cmd, "i_use_arch_btw"))
     {

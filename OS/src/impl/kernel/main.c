@@ -2,10 +2,12 @@
 #include "shell.h"
 #include "keyboard.h"
 #include "gui.h"
+#include "network.h"
 
 void kmain() {
     enable_key_input();
     enable_gui();
+    enable_network();
     imp_cls();
     imp_color(PRINT_COLOR_BLACK, PRINT_COLOR_WHITE);
     imp_text("===========================================\n");

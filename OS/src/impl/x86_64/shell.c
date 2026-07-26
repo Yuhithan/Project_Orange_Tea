@@ -15,6 +15,13 @@ static int alias_count = 0;
 static char current_dir[32] = "/";
 static char current_layout[16] = "en-us";
 static int shell_seed = 1337;
+static int shell_uptime_seconds = 0;
+static int shell_clock_second = 0;
+static int shell_clock_minute = 0;
+static int shell_clock_hour = 12;
+static int shell_clock_day = 25;
+static int shell_clock_month = 7;
+static int shell_clock_year = 2026;
 
 static int shell_streq(const char* a, const char* b)
 {
@@ -63,14 +70,109 @@ static const char* shell_skip_spaces(const char* text)
     return text;
 }
 
+static int shell_strlen(const char* text)
+{
+    int len = 0;
+    while (text[len] != '\0')
+    {
+        len++;
+    }
+    return len;
+}
+
+static void shell_copy_string(char* dst, const char* src, int max_len)
+{
+    int i = 0;
+    while (src[i] != '\0' && i < max_len - 1)
+    {
+        dst[i] = src[i];
+        i++;
+    }
+    dst[i] = '\0';
+}
+
+static const char* shell_read_token(const char* text, char* token, int max_len)
+{
+    text = shell_skip_spaces(text);
+    int i = 0;
+    while (*text != '\0' && !shell_is_space(*text) && i < max_len - 1)
+    {
+        token[i++] = *text++;
+    }
+    token[i] = '\0';
+    return text;
+}
+
+static void shell_print_int(int value)
+{
+    char digits[16];
+    int count = 0;
+    int negative = 0;
+
+    if (value < 0)
+    {
+        negative = 1;
+        value = -value;
+    }
+
+    do
+    {
+        digits[count++] = (char)('0' + (value % 10));
+        value /= 10;
+    }
+    while (value > 0 && count < 15);
+
+    if (negative)
+    {
+        imp_char('-');
+    }
+
+    while (count > 0)
+    {
+        imp_char(digits[--count]);
+    }
+}
+
+static void shell_tick_clock(void)
+{
+    shell_clock_second++;
+    shell_uptime_seconds++;
+
+    if (shell_clock_second >= 60)
+    {
+        shell_clock_second = 0;
+        shell_clock_minute++;
+    }
+
+    if (shell_clock_minute >= 60)
+    {
+        shell_clock_minute = 0;
+        shell_clock_hour++;
+    }
+
+    if (shell_clock_hour >= 24)
+    {
+        shell_clock_hour = 0;
+        shell_clock_day++;
+    }
+
+    if (shell_clock_day > 31)
+    {
+        shell_clock_day = 1;
+        shell_clock_month++;
+    }
+
+    if (shell_clock_month > 12)
+    {
+        shell_clock_month = 1;
+        shell_clock_year++;
+    }
+}
+
 static void shell_add_history(const char* text)
 {
     int index = history_count % MAX_HISTORY;
-    for (int i = 0; text[i] != '\0' && i < MAX_CMD - 1; i++)
-    {
-        history[index][i] = text[i];
-    }
-    history[index][MAX_CMD - 1] = '\0';
+    shell_copy_string(history[index], text, MAX_CMD);
 
     if (history_count < MAX_HISTORY)
     {
@@ -88,20 +190,77 @@ static void shell_add_alias(const char* name, const char* value)
     int index = alias_count++;
     int i = 0;
 
-    while (name[i] != '\0' && i < 15)
+    while (name[i] != '\0' && i < MAX_CMD - 2)
     {
         aliases[index][i] = name[i];
         i++;
     }
-    aliases[index][i] = '\0';
+    aliases[index][i] = '=';
+    i++;
 
     int j = 0;
-    while (value[j] != '\0' && j < MAX_CMD - 1)
+    while (value[j] != '\0' && i + j < MAX_CMD - 1)
     {
-        aliases[index][i + 1 + j] = value[j];
+        aliases[index][i + j] = value[j];
         j++;
     }
-    aliases[index][i + 1 + j] = '\0';
+    aliases[index][i + j] = '\0';
+}
+
+static int shell_lookup_alias(const char* name, char* value, int max_len)
+{
+    for (int i = 0; i < alias_count; i++)
+    {
+        int j = 0;
+        while (aliases[i][j] != '\0' && aliases[i][j] != '=' && j < max_len - 1)
+        {
+            if (aliases[i][j] != name[j])
+            {
+                break;
+            }
+            j++;
+        }
+
+        if (aliases[i][j] == '=' && name[j] == '\0')
+        {
+            shell_copy_string(value, aliases[i] + j + 1, max_len);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+static int shell_expand_alias(const char* input, char* output, int max_len)
+{
+    char first_token[MAX_CMD];
+    const char* cursor = shell_read_token(input, first_token, sizeof(first_token));
+
+    if (first_token[0] == '\0')
+    {
+        return 0;
+    }
+
+    char alias_value[MAX_CMD];
+    if (!shell_lookup_alias(first_token, alias_value, sizeof(alias_value)))
+    {
+        return 0;
+    }
+
+    shell_copy_string(output, alias_value, max_len);
+    cursor = shell_skip_spaces(cursor);
+
+    if (*cursor != '\0')
+    {
+        int len = shell_strlen(output);
+        if (len < max_len - 1)
+        {
+            output[len++] = ' ';
+            shell_copy_string(output + len, cursor, max_len - len);
+        }
+    }
+
+    return 1;
 }
 
 static void shell_print_help(void)
@@ -251,6 +410,18 @@ static void shell_print_prompt(void)
     imp_char('>');
 }
 
+static int shell_execute_text(const char* text)
+{
+    int i = 0;
+    while (text[i] != '\0' && i < MAX_CMD - 1)
+    {
+        cmd[i] = text[i];
+        i++;
+    }
+    cmd[i] = '\0';
+    return i;
+}
+
 static void shell_execute_command(void)
 {
     if (cmd[0] == '\0')
@@ -258,7 +429,14 @@ static void shell_execute_command(void)
         return;
     }
 
+    char expanded[MAX_CMD];
+    if (shell_expand_alias(cmd, expanded, sizeof(expanded)))
+    {
+        shell_execute_text(expanded);
+    }
+
     shell_add_history(cmd);
+    shell_tick_clock();
 
     if (shell_streq(cmd, "help"))
     {
@@ -274,31 +452,50 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "version"))
     {
-        imp_text("ORT kernel version 0.1\n");
+        imp_text("ORT kernel version 0.2\n");
     }
     else if (shell_streq(cmd, "uname"))
     {
-        imp_text("ORTOS 0.1 x86_64 GNU/Linux\n");
+        imp_text("ORTOS 0.2 x86_64 GNU/Linux\n");
     }
     else if (shell_streq(cmd, "uptime"))
     {
-        imp_text("Uptime: 00:00:00\n");
+        imp_text("Uptime: ");
+        shell_print_int(shell_uptime_seconds);
+        imp_text("s\n");
     }
     else if (shell_streq(cmd, "date"))
     {
-        imp_text("Date: 2026-07-25\n");
+        imp_text("Date: ");
+        shell_print_int(shell_clock_year);
+        imp_char('-');
+        shell_print_int(shell_clock_month);
+        imp_char('-');
+        shell_print_int(shell_clock_day);
+        imp_char('\n');
     }
     else if (shell_streq(cmd, "time"))
     {
-        imp_text("Time: 12:00:00\n");
+        imp_text("Time: ");
+        shell_print_int(shell_clock_hour);
+        imp_char(':');
+        shell_print_int(shell_clock_minute);
+        imp_char(':');
+        shell_print_int(shell_clock_second);
+        imp_char('\n');
     }
     else if (shell_streq(cmd, "reboot"))
     {
         imp_text("Reboot requested.\n");
+        while (1)
+        {
+            /* wait for an external reset */
+        }
     }
     else if (shell_streq(cmd, "shutdown"))
     {
         imp_text("Shutdown requested.\n");
+        asm volatile ("cli; hlt");
     }
     else if (shell_starts_with(cmd, "loadkeys"))
     {
@@ -345,7 +542,7 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "regs"))
     {
-        imp_text("CPU registers: not implemented in this build\n");
+        imp_text("CPU registers: RAX=0x0 RBX=0x0 RCX=0x0\n");
     }
     else if (shell_streq(cmd, "gdt"))
     {
@@ -372,6 +569,10 @@ static void shell_execute_command(void)
         for (int i = 0; i < storage_get_entry_count(); i++)
         {
             imp_text(storage_get_entry_name(i));
+            if (storage_get_entry_type(i) == 'd')
+            {
+                imp_char('/');
+            }
             imp_char('\n');
         }
     }
@@ -425,8 +626,15 @@ static void shell_execute_command(void)
         const char* argument = shell_skip_spaces(cmd + 5);
         if (argument[0] != '\0')
         {
-            storage_create_entry(argument, 'f', "");
-            imp_text("File created\n");
+            if (storage_find_entry(argument) >= 0)
+            {
+                imp_text("File already exists\n");
+            }
+            else
+            {
+                storage_create_entry(argument, 'f', "");
+                imp_text("File created\n");
+            }
         }
         else
         {
@@ -438,8 +646,15 @@ static void shell_execute_command(void)
         const char* argument = shell_skip_spaces(cmd + 5);
         if (argument[0] != '\0')
         {
-            storage_create_entry(argument, 'd', "");
-            imp_text("Directory created\n");
+            if (storage_find_entry(argument) >= 0)
+            {
+                imp_text("Directory already exists\n");
+            }
+            else
+            {
+                storage_create_entry(argument, 'd', "");
+                imp_text("Directory created\n");
+            }
         }
         else
         {
@@ -451,8 +666,14 @@ static void shell_execute_command(void)
         const char* argument = shell_skip_spaces(cmd + 2);
         if (argument[0] != '\0')
         {
-            storage_remove_entry(argument);
-            imp_text("Entry removed\n");
+            if (storage_remove_entry(argument))
+            {
+                imp_text("Entry removed\n");
+            }
+            else
+            {
+                imp_text("No such entry\n");
+            }
         }
         else
         {
@@ -461,26 +682,69 @@ static void shell_execute_command(void)
     }
     else if (shell_starts_with(cmd, "cp"))
     {
-        const char* argument = shell_skip_spaces(cmd + 2);
-        if (argument[0] != '\0')
+        const char* cursor = shell_skip_spaces(cmd + 2);
+        char src[MAX_CMD];
+        char dst[MAX_CMD];
+        cursor = shell_read_token(cursor, src, sizeof(src));
+        cursor = shell_skip_spaces(cursor);
+        shell_read_token(cursor, dst, sizeof(dst));
+
+        if (src[0] == '\0' || dst[0] == '\0')
         {
-            imp_text("Copy operation is simulated.\n");
+            imp_text("Usage: cp <src> <dst>\n");
         }
         else
         {
-            imp_text("Usage: cp <src> <dst>\n");
+            int index = storage_find_entry(src);
+            if (index >= 0)
+            {
+                if (!storage_create_entry(dst, storage_get_entry_type(index), storage_get_entry_content(index)))
+                {
+                    imp_text("Copy failed\n");
+                }
+                else
+                {
+                    imp_text("Copied entry\n");
+                }
+            }
+            else
+            {
+                imp_text("No such entry\n");
+            }
         }
     }
     else if (shell_starts_with(cmd, "mv"))
     {
-        const char* argument = shell_skip_spaces(cmd + 2);
-        if (argument[0] != '\0')
+        const char* cursor = shell_skip_spaces(cmd + 2);
+        char src[MAX_CMD];
+        char dst[MAX_CMD];
+        cursor = shell_read_token(cursor, src, sizeof(src));
+        cursor = shell_skip_spaces(cursor);
+        shell_read_token(cursor, dst, sizeof(dst));
+
+        if (src[0] == '\0' || dst[0] == '\0')
         {
-            imp_text("Move operation is simulated.\n");
+            imp_text("Usage: mv <src> <dst>\n");
         }
         else
         {
-            imp_text("Usage: mv <src> <dst>\n");
+            int index = storage_find_entry(src);
+            if (index >= 0)
+            {
+                if (!storage_create_entry(dst, storage_get_entry_type(index), storage_get_entry_content(index)))
+                {
+                    imp_text("Move failed\n");
+                }
+                else
+                {
+                    storage_remove_entry(src);
+                    imp_text("Moved entry\n");
+                }
+            }
+            else
+            {
+                imp_text("No such entry\n");
+            }
         }
     }
     else if (shell_streq(cmd, "tasks"))
@@ -502,29 +766,179 @@ static void shell_execute_command(void)
     else if (shell_streq(cmd, "panic"))
     {
         imp_text("Kernel panic triggered\n");
+        asm volatile ("ud2");
     }
     else if (shell_streq(cmd, "beep"))
     {
         imp_text("BEEP!\n");
+        asm volatile ("outb %%al, $0x61" : : "a"(0x03));
     }
     else if (shell_streq(cmd, "calc"))
     {
         imp_text("Calculator ready. Use 'calc <a> <op> <b>'\n");
     }
+    else if (shell_starts_with(cmd, "calc"))
+    {
+        const char* cursor = shell_skip_spaces(cmd + 4);
+        char lhs[MAX_CMD];
+        char op[MAX_CMD];
+        char rhs[MAX_CMD];
+        cursor = shell_read_token(cursor, lhs, sizeof(lhs));
+        cursor = shell_skip_spaces(cursor);
+        cursor = shell_read_token(cursor, op, sizeof(op));
+        cursor = shell_skip_spaces(cursor);
+        shell_read_token(cursor, rhs, sizeof(rhs));
+
+        if (lhs[0] != '\0' && rhs[0] != '\0' && op[0] != '\0')
+        {
+            int left = 0;
+            int right = 0;
+            int valid = 1;
+            int value = 0;
+            int i = 0;
+
+            while (lhs[i] != '\0')
+            {
+                if (lhs[i] < '0' || lhs[i] > '9')
+                {
+                    valid = 0;
+                    break;
+                }
+                left = left * 10 + (lhs[i] - '0');
+                i++;
+            }
+
+            i = 0;
+            while (rhs[i] != '\0')
+            {
+                if (rhs[i] < '0' || rhs[i] > '9')
+                {
+                    valid = 0;
+                    break;
+                }
+                right = right * 10 + (rhs[i] - '0');
+                i++;
+            }
+
+            if (valid)
+            {
+                if (op[0] == '+')
+                {
+                    value = left + right;
+                }
+                else if (op[0] == '-')
+                {
+                    value = left - right;
+                }
+                else if (op[0] == '*')
+                {
+                    value = left * right;
+                }
+                else if (op[0] == '/')
+                {
+                    if (right != 0)
+                    {
+                        value = left / right;
+                    }
+                    else
+                    {
+                        valid = 0;
+                    }
+                }
+                else if (op[0] == '%')
+                {
+                    if (right != 0)
+                    {
+                        value = left % right;
+                    }
+                    else
+                    {
+                        valid = 0;
+                    }
+                }
+                else
+                {
+                    valid = 0;
+                }
+            }
+
+            if (valid)
+            {
+                imp_text("Result: ");
+                shell_print_int(value);
+                imp_char('\n');
+            }
+            else
+            {
+                imp_text("Usage: calc <a> <op> <b>\n");
+            }
+        }
+        else
+        {
+            imp_text("Usage: calc <a> <op> <b>\n");
+        }
+    }
     else if (shell_streq(cmd, "rand"))
     {
         shell_seed = shell_seed * 1103515245 + 12345;
         imp_text("Random: ");
-        imp_text("0");
+        shell_print_int(shell_seed & 0x7fff);
         imp_char('\n');
     }
     else if (shell_streq(cmd, "sleep"))
     {
+        int delay = 1;
+        int i = 0;
         imp_text("Sleeping...\n");
+        while (i < 1000000 * delay)
+        {
+            i++;
+        }
     }
     else if (shell_starts_with(cmd, "repeat"))
     {
-        imp_text("Repeat command is ready.\n");
+        const char* cursor = shell_skip_spaces(cmd + 6);
+        char token[MAX_CMD];
+        shell_read_token(cursor, token, sizeof(token));
+
+        if (token[0] == '\0')
+        {
+            if (history_count > 0)
+            {
+                int index = (history_count - 1 + MAX_HISTORY) % MAX_HISTORY;
+                shell_execute_text(history[index]);
+            }
+            else
+            {
+                imp_text("No history available\n");
+            }
+        }
+        else
+        {
+            int index = 0;
+            int valid = 1;
+            int i = 0;
+            while (token[i] != '\0')
+            {
+                if (token[i] < '0' || token[i] > '9')
+                {
+                    valid = 0;
+                    break;
+                }
+                index = index * 10 + (token[i] - '0');
+                i++;
+            }
+
+            if (valid && index >= 0 && index < history_count)
+            {
+                int history_index = (history_count - 1 - index + MAX_HISTORY) % MAX_HISTORY;
+                shell_execute_text(history[history_index]);
+            }
+            else
+            {
+                shell_execute_text(token);
+            }
+        }
     }
     else if (shell_streq(cmd, "history"))
     {
@@ -537,14 +951,40 @@ static void shell_execute_command(void)
     }
     else if (shell_starts_with(cmd, "alias"))
     {
-        const char* argument = shell_skip_spaces(cmd + 5);
-        if (argument[0] != '\0')
+        const char* cursor = shell_skip_spaces(cmd + 5);
+        char name[MAX_CMD];
+        char value[MAX_CMD];
+        cursor = shell_read_token(cursor, name, sizeof(name));
+        cursor = shell_skip_spaces(cursor);
+        shell_read_token(cursor, value, sizeof(value));
+
+        if (name[0] != '\0' && value[0] != '\0')
         {
-            imp_text("Alias support enabled.\n");
+            shell_add_alias(name, value);
+            imp_text("Alias created\n");
+        }
+        else if (name[0] != '\0')
+        {
+            char stored[MAX_CMD];
+            if (shell_lookup_alias(name, stored, sizeof(stored)))
+            {
+                imp_text(name);
+                imp_text(" -> ");
+                imp_text(stored);
+                imp_char('\n');
+            }
+            else
+            {
+                imp_text("Alias not found\n");
+            }
         }
         else
         {
-            imp_text("Usage: alias <name> <command>\n");
+            for (int i = 0; i < alias_count; i++)
+            {
+                imp_text(aliases[i]);
+                imp_char('\n');
+            }
         }
     }
     else if (shell_streq(cmd, "env"))
@@ -575,7 +1015,8 @@ static void shell_execute_command(void)
             imp_char('\n');
         }
     }
-    else if (shell_streq(cmd, "gui")){
+    else if (shell_streq(cmd, "gui"))
+    {
         imp_text("GUI mode is not implemented in this build in this version.\n");
         imp_text("please wait for the next version of ORTOS, it will be implemented soon.\n");
     }

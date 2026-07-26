@@ -2,6 +2,7 @@
 #include "keyboard.h"
 #include "imp.h"
 #include "storage.h"
+#include "gui.h"
 
 #define MAX_CMD 128
 #define MAX_HISTORY 16
@@ -308,6 +309,7 @@ static void shell_print_help(void)
     imp_text("  history     - historique des commandes\n");
     imp_text("  alias       - crée un alias\n");
     imp_text("  env         - variables d'environnement\n");
+    imp_text("  gui         - mode graphique\n");
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
 }
 
@@ -1017,8 +1019,7 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "gui"))
     {
-        imp_text("GUI mode is not implemented in this build in this version.\n");
-        imp_text("please wait for the next version of ORTOS, it will be implemented soon.\n");
+        gui_enter();
     }
     else
     {

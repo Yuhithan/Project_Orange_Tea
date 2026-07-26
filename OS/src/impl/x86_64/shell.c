@@ -567,7 +567,7 @@ static void shell_execute_command(void)
         const char* argument = shell_skip_spaces(cmd + 4);
         if (*argument != '\0')
         {
-            imp_text((char*)argument);
+            imp_text(argument);
             imp_char('\n');
         }
         else
@@ -577,7 +577,7 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "gui")){
         imp_text("GUI mode is not implemented in this build in this version.\n");
-        impl_text("please wait for the next version of ORTOS, it will be implemented soon.\n");
+        imp_text("please wait for the next version of ORTOS, it will be implemented soon.\n");
     }
     else
     {

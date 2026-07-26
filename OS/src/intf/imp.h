@@ -25,4 +25,4 @@ enum {
 void imp_cls();
 void imp_color(uint8_t foreground, uint8_t background);
 void imp_char(char character);
-void imp_text(char* string);
+void imp_text(const char* string);

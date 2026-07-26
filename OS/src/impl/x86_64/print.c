@@ -91,7 +91,7 @@ void imp_char(char character) {
     col++;
 }
 
-void imp_text(char* str) {
+void imp_text(const char* str) {
     for (size_t i = 0; 1; i++) {
         char character = (uint8_t) str[i];
 

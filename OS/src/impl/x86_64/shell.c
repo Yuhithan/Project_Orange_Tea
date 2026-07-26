@@ -454,7 +454,7 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "version"))
     {
-        imp_text("ORT kernel version 0.2\n");
+        imp_text("ORT kernel version beta-1.9.9\n");
     }
     else if (shell_streq(cmd, "uname"))
     {

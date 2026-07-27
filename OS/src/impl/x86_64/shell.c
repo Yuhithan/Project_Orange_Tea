@@ -327,6 +327,43 @@ static void shell_set_current_dir(const char* path)
     current_dir[i] = '\0';
 }
 
+static void shell_resolve_path(const char* path, char* out, int max_len)
+{
+    if (path[0] == '/')
+    {
+        shell_copy_string(out, path, max_len);
+        return;
+    }
+
+    if (current_dir[0] == '/' && current_dir[1] == '\0')
+    {
+        out[0] = '/';
+        out[1] = '\0';
+        if (path[0] != '\0')
+        {
+            shell_copy_string(out + 1, path, max_len - 1);
+        }
+        return;
+    }
+
+    int len = 0;
+    while (current_dir[len] != '\0' && len < max_len - 1)
+    {
+        out[len] = current_dir[len];
+        len++;
+    }
+
+    if (len == 0 || out[len - 1] != '/')
+    {
+        if (len < max_len - 1)
+        {
+            out[len++] = '/';
+        }
+    }
+
+    shell_copy_string(out + len, path, max_len - len);
+}
+
 static void shell_go_to_parent(void)
 {
     int len = 0;
@@ -594,13 +631,15 @@ static void shell_execute_command(void)
         }
         else
         {
-            int index = storage_find_entry(argument);
+            char resolved[MAX_CMD];
+            shell_resolve_path(argument, resolved, sizeof(resolved));
+            int index = storage_find_entry(resolved);
             if (index >= 0 && storage_get_entry_type(index) == 'd')
             {
                 imp_text("Changed directory to ");
                 imp_text(argument);
                 imp_char('\n');
-                shell_enter_directory(argument);
+                shell_set_current_dir(resolved);
             }
             else
             {
@@ -615,7 +654,9 @@ static void shell_execute_command(void)
     else if (shell_starts_with(cmd, "cat"))
     {
         const char* argument = shell_skip_spaces(cmd + 3);
-        int index = storage_find_entry(argument);
+        char resolved[MAX_CMD];
+        shell_resolve_path(argument, resolved, sizeof(resolved));
+        int index = storage_find_entry(resolved);
         if (index >= 0 && storage_get_entry_type(index) == 'f')
         {
             imp_text(storage_get_entry_content(index));
@@ -631,13 +672,15 @@ static void shell_execute_command(void)
         const char* argument = shell_skip_spaces(cmd + 5);
         if (argument[0] != '\0')
         {
-            if (storage_find_entry(argument) >= 0)
+            char resolved[MAX_CMD];
+            shell_resolve_path(argument, resolved, sizeof(resolved));
+            if (storage_find_entry(resolved) >= 0)
             {
                 imp_text("File already exists\n");
             }
             else
             {
-                storage_create_entry(argument, 'f', "");
+                storage_create_entry(resolved, 'f', "");
                 imp_text("File created\n");
             }
         }
@@ -651,13 +694,15 @@ static void shell_execute_command(void)
         const char* argument = shell_skip_spaces(cmd + 5);
         if (argument[0] != '\0')
         {
-            if (storage_find_entry(argument) >= 0)
+            char resolved[MAX_CMD];
+            shell_resolve_path(argument, resolved, sizeof(resolved));
+            if (storage_find_entry(resolved) >= 0)
             {
                 imp_text("Directory already exists\n");
             }
             else
             {
-                storage_create_entry(argument, 'd', "");
+                storage_create_entry(resolved, 'd', "");
                 imp_text("Directory created\n");
             }
         }
@@ -671,7 +716,9 @@ static void shell_execute_command(void)
         const char* argument = shell_skip_spaces(cmd + 2);
         if (argument[0] != '\0')
         {
-            if (storage_remove_entry(argument))
+            char resolved[MAX_CMD];
+            shell_resolve_path(argument, resolved, sizeof(resolved));
+            if (storage_remove_entry(resolved))
             {
                 imp_text("Entry removed\n");
             }
@@ -700,10 +747,14 @@ static void shell_execute_command(void)
         }
         else
         {
-            int index = storage_find_entry(src);
+            char src_path[MAX_CMD];
+            char dst_path[MAX_CMD];
+            shell_resolve_path(src, src_path, sizeof(src_path));
+            shell_resolve_path(dst, dst_path, sizeof(dst_path));
+            int index = storage_find_entry(src_path);
             if (index >= 0)
             {
-                if (!storage_create_entry(dst, storage_get_entry_type(index), storage_get_entry_content(index)))
+                if (!storage_create_entry(dst_path, storage_get_entry_type(index), storage_get_entry_content(index)))
                 {
                     imp_text("Copy failed\n");
                 }
@@ -733,16 +784,20 @@ static void shell_execute_command(void)
         }
         else
         {
-            int index = storage_find_entry(src);
+            char src_path[MAX_CMD];
+            char dst_path[MAX_CMD];
+            shell_resolve_path(src, src_path, sizeof(src_path));
+            shell_resolve_path(dst, dst_path, sizeof(dst_path));
+            int index = storage_find_entry(src_path);
             if (index >= 0)
             {
-                if (!storage_create_entry(dst, storage_get_entry_type(index), storage_get_entry_content(index)))
+                if (!storage_create_entry(dst_path, storage_get_entry_type(index), storage_get_entry_content(index)))
                 {
                     imp_text("Move failed\n");
                 }
                 else
                 {
-                    storage_remove_entry(src);
+                    storage_remove_entry(src_path);
                     imp_text("Moved entry\n");
                 }
             }

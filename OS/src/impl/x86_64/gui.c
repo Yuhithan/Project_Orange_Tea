@@ -75,54 +75,6 @@ static void gui_render_vga_view(void)
         gui_vga_buffer[i].character = ' ';
         gui_vga_buffer[i].color = 0x07;
     }
-
-    for (int x = 0; x < 80; x++)
-    {
-        gui_vga_write_char(x, 0, '=', 0x0F);
-        gui_vga_write_char(x, 24, '=', 0x0F);
-    }
-
-    for (int y = 0; y < 25; y++)
-    {
-        gui_vga_write_char(0, y, '|', 0x0F);
-        gui_vga_write_char(79, y, '|', 0x0F);
-    }
-
-    gui_vga_write_string(3, 1, "Orange Tea OS GUI", 0x0E);
-    gui_vga_write_string(3, 2, "Shell in GUI mode", 0x0A);
-    gui_vga_write_string(3, 3, "--------------------", 0x07);
-
-    for (int row = 0; row < GUI_ROWS; row++)
-    {
-        for (int col = 0; col < GUI_COLS; col++)
-        {
-            int index = row * GUI_COLS + col;
-            struct gui_cell cell = gui_console[index];
-            if (cell.character == '\0' || cell.character == ' ')
-            {
-                continue;
-            }
-
-            int x = 3 + col;
-            int y = 5 + row;
-            if (x >= 80 || y >= 25)
-            {
-                continue;
-            }
-
-            uint8_t color = 0x0F;
-            if (cell.foreground == 0x08)
-            {
-                color = 0x08;
-            }
-            else if (cell.foreground != 0x0F)
-            {
-                color = 0x07;
-            }
-
-            gui_vga_write_char(x, y, cell.character, color);
-        }
-    }
 }
 
 static void gui_draw_char(int x, int y, char character, uint32_t color)
@@ -527,25 +479,36 @@ static void gui_render_console(void)
 
 static void gui_render_frame(void)
 {
-    fill_rect(0, 0, GUI_WIDTH, GUI_HEIGHT, 0xFF1F2D3D);
-    draw_rect(0, 0, GUI_WIDTH, GUI_HEIGHT, 0xFF0B1020);
-    fill_rect(0, GUI_HEIGHT - 24, GUI_WIDTH, 24, 0xFF263547);
-    draw_rect(6, GUI_HEIGHT - 20, 48, 12, 0xFF4A90E2);
-    draw_string(16, GUI_HEIGHT - 18, "ORT", 0x00FFFFFF);
-    draw_string(70, GUI_HEIGHT - 18, "Orange Tea OS", 0x00DDEEFF);
-    draw_rect(6, 6, GUI_WIDTH - 12, GUI_HEIGHT - 36, 0xFF102030);
-    draw_rect_outline(6, 6, GUI_WIDTH - 12, GUI_HEIGHT - 36, 0xFF5A6A7A);
-    draw_rect(GUI_TERMINAL_X, GUI_TERMINAL_Y, GUI_TERMINAL_W, GUI_TERMINAL_H, 0xFF000000);
-    draw_rect_outline(GUI_TERMINAL_X, GUI_TERMINAL_Y, GUI_TERMINAL_W, GUI_TERMINAL_H, 0xFF4A90E2);
-    draw_string(GUI_TERMINAL_X + 6, GUI_TERMINAL_Y + 4, "Terminal", 0x00FFFFFF);
-    gui_render_console();
-    gui_render_vga_view();
+    fill_rect(0, 0, GUI_WIDTH, GUI_HEIGHT, 0xFF7FA8D7);
+    fill_rect(0, 0, GUI_WIDTH, 24, 0xFF0F60B6);
+    draw_rect_outline(0, 0, GUI_WIDTH, GUI_HEIGHT, 0xFF000000);
+
+    draw_rect(12, 28, 64, 52, 0xFFFAFAFA);
+    draw_rect_outline(12, 28, 64, 52, 0xFF808080);
+    fill_rect(13, 29, 62, 18, 0xFF0F60B6);
+    draw_string(20, 33, "ORT", 0x00FFFFFF);
+    draw_rect(20, 52, 18, 16, 0xFFB3D5FF);
+    draw_rect_outline(20, 52, 18, 16, 0xFF0F60B6);
+    draw_string(18, 72, "TERM", 0x00FFFFFF);
+
+    draw_rect(92, 28, 120, 86, 0xFFFAFAFA);
+    draw_rect_outline(92, 28, 120, 86, 0xFF808080);
+    fill_rect(93, 29, 118, 18, 0xFF0F60B6);
+    draw_string(100, 33, "OrangeTeaOS", 0x00FFFFFF);
+    draw_string(100, 54, "Welcome", 0x00000000);
+    draw_string(100, 66, "to the GUI", 0x00000000);
+    draw_string(100, 80, "desktop", 0x00000000);
+
+    fill_rect(0, GUI_HEIGHT - 24, GUI_WIDTH, 24, 0xFFC0C0C0);
+    draw_rect_outline(0, GUI_HEIGHT - 24, GUI_WIDTH, 24, 0xFF808080);
+    fill_rect(4, GUI_HEIGHT - 20, 44, 14, 0xFF004E98);
+    draw_rect_outline(4, GUI_HEIGHT - 20, 44, 14, 0xFFFFFFFF);
+    draw_string(10, GUI_HEIGHT - 18, "START", 0x00FFFFFF);
+    draw_string(220, GUI_HEIGHT - 18, "OrangeTeaOS", 0x00000000);
 
     if (gui_cursor_visible)
     {
-        int cursor_x = GUI_TERMINAL_X + 8 + gui_console_col * 6;
-        int cursor_y = GUI_TERMINAL_Y + 20 + gui_console_row * 8;
-        fill_rect(cursor_x, cursor_y, 4, 8, 0x00FFFFFF);
+        fill_rect(8, GUI_HEIGHT - 18, 4, 8, 0x00000000);
     }
 }
 

@@ -2,7 +2,7 @@
 #include "gui.h"
 
 #define SCREEN_W 320
-#define SCREEN_H 100
+#define SCREEN_H 200
 
 
 static int mouse_x = 160;
@@ -20,33 +20,38 @@ void desktop_init(void)
 
 void desktop_render(void)
 {
-    /*Fond d'écran*/
-    fill_rect(0,0,SCREEN_W,SCREEN_H,0xFF2D5EA8);
+    fill_rect(0, 0, SCREEN_W, SCREEN_H, 0xFF7FA8D7);
+    fill_rect(0, 0, SCREEN_W, 40, 0xFF0F60B6);
 
-    /*simple gradient*/
-    fill_rect(0,0,SCREEN_W,60,0xFF4A90E2);
+    fill_rect(20, 24, 16, 16, 0xFFFFFF00);
+    draw_rect_outline(20, 24, 16, 16, 0xFFFFFFFF);
+    draw_string(18, 44, "TERM", 0xFFFFFFFF);
 
-    /*icon de Desktop*/
-    fill_rect(20,20,16,16,0xFFFFFF00);
-    draw_rect_outline(20,20,16,16,0xFFFFFFFF);
-    draw_string(18,40,"TERM",0xFFFFFFFF);
+    fill_rect(20, 72, 16, 16, 0xFFB3D5FF);
+    draw_rect_outline(20, 72, 16, 16, 0xFF0F60B6);
+    draw_string(14, 92, "FILES", 0xFFFFFFFF);
+
+    fill_rect(80, 24, 70, 58, 0xFFFAFAFA);
+    draw_rect_outline(80, 24, 70, 58, 0xFF808080);
+    fill_rect(81, 25, 68, 16, 0xFF0F60B6);
+    draw_string(88, 29, "OrangeTeaOS", 0x00FFFFFF);
+    draw_string(88, 46, "Welcome", 0x00000000);
+    draw_string(88, 58, "to the desktop", 0x00000000);
 
     taskbar_render();
-
     mouse_render();
-
 }
 
 void taskbar_render(void)
 {
-    fill_rect(0,180,SCREEN_W,20,0xFF202020);
+    fill_rect(0, 176, SCREEN_W, 24, 0xFFC0C0C0);
+    draw_rect_outline(0, 176, SCREEN_W, 24, 0xFF808080);
 
-    /* Start button */
-    fill_rect(4,183,42,14,0xFF0078D7);
-    draw_rect_outline(4,183,42,14,0xFFFFFFFF);
-    draw_string(10,186,"START",0xFFFFFFFF);
+    fill_rect(4, 180, 44, 14, 0xFF004E98);
+    draw_rect_outline(4, 180, 44, 14, 0xFFFFFFFF);
+    draw_string(10, 183, "START", 0x00FFFFFF);
 
-    draw_string(250,186,"OrangeTeaOS",0xFFFFFFFF);
+    draw_string(240, 183, "OrangeTeaOS", 0x00000000);
 }
 
 void mouse_render(void)

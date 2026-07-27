@@ -39,6 +39,92 @@ struct gui_cell {
 
 static struct gui_cell gui_console[GUI_COLS * GUI_ROWS];
 
+struct gui_vga_char {
+    uint8_t character;
+    uint8_t color;
+};
+
+static struct gui_vga_char* gui_vga_buffer = (struct gui_vga_char*)0xB8000;
+
+static void gui_vga_write_char(int x, int y, char character, uint8_t color)
+{
+    if (x < 0 || y < 0 || x >= 80 || y >= 25)
+    {
+        return;
+    }
+
+    int index = y * 80 + x;
+    gui_vga_buffer[index].character = (uint8_t)character;
+    gui_vga_buffer[index].color = color;
+}
+
+static void gui_vga_write_string(int x, int y, const char* text, uint8_t color)
+{
+    int offset = 0;
+    while (text[offset] != '\0')
+    {
+        gui_vga_write_char(x + offset, y, text[offset], color);
+        offset++;
+    }
+}
+
+static void gui_render_vga_view(void)
+{
+    for (int i = 0; i < 80 * 25; i++)
+    {
+        gui_vga_buffer[i].character = ' ';
+        gui_vga_buffer[i].color = 0x07;
+    }
+
+    for (int x = 0; x < 80; x++)
+    {
+        gui_vga_write_char(x, 0, '=', 0x0F);
+        gui_vga_write_char(x, 24, '=', 0x0F);
+    }
+
+    for (int y = 0; y < 25; y++)
+    {
+        gui_vga_write_char(0, y, '|', 0x0F);
+        gui_vga_write_char(79, y, '|', 0x0F);
+    }
+
+    gui_vga_write_string(3, 1, "Orange Tea OS GUI", 0x0E);
+    gui_vga_write_string(3, 2, "Shell in GUI mode", 0x0A);
+    gui_vga_write_string(3, 3, "--------------------", 0x07);
+
+    for (int row = 0; row < GUI_ROWS; row++)
+    {
+        for (int col = 0; col < GUI_COLS; col++)
+        {
+            int index = row * GUI_COLS + col;
+            struct gui_cell cell = gui_console[index];
+            if (cell.character == '\0' || cell.character == ' ')
+            {
+                continue;
+            }
+
+            int x = 3 + col;
+            int y = 5 + row;
+            if (x >= 80 || y >= 25)
+            {
+                continue;
+            }
+
+            uint8_t color = 0x0F;
+            if (cell.foreground == 0x08)
+            {
+                color = 0x08;
+            }
+            else if (cell.foreground != 0x0F)
+            {
+                color = 0x07;
+            }
+
+            gui_vga_write_char(x, y, cell.character, color);
+        }
+    }
+}
+
 static void gui_draw_char(int x, int y, char character, uint32_t color)
 {
     if (character == ' ')
@@ -453,6 +539,7 @@ static void gui_render_frame(void)
     draw_rect_outline(GUI_TERMINAL_X, GUI_TERMINAL_Y, GUI_TERMINAL_W, GUI_TERMINAL_H, 0xFF4A90E2);
     draw_string(GUI_TERMINAL_X + 6, GUI_TERMINAL_Y + 4, "Terminal", 0x00FFFFFF);
     gui_render_console();
+    gui_render_vga_view();
 
     if (gui_cursor_visible)
     {
@@ -689,5 +776,6 @@ void enable_cursor(void)
 void gui_enter(void)
 {
     gui_active = 1;
-    gui_render_frame();
+    gui_cursor_visible = 1;
+    gui_console_clear();
 }

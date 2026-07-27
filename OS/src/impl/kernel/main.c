@@ -6,7 +6,6 @@
 
 void kmain() {
     enable_key_input();
-    enable_gui();
     enable_network();
     imp_cls();
     imp_color(PRINT_COLOR_BLACK, PRINT_COLOR_WHITE);

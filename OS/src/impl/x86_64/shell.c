@@ -1154,10 +1154,12 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "gui"))
     {
-        gui_enter();
+        imp_text("Entering GUI mode...\n");
+        desktop_enter();
     }
     else if (shell_streq(cmd, "desktop"))
     {
+        imp_text("Opening desktop...\n");
         desktop_enter();
     }
     else

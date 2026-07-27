@@ -113,5 +113,6 @@ void mouse_update_wheel(int delta)
 
 void desktop_enter(void)
 {
+    enable_gui();
     desktop_render();
 }

@@ -14,6 +14,18 @@
 #define GUI_TERMINAL_W 300
 #define GUI_TERMINAL_H 160
 
+#define XP_BG_TOP 0xFF8CCEFF
+#define XP_BG_BOTTOM 0xFF5094E5
+#define XP_WINDOW_BORDER 0xFF2A4E8A
+#define XP_WINDOW_TITLE 0xFF1E4AA0
+#define XP_WINDOW_TITLE_TEXT 0x00FFFFFF
+#define XP_WINDOW_BG 0x00F5F7FF
+#define XP_TERMINAL_BG 0x00FFFFFF
+#define XP_TASKBAR 0xFF1C3E77
+#define XP_START_BUTTON 0xFF3B66B0
+#define XP_START_TEXT 0x00FFFFFF
+#define XP_SHADOW 0xFF1A2F56
+
 static uint32_t gui_backbuffer[GUI_WIDTH * GUI_HEIGHT];
 struct framebuffer framebuffer = {
     .address = gui_backbuffer,
@@ -39,10 +51,6 @@ struct gui_cell {
 
 static struct gui_cell gui_console[GUI_COLS * GUI_ROWS];
 
-struct gui_vga_char {
-    uint8_t character;
-    uint8_t color;
-};
 
 static struct gui_vga_char* gui_vga_buffer = (struct gui_vga_char*)0xB8000;
 
@@ -68,12 +76,96 @@ static void gui_vga_write_string(int x, int y, const char* text, uint8_t color)
     }
 }
 
+static uint32_t blend_color(uint32_t a, uint32_t b, uint8_t t)
+{
+    uint8_t aA = (a >> 24) & 0xFF;
+    uint8_t aR = (a >> 16) & 0xFF;
+    uint8_t aG = (a >> 8) & 0xFF;
+    uint8_t aB = a & 0xFF;
+
+    uint8_t bA = (b >> 24) & 0xFF;
+    uint8_t bR = (b >> 16) & 0xFF;
+    uint8_t bG = (b >> 8) & 0xFF;
+    uint8_t bB = b & 0xFF;
+
+    uint32_t A = aA + (((bA - aA) * t) >> 8);
+    uint32_t R = aR + (((bR - aR) * t) >> 8);
+    uint32_t G = aG + (((bG - aG) * t) >> 8);
+    uint32_t B = aB + (((bB - aB) * t) >> 8);
+
+    return (A << 24) | (R << 16) | (G << 8) | B;
+}
+
+static void draw_vertical_gradient(int x, int y, int width, int height, uint32_t topColor, uint32_t bottomColor)
+{
+    if (height <= 1)
+    {
+        fill_rect(x, y, width, height, topColor);
+        return;
+    }
+
+    for (int row = 0; row < height; row++)
+    {
+        uint8_t t = (uint8_t)((row * 255) / (height - 1));
+        uint32_t color = blend_color(topColor, bottomColor, t);
+        fill_rect(x, y + row, width, 1, color);
+    }
+}
+
 static void gui_render_vga_view(void)
 {
     for (int i = 0; i < 80 * 25; i++)
     {
         gui_vga_buffer[i].character = ' ';
         gui_vga_buffer[i].color = 0x07;
+    }
+
+    for (int x = 0; x < 80; x++)
+    {
+        gui_vga_write_char(x, 0, '=', 0x0F);
+        gui_vga_write_char(x, 24, '=', 0x0F);
+    }
+
+    for (int y = 0; y < 25; y++)
+    {
+        gui_vga_write_char(0, y, '|', 0x0F);
+        gui_vga_write_char(79, y, '|', 0x0F);
+    }
+
+    gui_vga_write_string(3, 1, "Orange Tea OS GUI", 0x0E);
+    _write_string(3, 2, "Shell in GUI mode", 0x0A);
+    gui_vga_write_string(3, 3, "--------------------", 0x07);
+
+    for (int row = 0; row < GUI_ROWS; row++)
+    {
+        for (int col = 0; col < GUI_COLS; col++)
+        {
+            int index = row * GUI_COLS + col;
+            struct gui_cell cell = gui_console[index];
+            if (cell.character == '\0' || cell.character == ' ')
+            {
+                continue;
+            }
+
+            int x = 3 + col;
+            int y = 5 + row;
+            if (x >= 80 || y >= 25)
+            {
+                continue;
+            }
+
+            uint8_t color = 0x0F;
+            if (cell.foreground == 0x08)
+            {
+                color = 0x08;
+            }
+            else if (cell.foreground != 0x0F)
+            {
+                color = 0x07;
+            }
+
+            gui_vga_write_char(x, y, cell.character, color);
+        }
     }
 }
 
@@ -479,36 +571,41 @@ static void gui_render_console(void)
 
 static void gui_render_frame(void)
 {
-    fill_rect(0, 0, GUI_WIDTH, GUI_HEIGHT, 0xFF7FA8D7);
-    fill_rect(0, 0, GUI_WIDTH, 24, 0xFF0F60B6);
-    draw_rect_outline(0, 0, GUI_WIDTH, GUI_HEIGHT, 0xFF000000);
+    draw_vertical_gradient(0, 0, GUI_WIDTH, GUI_HEIGHT, XP_BG_TOP, XP_BG_BOTTOM);
+    draw_rect_outline(2, 2, GUI_WIDTH - 4, GUI_HEIGHT - 4, XP_WINDOW_BORDER);
 
-    draw_rect(12, 28, 64, 52, 0xFFFAFAFA);
-    draw_rect_outline(12, 28, 64, 52, 0xFF808080);
-    fill_rect(13, 29, 62, 18, 0xFF0F60B6);
-    draw_string(20, 33, "ORT", 0x00FFFFFF);
-    draw_rect(20, 52, 18, 16, 0xFFB3D5FF);
-    draw_rect_outline(20, 52, 18, 16, 0xFF0F60B6);
-    draw_string(18, 72, "TERM", 0x00FFFFFF);
+    int titleBarHeight = 24;
+    draw_vertical_gradient(6, 8, GUI_WIDTH - 16, titleBarHeight, XP_WINDOW_TITLE, XP_WINDOW_BORDER);
+    draw_rect_outline(6, 8, GUI_WIDTH - 16, titleBarHeight, XP_WINDOW_BORDER);
+    draw_string(14, 12, "Orange Tea OS", XP_WINDOW_TITLE_TEXT);
+    draw_rect(8, 12, 16, 10, 0x00FFFFFF);
+    draw_string(10, 14, "XP", XP_WINDOW_TITLE);
 
-    draw_rect(92, 28, 120, 86, 0xFFFAFAFA);
-    draw_rect_outline(92, 28, 120, 86, 0xFF808080);
-    fill_rect(93, 29, 118, 18, 0xFF0F60B6);
-    draw_string(100, 33, "OrangeTeaOS", 0x00FFFFFF);
-    draw_string(100, 54, "Welcome", 0x00000000);
-    draw_string(100, 66, "to the GUI", 0x00000000);
-    draw_string(100, 80, "desktop", 0x00000000);
+    int contentX = 10;
+    int contentY = 36;
+    int contentW = GUI_WIDTH - 20;
+    int contentH = GUI_HEIGHT - 72;
+    fill_rect(contentX, contentY, contentW, contentH, XP_WINDOW_BG);
+    draw_rect_outline(contentX, contentY, contentW, contentH, XP_WINDOW_BORDER);
 
-    fill_rect(0, GUI_HEIGHT - 24, GUI_WIDTH, 24, 0xFFC0C0C0);
-    draw_rect_outline(0, GUI_HEIGHT - 24, GUI_WIDTH, 24, 0xFF808080);
-    fill_rect(4, GUI_HEIGHT - 20, 44, 14, 0xFF004E98);
-    draw_rect_outline(4, GUI_HEIGHT - 20, 44, 14, 0xFFFFFFFF);
-    draw_string(10, GUI_HEIGHT - 18, "START", 0x00FFFFFF);
-    draw_string(220, GUI_HEIGHT - 18, "OrangeTeaOS", 0x00000000);
+    draw_rect(GUI_TERMINAL_X, GUI_TERMINAL_Y, GUI_TERMINAL_W, GUI_TERMINAL_H, XP_TERMINAL_BG);
+    draw_rect_outline(GUI_TERMINAL_X, GUI_TERMINAL_Y, GUI_TERMINAL_W, GUI_TERMINAL_H, XP_WINDOW_BORDER);
+    draw_string(GUI_TERMINAL_X + 8, GUI_TERMINAL_Y + 6, "Terminal", 0x001E3E7F);
+
+    gui_render_console();
+    gui_render_vga_view();
+
+    int taskbarHeight = 20;
+    fill_rect(0, GUI_HEIGHT - taskbarHeight, GUI_WIDTH, taskbarHeight, XP_TASKBAR);
+    draw_rect_outline(2, GUI_HEIGHT - taskbarHeight - 2, 64, taskbarHeight + 4, XP_WINDOW_BORDER);
+    fill_rect(4, GUI_HEIGHT - taskbarHeight + 2, 56, taskbarHeight - 4, XP_START_BUTTON);
+    draw_string(8, GUI_HEIGHT - taskbarHeight + 6, "Start", XP_START_TEXT);
 
     if (gui_cursor_visible)
     {
-        fill_rect(8, GUI_HEIGHT - 18, 4, 8, 0x00000000);
+        int cursor_x = GUI_TERMINAL_X + 8 + gui_console_col * 6;
+        int cursor_y = GUI_TERMINAL_Y + 20 + gui_console_row * 8;
+        fill_rect(cursor_x, cursor_y, 4, 8, 0x00333333);
     }
 }
 

@@ -4,6 +4,7 @@
 #include "storage.h"
 #include "gui.h"
 #include "network.h"
+#include "desktop.h"
 
 #define MAX_CMD 128
 #define MAX_HISTORY 16
@@ -494,7 +495,7 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "version"))
     {
-        imp_text("ORT kernel version beta-1.9.9\n");
+        imp_text("ORT kernel version alplha-2.0.0\n");
     }
     else if (shell_streq(cmd, "uname"))
     {
@@ -1154,6 +1155,10 @@ static void shell_execute_command(void)
     else if (shell_streq(cmd, "gui"))
     {
         gui_enter();
+    }
+    else if (shell_streq(cmd, "desktop"))
+    {
+        desktop_enter();
     }
     else
     {

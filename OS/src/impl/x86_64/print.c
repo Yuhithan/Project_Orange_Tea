@@ -1,4 +1,5 @@
 #include "imp.h"
+#include "gui.h"
 
 const static size_t NUM_COLS = 80;
 const static size_t NUM_ROWS = 25;
@@ -25,6 +26,11 @@ void clear_row(size_t row) {
 }
 
 void imp_cls() {
+    if (gui_is_active()) {
+        gui_console_clear();
+        return;
+    }
+
     col = 0;
     row = 0;
 
@@ -52,6 +58,11 @@ void imp_Nl() {
 }
 
 void imp_char(char character) {
+    if (gui_is_active()) {
+        gui_console_write_char(character);
+        return;
+    }
+
     if (character == '\n') {
         imp_Nl();
         return;
@@ -105,4 +116,7 @@ void imp_text(const char* str) {
 
 void imp_color(uint8_t foreground, uint8_t background) {
     color = foreground + (background << 4);
+    if (gui_is_active()) {
+        gui_set_console_color(foreground, background);
+    }
 }

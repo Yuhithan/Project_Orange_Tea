@@ -133,7 +133,7 @@ static void gui_render_vga_view(void)
     }
 
     gui_vga_write_string(3, 1, "Orange Tea OS GUI", 0x0E);
-    _write_string(3, 2, "Shell in GUI mode", 0x0A);
+    gui_vga_write_string(3, 2, "Shell in GUI mode", 0x0A);
     gui_vga_write_string(3, 3, "--------------------", 0x07);
 
     for (int row = 0; row < GUI_ROWS; row++)

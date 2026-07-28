@@ -2,6 +2,12 @@
 
 #include <stdint.h>
 
+struct gui_vga_char
+{
+    uint8_t character;
+    uint8_t color;
+};
+
 void enable_gui(void);
 void enable_cursor(void);
 void gui_enter(void);

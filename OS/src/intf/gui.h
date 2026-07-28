@@ -11,6 +11,7 @@ struct gui_vga_char
 void enable_gui(void);
 void enable_cursor(void);
 void gui_enter(void);
+void gui_set_desktop_mode(int enabled);
 void draw_pixel(int x, int y, uint32_t color);
 void draw_line(int x0, int y0, int x1, int y1, uint32_t color);
 void draw_rect(int x, int y, int width, int height, uint32_t color);

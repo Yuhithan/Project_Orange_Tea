@@ -1,4 +1,5 @@
 #include "gui.h"
+#include "desktop.h"
 #include "keyboard.h"
 #include "imp.h"
 #include "network.h"
@@ -35,6 +36,7 @@ struct framebuffer framebuffer = {
 };
 
 static int gui_active = 0;
+static int gui_desktop_mode = 0;
 static int gui_cursor_visible = 1;
 static int gui_cursor_x = 0;
 static int gui_cursor_y = 0;
@@ -571,6 +573,12 @@ static void gui_render_console(void)
 
 static void gui_render_frame(void)
 {
+    if (gui_desktop_mode)
+    {
+        desktop_render();
+        return;
+    }
+
     draw_vertical_gradient(0, 0, GUI_WIDTH, GUI_HEIGHT, XP_BG_TOP, XP_BG_BOTTOM);
     draw_rect_outline(2, 2, GUI_WIDTH - 4, GUI_HEIGHT - 4, XP_WINDOW_BORDER);
 
@@ -815,6 +823,11 @@ void gui_set_console_color(uint8_t foreground, uint8_t background)
     gui_console_bg = background;
 }
 
+void gui_set_desktop_mode(int enabled)
+{
+    gui_desktop_mode = enabled ? 1 : 0;
+}
+
 int gui_is_active(void)
 {
     return gui_active;
@@ -836,6 +849,7 @@ void enable_cursor(void)
 void gui_enter(void)
 {
     gui_active = 1;
+    gui_set_desktop_mode(1);
     gui_cursor_visible = 1;
     gui_console_clear();
 }

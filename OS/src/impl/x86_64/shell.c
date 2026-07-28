@@ -313,7 +313,6 @@ static void shell_print_help(void)
     imp_text("  env         - variables d'environnement\n");
     imp_text("  ping        - test réseau (ping <host> [eth|wifi])\n");
     imp_text("  wifi        - wifi connect/disconnect/status\n");
-    imp_text("  gui         - mode graphique\n");
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
 }
 

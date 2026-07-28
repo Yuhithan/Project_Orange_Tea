@@ -2,7 +2,7 @@
 #include "keyboard.h"
 #include "imp.h"
 #include "storage.h"
-#include "gui.h"
+#include "framebuffer.h"
 #include "network.h"
 #include "desktop.h"
 
@@ -1152,15 +1152,14 @@ static void shell_execute_command(void)
             imp_char('\n');
         }
     }
-    else if (shell_streq(cmd, "gui"))
-    {
-        imp_text("Entering GUI mode...\n");
-        desktop_enter();
-    }
     else if (shell_streq(cmd, "desktop"))
     {
-        imp_text("Opening desktop...\n");
-        desktop_enter();
+        desktop_init(1024, 768);   // Replace with your screen size
+
+        while (1)
+        {
+        desktop_draw();
+        }
     }
     else
     {

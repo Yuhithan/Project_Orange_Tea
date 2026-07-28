@@ -1,7 +1,7 @@
 #include "imp.h"
 #include "shell.h"
 #include "keyboard.h"
-#include "gui.h"
+#include "framebuffer.h"
 #include "network.h"
 
 void kmain() {

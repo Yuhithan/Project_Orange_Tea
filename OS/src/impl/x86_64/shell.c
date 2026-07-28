@@ -1153,12 +1153,7 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "desktop"))
     {
-        desktop_init(1024, 768);   // Replace with your screen size
-
-        while (1)
-        {
         desktop_draw();
-        }
     }
     else
     {

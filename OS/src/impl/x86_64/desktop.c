@@ -3,7 +3,18 @@
 
 #define WILDFIRE 0xFF5A1F
 
-void desktop_draw()
+void desktop_draw(void)
 {
-    fb_clear(WILDFIRE);
+    while (1)
+    {
+        fb_clear(0xFF5A1F);   // Wildfire background
+
+        //cursor_draw();
+
+        // Update mouse here later
+
+        // Exit back to shell (optional)
+        // if (keyboard_pressed(KEY_ESC))
+        //     break;
+    }
 }

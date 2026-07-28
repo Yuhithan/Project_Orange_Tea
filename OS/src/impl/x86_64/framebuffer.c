@@ -27,16 +27,38 @@ void fb_put_pixel(int x, int y, uint32_t color)
 
 void fb_fill_rect(int x, int y, int width, int height, uint32_t color)
 {
+    if (x < 0) {
+        width += x;
+        x = 0;
+    }
+
+    if (y < 0) {
+        height += y;
+        y = 0;
+    }
+
+    if (x + width > screen_width)
+        width = screen_width - x;
+
+    if (y + height > screen_height)
+        height = screen_height - y;
+
+    if (width <= 0 || height <= 0)
+        return;
+
     for (int iy = 0; iy < height; iy++)
     {
+        uint32_t *row = framebuffer + (y + iy) * screen_pitch + x;
+
         for (int ix = 0; ix < width; ix++)
-        {
-            fb_put_pixel(x + ix, y + iy, color);
-        }
+            row[ix] = color;
     }
 }
 
 void fb_clear(uint32_t color)
 {
-    fb_fill_rect(0, 0, screen_width, screen_height, color);
+    int total = screen_pitch * screen_height;
+
+    for (int i = 0; i < total; i++)
+        framebuffer[i] = color;
 }

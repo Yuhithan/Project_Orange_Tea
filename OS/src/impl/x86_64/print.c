@@ -4,6 +4,10 @@
 const static size_t NUM_COLS = 80;
 const static size_t NUM_ROWS = 25;
 
+static const imp_backend_t *backend = NULL;
+
+
+
 struct Char {
     uint8_t character;
     uint8_t color;
@@ -13,6 +17,11 @@ struct Char* buffer = (struct Char*) 0xb8000;
 size_t col = 0;
 size_t row = 0;
 uint8_t color = PRINT_COLOR_BLACK | PRINT_COLOR_WHITE << 4;
+
+void imp_set_backend(const imp_backend_t *b)
+{
+    backend = b;
+}
 
 void clear_row(size_t row) {
     struct Char empty = (struct Char) {
@@ -26,9 +35,9 @@ void clear_row(size_t row) {
 }
 
 void imp_cls() {
-    if (imp_backend_active()) {
-        imp_backend_clear();
-        return;
+    if (backend && backend->active()) {
+    backend->clear();
+    return;
     }
 
     col = 0;
@@ -58,9 +67,9 @@ void imp_Nl() {
 }
 
 void imp_char(char character) {
-    if (imp_backend_active()) {
-        imp_backend_putchar(character);
-        return;
+    if (backend && backend->active()) {
+    backend->put_char(character);
+    return;
     }
 
     if (character == '\n') {
@@ -116,7 +125,7 @@ void imp_text(const char* str) {
 
 void imp_color(uint8_t foreground, uint8_t background) {
     color = foreground + (background << 4);
-    if (imp_backend_active()) {
-        imp_backend_set_color(foreground, background);
+    if (backend && backend->active()) {
+    backend->set_color(foreground, background);
     }
 }

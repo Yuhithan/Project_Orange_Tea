@@ -22,6 +22,15 @@ enum {
 	PRINT_COLOR_WHITE = 15,
 };
 
+typedef struct {
+    int (*active)(void);
+    void (*clear)(void);
+    void (*put_char)(char);
+    void (*set_color)(uint8_t fg, uint8_t bg);
+} imp_backend_t;
+
+void imp_set_backend(const imp_backend_t *backend);
+
 void imp_clear();
 void imp_char(char character);
 void imp_str(char* string);

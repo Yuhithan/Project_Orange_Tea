@@ -1,4 +1,5 @@
 #include "framebuffer.h"
+#include "imp.h"
 
 typedef struct {
     uint32_t type;
@@ -102,7 +103,20 @@ void fb_put_pixel(int x, int y, uint32_t color)
     if (x >= screen_width || y >= screen_height)
         return;
 
-    framebuffer[y * screen_pitch + x] = color;
+    uint8_t *pixel = (uint8_t *)framebuffer + (y * screen_pitch + x * screen_bytes_per_pixel);
+    uint32_t rgba = color;
+
+    if (screen_bytes_per_pixel >= 4) {
+        pixel[0] = (uint8_t)(rgba & 0xFF);
+        pixel[1] = (uint8_t)((rgba >> 8) & 0xFF);
+        pixel[2] = (uint8_t)((rgba >> 16) & 0xFF);
+        pixel[3] = (uint8_t)((rgba >> 24) & 0xFF);
+    } else if (screen_bytes_per_pixel == 2) {
+        uint16_t *p16 = (uint16_t *)pixel;
+        *p16 = (uint16_t)(((rgba >> 8) & 0xF800) | ((rgba >> 5) & 0x07E0) | ((rgba >> 3) & 0x001F));
+    } else if (screen_bytes_per_pixel == 1) {
+        pixel[0] = (uint8_t)(rgba & 0xFF);
+    }
 }
 
 void fb_fill_rect(int x, int y, int width, int height, uint32_t color)
@@ -131,10 +145,8 @@ void fb_fill_rect(int x, int y, int width, int height, uint32_t color)
 
     for (int iy = 0; iy < height; iy++)
     {
-        uint32_t *row = framebuffer + (y + iy) * screen_pitch + x;
-
         for (int ix = 0; ix < width; ix++)
-            row[ix] = color;
+            fb_put_pixel(x + ix, y + iy, color);
     }
 }
 
@@ -216,8 +228,9 @@ void fb_clear(uint32_t color)
     if (framebuffer == 0 || screen_width <= 0 || screen_height <= 0)
         return;
 
-    int total = screen_pitch * screen_height;
-
-    for (int i = 0; i < total; i++)
-        framebuffer[i] = color;
+    for (int y = 0; y < screen_height; y++) {
+        for (int x = 0; x < screen_width; x++) {
+            fb_put_pixel(x, y, color);
+        }
+    }
 }

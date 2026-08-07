@@ -10,11 +10,14 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr) {
     fb_init_from_multiboot(multiboot_info_addr);
 
     if (framebuffer_ready) {
+        imp_text("Framebuffer ready.\n");
         fb_clear(0xFF140B0B);
         fb_fill_rect(80, 80, 320, 160, 0xFF2C0F0D);
         fb_draw_rect(80, 80, 320, 160, 0xFFE8C34E);
         fb_draw_string(110, 105, "ORTOS FRAMEBUFFER", 0xFFF7E2C8);
         fb_draw_string(120, 135, "GUI MODE READY", 0xFFB8201C);
+    } else {
+        imp_text("Framebuffer unavailable.\n");
     }
 
     enable_key_input();

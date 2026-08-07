@@ -8,6 +8,19 @@ int screen_width = 0;
 int screen_height = 0;
 int screen_pitch = 0;
 int screen_bpp = 4;
+int screen_bytes_per_pixel = 4;
+int framebuffer_ready = 0;
+
+static void fb_init_defaults(void)
+{
+    framebuffer = framebuffer_storage;
+    screen_width = 1024;
+    screen_height = 768;
+    screen_pitch = 1024;
+    screen_bpp = 32;
+    screen_bytes_per_pixel = 4;
+    framebuffer_ready = 1;
+}
 
 void fb_init(uint32_t *fb, int width, int height, int pitch)
 {
@@ -24,7 +37,15 @@ void fb_init(uint32_t *fb, int width, int height, int pitch)
     screen_width = width;
     screen_height = height;
     screen_pitch = pitch;
-    screen_bpp = 4;
+    screen_bpp = 32;
+    screen_bytes_per_pixel = 4;
+    framebuffer_ready = 1;
+}
+
+void fb_init_from_multiboot(uint64_t info_addr)
+{
+    (void)info_addr;
+    fb_init_defaults();
 }
 
 void fb_put_pixel(int x, int y, uint32_t color)

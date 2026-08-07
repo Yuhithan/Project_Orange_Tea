@@ -1,3 +1,4 @@
 #pragma once
 
-void desktop_draw();
+void desktop_init(void);
+void desktop_draw(void);

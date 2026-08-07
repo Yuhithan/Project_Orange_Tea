@@ -10,9 +10,12 @@ extern int screen_width;
 extern int screen_height;
 extern int screen_pitch;
 extern int screen_bpp;
+extern int screen_bytes_per_pixel;
+extern int framebuffer_ready;
 
 /* Initialize framebuffer */
 void fb_init(uint32_t *fb, int width, int height, int pitch);
+void fb_init_from_multiboot(uint64_t info_addr);
 
 /* Draw one pixel */
 void fb_put_pixel(int x, int y, uint32_t color);

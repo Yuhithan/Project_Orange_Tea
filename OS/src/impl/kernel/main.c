@@ -5,6 +5,7 @@
 #include "network.h"
 
 void kmain() {
+    fb_init(0, 1024, 768, 1024);
     enable_key_input();
     enable_network();
     imp_cls();

@@ -313,6 +313,7 @@ static void shell_print_help(void)
     imp_text("  env         - variables d'environnement\n");
     imp_text("  ping        - test réseau (ping <host> [eth|wifi])\n");
     imp_text("  wifi        - wifi connect/disconnect/status\n");
+    imp_text("  gui         - lance l'environnement graphique ORgui\n");
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
 }
 
@@ -1151,7 +1152,7 @@ static void shell_execute_command(void)
             imp_char('\n');
         }
     }
-    else if (shell_streq(cmd, "desktop"))
+    else if (shell_streq(cmd, "desktop") || shell_streq(cmd, "gui"))
     {
         desktop_draw();
     }

@@ -1,5 +1,6 @@
 #include "ORgui.h"
 #include "framebuffer.h"
+#include <stddef.h>
 
 static ORWindow *first_window = NULL;
 static ORButton button;

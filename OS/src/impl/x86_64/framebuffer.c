@@ -64,11 +64,16 @@ void fb_init_from_multiboot(uint64_t info_addr)
     }
 
     uint32_t total_size = info[0];
+    if (total_size < 24) {
+        fb_init_defaults();
+        return;
+    }
+
     uint32_t offset = 8;
     while (offset + 8 <= total_size) {
         uint32_t type = info[offset / 4];
         uint32_t size = info[(offset / 4) + 1];
-        if (size == 0) {
+        if (size == 0 || size < 8) {
             break;
         }
 

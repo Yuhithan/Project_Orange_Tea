@@ -9,8 +9,10 @@ start:
 	mov esp, stack_top
 
 	call check_multiboot
-	mov [boot_magic], eax
-	mov [boot_info], ebx
+	mov dword [boot_magic], eax
+	mov dword [boot_magic + 4], 0
+	mov dword [boot_info], ebx
+	mov dword [boot_info + 4], 0
 	call check_cpuid
 	call check_long_mode
 

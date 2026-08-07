@@ -5,8 +5,9 @@
 #include "framebuffer.h"
 #include "network.h"
 #include "desktop.h"
+#include "boot_mode.h"
 
-extern void gui_start(void);
+extern void gui_start(uint64_t multiboot_info_addr);
 
 #define MAX_CMD 128
 #define MAX_HISTORY 16
@@ -532,10 +533,7 @@ static void shell_execute_command(void)
     else if (shell_streq(cmd, "reboot"))
     {
         imp_text("Reboot requested.\n");
-        while (1)
-        {
-            /* wait for an external reset */
-        }
+        ortos_reboot();
     }
     else if (shell_streq(cmd, "shutdown"))
     {
@@ -1156,7 +1154,10 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "desktop") || shell_streq(cmd, "gui"))
     {
-        gui_start();
+        imp_text("GUI boot requested.\n");
+        imp_text("Rebooting ORTos...\n");
+        ortos_boot_mode_request_gui();
+        ortos_reboot();
     }
     else
     {

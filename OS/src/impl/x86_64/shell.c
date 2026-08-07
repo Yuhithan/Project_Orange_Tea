@@ -6,6 +6,8 @@
 #include "network.h"
 #include "desktop.h"
 
+extern void gui_start(void);
+
 #define MAX_CMD 128
 #define MAX_HISTORY 16
 #define MAX_ALIASES 8
@@ -1154,7 +1156,7 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "desktop") || shell_streq(cmd, "gui"))
     {
-        desktop_draw();
+        gui_start();
     }
     else
     {

@@ -1,4 +1,6 @@
 global start
+global boot_magic
+global boot_info
 extern long_mode_start
 
 section .text
@@ -7,6 +9,8 @@ start:
 	mov esp, stack_top
 
 	call check_multiboot
+	mov [boot_magic], eax
+	mov [boot_info], ebx
 	call check_cpuid
 	call check_long_mode
 
@@ -115,6 +119,12 @@ error:
 	hlt
 
 section .bss
+align 8
+boot_magic:
+	resq 1
+boot_info:
+	resq 1
+
 align 4096
 page_table_l4:
 	resb 4096

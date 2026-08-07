@@ -1,5 +1,17 @@
 #include "framebuffer.h"
 
+typedef struct {
+    uint32_t type;
+    uint32_t size;
+    uint64_t framebuffer_addr;
+    uint32_t framebuffer_pitch;
+    uint32_t framebuffer_width;
+    uint32_t framebuffer_height;
+    uint8_t framebuffer_bpp;
+    uint8_t framebuffer_type;
+    uint8_t reserved[6];
+} __attribute__((packed)) multiboot2_framebuffer_tag_t;
+
 static uint32_t framebuffer_storage[1024 * 768];
 
 uint32_t *framebuffer = 0;
@@ -44,7 +56,41 @@ void fb_init(uint32_t *fb, int width, int height, int pitch)
 
 void fb_init_from_multiboot(uint64_t info_addr)
 {
-    (void)info_addr;
+    uint32_t *info = (uint32_t *)(uintptr_t)info_addr;
+    if (info == 0) {
+        fb_init_defaults();
+        return;
+    }
+
+    uint32_t total_size = info[0];
+    uint32_t offset = 8;
+    while (offset + 8 <= total_size) {
+        uint32_t type = info[offset / 4];
+        uint32_t size = info[(offset / 4) + 1];
+        if (size == 0) {
+            break;
+        }
+
+        if (type == 8) {
+            multiboot2_framebuffer_tag_t *tag = (multiboot2_framebuffer_tag_t *)((uint8_t *)info + offset);
+            if (tag->framebuffer_addr != 0 && tag->framebuffer_width > 0 && tag->framebuffer_height > 0) {
+                framebuffer = (uint32_t *)(uintptr_t)tag->framebuffer_addr;
+                screen_width = tag->framebuffer_width;
+                screen_height = tag->framebuffer_height;
+                screen_bpp = tag->framebuffer_bpp;
+                screen_bytes_per_pixel = (tag->framebuffer_bpp + 7) / 8;
+                screen_pitch = tag->framebuffer_pitch / screen_bytes_per_pixel;
+                framebuffer_ready = 1;
+                return;
+            }
+        }
+
+        offset += size;
+        if (offset % 8 != 0) {
+            offset += 8 - (offset % 8);
+        }
+    }
+
     fb_init_defaults();
 }
 

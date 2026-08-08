@@ -14,8 +14,17 @@ header_start:
     ; Checksum
     dd 0x100000000 - (0xe85250d6 + 0 + (header_end - header_start))
 
-    ; End tag.  The shell uses the VGA text console, so do not request a
-    ; graphical framebuffer from GRUB.
+    ; Request a 32-bit framebuffer. GRUB reports its actual selection through
+    ; the Multiboot2 runtime framebuffer tag (type 8).
+    align 8
+    dw 5
+    dw 0
+    dd 20
+    dd 1024
+    dd 768
+    dd 32
+
+    ; End tag.
     align 8
     dw 0
     dw 0

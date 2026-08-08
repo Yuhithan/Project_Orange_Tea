@@ -2,12 +2,8 @@
 #include "keyboard.h"
 #include "imp.h"
 #include "storage.h"
-#include "framebuffer.h"
 #include "network.h"
-#include "desktop.h"
 #include "boot_mode.h"
-
-extern void gui_start(uint64_t multiboot_info_addr);
 
 #define MAX_CMD 128
 #define MAX_HISTORY 16
@@ -316,7 +312,7 @@ static void shell_print_help(void)
     imp_text("  env         - variables d'environnement\n");
     imp_text("  ping        - test réseau (ping <host> [eth|wifi])\n");
     imp_text("  wifi        - wifi connect/disconnect/status\n");
-    imp_text("  gui         - lance l'environnement graphique ORgui\n");
+    imp_text("  gui         - redemarre dans l'environnement graphique ORgui\n");
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
 }
 
@@ -1154,8 +1150,10 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "desktop") || shell_streq(cmd, "gui"))
     {
-        imp_text("GUI mode is currently disabled.\n");
-        imp_text("You are already in the ORTos shell.\n");
+        ortos_boot_mode_set(ORTOS_BOOT_GUI);
+        imp_text("Switching to GUI mode...\n");
+        imp_text("Rebooting...\n");
+        ortos_reboot();
     }
     else
     {

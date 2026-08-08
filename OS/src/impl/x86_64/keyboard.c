@@ -1,4 +1,5 @@
 #include "keyboard.h"
+#include "io.h"
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -9,12 +10,6 @@ static volatile int kb_head = 0;
 static volatile int kb_tail = 0;
 static volatile char kb_buf[128];
 static volatile int kb_enabled = 0;
-
-static inline uint8_t inb(uint16_t port) {
-	uint8_t val;
-	asm volatile ("inb %1, %0" : "=a"(val) : "Nd"(port));
-	return val;
-}
 
 static const char base_map[128] = {
 	[0x01] = 27,
@@ -127,9 +122,9 @@ static void kb_push(char c) {
 /* Polling is intentional: ORTos has no IRQ dispatcher yet. Keep all PS/2
  * decoding in one place so shell and ORgui observe identical input. */
 static void keyboard_poll(void) {
-    if (!kb_enabled || !(inb(KBD_STATUS_PORT) & 1)) return;
+    if (!kb_enabled || !(io_inb(KBD_STATUS_PORT) & 1)) return;
 
-    uint8_t sc = inb(KBD_DATA_PORT);
+    uint8_t sc = io_inb(KBD_DATA_PORT);
     int released = sc & 0x80;
     uint8_t code = sc & 0x7F;
 

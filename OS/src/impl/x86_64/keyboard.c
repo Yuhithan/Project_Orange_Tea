@@ -17,6 +17,7 @@ static inline uint8_t inb(uint16_t port) {
 }
 
 static const char base_map[128] = {
+	[0x01] = 27,
 	[0x02] = '1', [0x03] = '2', [0x04] = '3', [0x05] = '4', [0x06] = '5',
 	[0x07] = '6', [0x08] = '7', [0x09] = '8', [0x0A] = '9', [0x0B] = '0',
 	[0x0C] = '-', [0x0D] = '=',
@@ -32,6 +33,7 @@ static const char base_map[128] = {
 };
 
 static const char shift_map[128] = {
+	[0x01] = 27,
 	[0x02] = '!', [0x03] = '@', [0x04] = '#', [0x05] = '$', [0x06] = '%',
 	[0x07] = '^', [0x08] = '&', [0x09] = '*', [0x0A] = '(', [0x0B] = ')',
 	[0x0C] = '_', [0x0D] = '+',
@@ -51,6 +53,7 @@ static volatile int caps_lock = 0;
 static const char* active_layout = "en-us";
 
 static const char fr_base_map[128] = {
+	[0x01] = 27,
 	[0x02] = '1', [0x03] = '2', [0x04] = '3', [0x05] = '4', [0x06] = '5',
 	[0x07] = '6', [0x08] = '7', [0x09] = '8', [0x0A] = '9', [0x0B] = '0',
 	[0x0C] = '-', [0x0D] = '=',
@@ -66,6 +69,7 @@ static const char fr_base_map[128] = {
 };
 
 static const char fr_shift_map[128] = {
+	[0x01] = 27,
 	[0x02] = '!', [0x03] = '@', [0x04] = '#', [0x05] = '$', [0x06] = '%',
 	[0x07] = '^', [0x08] = '&', [0x09] = '*', [0x0A] = '(', [0x0B] = ')',
 	[0x0C] = '_', [0x0D] = '+',
@@ -120,6 +124,29 @@ static void kb_push(char c) {
 	}
 }
 
+/* Polling is intentional: ORTos has no IRQ dispatcher yet. Keep all PS/2
+ * decoding in one place so shell and ORgui observe identical input. */
+static void keyboard_poll(void) {
+    if (!kb_enabled || !(inb(KBD_STATUS_PORT) & 1)) return;
+
+    uint8_t sc = inb(KBD_DATA_PORT);
+    int released = sc & 0x80;
+    uint8_t code = sc & 0x7F;
+
+    if (code == 0x2A || code == 0x36) {
+        shift_state = released ? 0 : 1;
+        return;
+    }
+    if (code == 0x3A && !released) {
+        caps_lock = !caps_lock;
+        return;
+    }
+    if (!released) {
+        char c = scancode_to_ascii(code);
+        if (c) kb_push(c);
+    }
+}
+
 void enable_key_input() {
 	kb_enabled = 1;
 }
@@ -137,38 +164,22 @@ void keyboard_set_layout(const char* layout) {
 }
 
 int keyboard_has_char() {
-	return kb_head != kb_tail;
+    keyboard_poll();
+    return kb_head != kb_tail;
+}
+
+int keyboard_try_getchar(int *out) {
+    keyboard_poll();
+    if (kb_head == kb_tail) return 0;
+    if (out != NULL) *out = (int)kb_buf[kb_tail];
+    kb_tail = (kb_tail + 1) % (int)sizeof(kb_buf);
+    return 1;
 }
 
 int keyboard_getchar() {
 	// Busy-wait until a character is available
 	while (kb_head == kb_tail) {
-		if (!kb_enabled) continue;
-		// If output buffer full, read scancode
-		if (inb(KBD_STATUS_PORT) & 1) {
-			uint8_t sc = inb(KBD_DATA_PORT);
-			// handle key releases and modifier keys
-			int released = sc & 0x80;
-			uint8_t code = sc & 0x7F;
-
-			// Shift press/release
-			if (code == 0x2A || code == 0x36) {
-				if (released) shift_state = 0; else shift_state = 1;
-				continue;
-			}
-
-			// Caps lock (toggle on key press)
-			if (code == 0x3A && !released) {
-				caps_lock = !caps_lock;
-				continue;
-			}
-
-			// ignore key releases for non-modifiers
-			if (released) continue;
-
-			char c = scancode_to_ascii(code);
-			if (c) kb_push(c);
-		}
+		keyboard_poll();
 	}
 
 	char c = kb_buf[kb_tail];

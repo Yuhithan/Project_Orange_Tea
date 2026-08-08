@@ -4,8 +4,6 @@
 
 ORguiContext ORgui;
 
-static uint32_t ORgui_theme_background = 0xFF140B0B;
-static uint32_t ORgui_theme_panel = 0xFF2C0F0D;
 static uint32_t ORgui_theme_window = 0xFF1A0B0A;
 static uint32_t ORgui_theme_border = 0xFF7A1C11;
 static uint32_t ORgui_theme_title = 0xFFB23A16;
@@ -13,23 +11,6 @@ static uint32_t ORgui_theme_fire_red = 0xFFB8201C;
 static uint32_t ORgui_theme_fire_orange = 0xFFD95A12;
 static uint32_t ORgui_theme_fire_yellow = 0xFFE8C34E;
 static uint32_t ORgui_theme_text = 0xFFF7E2C8;
-static uint32_t ORgui_theme_text_dim = 0xFFB69374;
-
-static void ORgui_draw_char(int x, int y, char c, uint32_t color)
-{
-    if (c == '\0') {
-        return;
-    }
-
-    int offset_x = x;
-    int offset_y = y;
-    const char *font = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-:.;_()<>/\\|[]{}+=";
-    (void)font;
-
-    if (c >= ' ' && c <= '~') {
-        fb_fill_rect(offset_x, offset_y, 6, 8, color);
-    }
-}
 
 void ORgui_init(void)
 {
@@ -69,23 +50,7 @@ void ORgui_draw_button(int x, int y, int width, int height, const char *label, u
 
 void ORgui_draw_text(int x, int y, const char *text, uint32_t color)
 {
-    int cursor_x = x;
-    if (text == NULL) {
-        return;
-    }
-
-    while (*text != '\0') {
-        if (*text == '\n') {
-            y += 10;
-            cursor_x = x;
-        } else if (*text == '\t') {
-            cursor_x += 8;
-        } else {
-            fb_fill_rect(cursor_x, y, 5, 8, color);
-            cursor_x += 6;
-        }
-        text++;
-    }
+    fb_draw_string(x, y, text, color);
 }
 
 void ORgui_draw_window(ORWindow *window)

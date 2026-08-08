@@ -4,7 +4,6 @@
 
 static ORWindow *first_window = NULL;
 static ORButton button;
-static int button_pressed = 0;
 
 void first_app_init(void)
 {
@@ -42,10 +41,10 @@ void first_app_draw(void)
         return;
     }
 
-    ORgui_draw_window(first_window);
     ORgui_draw_panel(first_window->x + 18, first_window->y + 42, first_window->width - 36, 84, 0xFF1A0B0A, 0xFF7A1C11);
     ORgui_draw_text(first_window->x + 24, first_window->y + 56, "Welcome to ORgui", 0xFFF7E2C8);
-    ORgui_draw_text(first_window->x + 24, first_window->y + 74, "This is a real framebuffer window.", 0xFFB69374);
+    ORgui_draw_text(first_window->x + 24, first_window->y + 74, "Real framebuffer window.", 0xFFB69374);
+    ORgui_draw_text(first_window->x + 24, first_window->y + 88, "No host GUI libraries used.", 0xFFB69374);
     ORgui_draw_button(first_window->x + 24, first_window->y + 104, 120, 28, button.text, button.background, button.pressed);
 }
 

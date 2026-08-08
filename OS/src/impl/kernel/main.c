@@ -29,27 +29,7 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr) {
         imp_text("ERROR: invalid multiboot2 information.\n");
     }
 
-    ortos_boot_mode_t mode = ortos_boot_mode_get();
-    if (mode == ORTOS_BOOT_GUI) {
-        imp_text("Boot mode: GUI\n");
-    } else {
-        imp_text("Boot mode: SHELL\n");
-    }
-
-    if (mode == ORTOS_BOOT_GUI) {
-        ortos_boot_mode_clear();
-        if (multiboot_magic == 0x36d76289u && multiboot_info_addr != 0) {
-            enable_key_input();
-            if (gui_start(multiboot_info_addr)) {
-                for (;;)
-                    asm volatile ("hlt");
-            }
-        }
-
-        imp_text("GUI boot requested.\n");
-        imp_text("ERROR: framebuffer unavailable.\n");
-        imp_text("Falling back to shell.\n");
-    }
-
+    ortos_boot_mode_clear();
+    imp_text("Boot mode: SHELL\n");
     start_shell();
 }

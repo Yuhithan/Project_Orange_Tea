@@ -7,6 +7,8 @@ section .text
 bits 64
 
 long_mode_start:
+    ; Shell-only kernel entry. Graphics initialization is intentionally not
+    ; performed here; kmain starts the VGA shell after the CPU handoff.
     ; load null into all data segment registers
     mov ax , 0
     mov ss, ax
@@ -21,4 +23,6 @@ long_mode_start:
     mov rsi, rax
     call kmain
 
+.halt:
     hlt
+    jmp .halt

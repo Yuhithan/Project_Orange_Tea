@@ -15,7 +15,7 @@ extern int framebuffer_ready;
 
 /* Initialize framebuffer */
 void fb_init(uint32_t *fb, int width, int height, int pitch);
-void fb_init_from_multiboot(uint64_t info_addr);
+int fb_init_from_multiboot(uint64_t info_addr);
 
 /* Draw one pixel */
 void fb_put_pixel(int x, int y, uint32_t color);

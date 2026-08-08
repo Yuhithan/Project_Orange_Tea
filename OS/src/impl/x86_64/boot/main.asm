@@ -71,9 +71,20 @@ setup_page_tables:
 	or eax, 0b11 ; present, writable
 	mov [page_table_l4], eax
 	
+	; Identity-map the low 4 GiB. QEMU's linear framebuffer is commonly placed
+	; near 0xFD000000, above the original 1 GiB mapping.
 	mov eax, page_table_l2
 	or eax, 0b11 ; present, writable
 	mov [page_table_l3], eax
+	mov eax, page_table_l2 + 4096
+	or eax, 0b11
+	mov [page_table_l3 + 8], eax
+	mov eax, page_table_l2 + 8192
+	or eax, 0b11
+	mov [page_table_l3 + 16], eax
+	mov eax, page_table_l2 + 12288
+	or eax, 0b11
+	mov [page_table_l3 + 24], eax
 
 	mov ecx, 0 ; counter
 .loop:
@@ -84,7 +95,7 @@ setup_page_tables:
 	mov [page_table_l2 + ecx * 8], eax
 
 	inc ecx ; increment counter
-	cmp ecx, 512 ; checks if the whole table is mapped
+	cmp ecx, 2048 ; four L2 tables, mapping the low 4 GiB
 	jne .loop ; if not, continue
 
 	ret
@@ -133,7 +144,7 @@ page_table_l4:
 page_table_l3:
 	resb 4096
 page_table_l2:
-	resb 4096
+	resb 4096 * 4
 stack_bottom:
 	resb 4096 * 4
 stack_top:

@@ -2,6 +2,9 @@
 #include "cursor.h"
 #include "framebuffer.h"
 #include "keyboard.h"
+#include "ORgui.h"
+#include "taskbar.h"
+#include "first_app.h"
 
 static int desktop_running;
 
@@ -14,10 +17,13 @@ void desktop_init(void)
 void desktop_draw(void)
 {
     while (desktop_running) {
-        /* The desktop deliberately owns only the background. Applications can
-         * be layered here later through ORgui without changing the cursor. */
+        ORgui_begin_frame();
         fb_clear(0xFF1677C8);
+        taskbar_draw(screen_width, screen_height);
+        ORgui_draw_windows();
+        first_app_draw();
         cursor_draw();
+        ORgui_end_frame();
 
         int key;
         while (keyboard_try_getchar(&key)) {
@@ -33,5 +39,8 @@ void desktop_draw(void)
                 cursor_move(8, 0);
             }
         }
+
+        ORgui_update();
+        first_app_update();
     }
 }

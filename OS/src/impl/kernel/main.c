@@ -1,13 +1,12 @@
 #include "imp.h"
 #include "shell.h"
 #include "keyboard.h"
-#include "framebuffer.h"
 #include "network.h"
 #include "boot_mode.h"
-#include "desktop.h"
 
 void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr) {
     (void)multiboot_magic;
+    (void)multiboot_info_addr;
 
     imp_text("BOOT 1: kernel entry\n");
 
@@ -19,22 +18,10 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr) {
     }
 
     if (mode == ORTOS_BOOT_GUI) {
+        /* GUI boot is disabled until the framebuffer path is stable.  Clear
+         * the request so this reboot and every following boot enter the shell. */
         ortos_boot_mode_clear();
-        imp_text("BOOT 2: multiboot2 information received\n");
-        fb_init_from_multiboot(multiboot_info_addr);
-        imp_text("BOOT 3: multiboot2 information parsed\n");
-
-        if (framebuffer_ready) {
-            imp_text("BOOT 6: framebuffer initialized\n");
-            imp_text("BOOT 7: entering GUI mode\n");
-            enable_key_input();
-            desktop_init();
-            desktop_draw();
-            imp_text("GUI closed; returning to shell mode.\n");
-        } else {
-            imp_text("GUI boot requested but no usable framebuffer was found.\n");
-            imp_text("Falling back to shell mode.\n");
-        }
+        imp_text("GUI mode is disabled; starting the shell.\n");
     }
 
     enable_key_input();

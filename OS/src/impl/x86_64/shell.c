@@ -1154,10 +1154,8 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "desktop") || shell_streq(cmd, "gui"))
     {
-        imp_text("GUI boot requested.\n");
-        imp_text("Rebooting ORTos...\n");
-        ortos_boot_mode_request_gui();
-        ortos_reboot();
+        imp_text("GUI mode is currently disabled.\n");
+        imp_text("You are already in the ORTos shell.\n");
     }
     else
     {

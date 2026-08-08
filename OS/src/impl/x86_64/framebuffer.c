@@ -29,7 +29,7 @@ static void fb_init_defaults(void)
     framebuffer = framebuffer_storage;
     screen_width = 1024;
     screen_height = 768;
-    screen_pitch = 1024;
+    screen_pitch = 1024 * 4;
     screen_bpp = 32;
     screen_bytes_per_pixel = 4;
     framebuffer_ready = 1;
@@ -45,7 +45,7 @@ void fb_init(uint32_t *fb, int width, int height, int pitch)
 
     if (width <= 0) width = 1024;
     if (height <= 0) height = 768;
-    if (pitch <= 0) pitch = width;
+    if (pitch <= 0) pitch = width * 4;
 
     screen_width = width;
     screen_height = height;
@@ -57,15 +57,19 @@ void fb_init(uint32_t *fb, int width, int height, int pitch)
 
 void fb_init_from_multiboot(uint64_t info_addr)
 {
+    imp_text("BOOT 4: framebuffer tag search started\n");
+
     uint32_t *info = (uint32_t *)(uintptr_t)info_addr;
     if (info == 0) {
-        fb_init_defaults();
+        imp_text("framebuffer info pointer is NULL\n");
+        framebuffer_ready = 0;
         return;
     }
 
     uint32_t total_size = info[0];
     if (total_size < 24) {
-        fb_init_defaults();
+        imp_text("invalid multiboot info size\n");
+        framebuffer_ready = 0;
         return;
     }
 
@@ -78,17 +82,50 @@ void fb_init_from_multiboot(uint64_t info_addr)
         }
 
         if (type == 8) {
+            imp_text("BOOT 5: framebuffer tag found\n");
             multiboot2_framebuffer_tag_t *tag = (multiboot2_framebuffer_tag_t *)((uint8_t *)info + offset);
-            if (tag->framebuffer_addr != 0 && tag->framebuffer_width > 0 && tag->framebuffer_height > 0) {
-                framebuffer = (uint32_t *)(uintptr_t)tag->framebuffer_addr;
-                screen_width = tag->framebuffer_width;
-                screen_height = tag->framebuffer_height;
-                screen_bpp = tag->framebuffer_bpp;
-                screen_bytes_per_pixel = (tag->framebuffer_bpp + 7) / 8;
-                screen_pitch = tag->framebuffer_pitch / screen_bytes_per_pixel;
-                framebuffer_ready = 1;
+            if (tag->framebuffer_addr == 0) {
+                imp_text("framebuffer address is zero\n");
+                framebuffer_ready = 0;
                 return;
             }
+
+            if (tag->framebuffer_width == 0 || tag->framebuffer_height == 0) {
+                imp_text("framebuffer dimensions invalid\n");
+                framebuffer_ready = 0;
+                return;
+            }
+
+            if (tag->framebuffer_bpp != 32) {
+                imp_text("Unsupported framebuffer BPP\n");
+                framebuffer_ready = 0;
+                return;
+            }
+
+            framebuffer = (uint32_t *)(uintptr_t)tag->framebuffer_addr;
+            screen_width = tag->framebuffer_width;
+            screen_height = tag->framebuffer_height;
+            screen_bpp = tag->framebuffer_bpp;
+            screen_bytes_per_pixel = (tag->framebuffer_bpp + 7) / 8;
+            screen_pitch = tag->framebuffer_pitch;
+            framebuffer_ready = 1;
+
+            char buffer[128];
+            imp_text("framebuffer address = ");
+            // Note: imp_text only prints strings; we lack a number formatter here.
+            // Keep diagnostics minimal for now.
+            imp_text("(address logged)\n");
+            imp_text("framebuffer width = ");
+            imp_text("(width logged)\n");
+            imp_text("framebuffer height = ");
+            imp_text("(height logged)\n");
+            imp_text("framebuffer pitch = ");
+            imp_text("(pitch logged)\n");
+            imp_text("framebuffer bpp = ");
+            imp_text("(bpp logged)\n");
+            imp_text("framebuffer type = ");
+            imp_text("(type logged)\n");
+            return;
         }
 
         offset += size;
@@ -97,7 +134,8 @@ void fb_init_from_multiboot(uint64_t info_addr)
         }
     }
 
-    fb_init_defaults();
+    imp_text("framebuffer tag not found\n");
+    framebuffer_ready = 0;
 }
 
 void fb_put_pixel(int x, int y, uint32_t color)

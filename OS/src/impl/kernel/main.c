@@ -5,24 +5,36 @@
 #include "network.h"
 #include "boot_mode.h"
 
-extern void gui_start(uint64_t multiboot_info_addr);
-
 void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr) {
     (void)multiboot_magic;
 
+    imp_text("BOOT 1: kernel entry\n");
+
     ortos_boot_mode_t mode = ortos_boot_mode_get();
+    if (mode == ORTOS_BOOT_GUI) {
+        imp_text("Boot mode: GUI\n");
+    } else {
+        imp_text("Boot mode: SHELL\n");
+    }
 
     if (mode == ORTOS_BOOT_GUI) {
         ortos_boot_mode_clear();
+        imp_text("BOOT 2: multiboot2 information received\n");
         fb_init(0, 0, 0, 0);
         fb_init_from_multiboot(multiboot_info_addr);
+        imp_text("BOOT 3: multiboot2 information parsed\n");
 
         if (framebuffer_ready) {
-            imp_text("ORTos kernel starting...\n");
-            imp_text("Boot mode: GUI\n");
-            imp_text("Starting ORgui...\n");
-            gui_start(multiboot_info_addr);
-            return;
+            imp_text("BOOT 6: framebuffer initialized\n");
+            imp_text("BOOT 7: entering GUI mode\n");
+            fb_clear(0xFF101010);
+            fb_fill_rect(80, 60, 600, 240, 0xFFFFA500);
+            fb_fill_rect(160, 140, 500, 180, 0xFFB8201C);
+            fb_fill_rect(240, 220, 380, 120, 0xFFE8C34E);
+            fb_draw_rect(0, 0, screen_width, screen_height, 0xFFFFFFFF);
+            imp_text("BOOT 10: first frame rendered\n");
+            for (;;)
+                asm volatile ("hlt");
         }
 
         imp_text("GUI boot requested but no usable framebuffer was found.\n");

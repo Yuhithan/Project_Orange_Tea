@@ -7,10 +7,8 @@ section .text
 bits 64
 
 long_mode_start:
-    ; Shell-only kernel entry. Graphics initialization is intentionally not
-    ; performed here; kmain starts the VGA shell after the CPU handoff.
-    ; load null into all data segment registers
-    mov ax , 0
+    ; Boot into the kernel shell using the standard VGA-compatible path.
+    mov ax, 0
     mov ss, ax
     mov ds, ax
     mov es, ax

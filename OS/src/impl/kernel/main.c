@@ -31,10 +31,10 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr) {
             desktop_init();
             desktop_draw();
             imp_text("GUI closed; returning to shell mode.\n");
+        } else {
+            imp_text("GUI boot requested but no usable framebuffer was found.\n");
+            imp_text("Falling back to shell mode.\n");
         }
-
-        imp_text("GUI boot requested but no usable framebuffer was found.\n");
-        imp_text("Falling back to shell mode.\n");
     }
 
     enable_key_input();

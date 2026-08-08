@@ -22,3 +22,6 @@ while (1) {
             imp_char((char)h);
         }
     }
+
+set gfxmode=640x480
+set gfxpayload=disable

@@ -4,6 +4,7 @@
 #include "network.h"
 #include "boot_mode.h"
 #include "test.h"
+#include "timer.h"
 
 extern int gui_start(uint64_t multiboot_info_addr);
 
@@ -52,6 +53,8 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr)
      * Test boot_mode.
      */
     test_boot();
+
+    timer_init(1000);
 
     /*
      * Continue into the shell.

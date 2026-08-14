@@ -52,7 +52,7 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr)
     /*
      * Test boot_mode.
      */
-    test_boot();
+    //test_boot();
 
     timer_init(1000);
 

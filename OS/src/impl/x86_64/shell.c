@@ -1150,7 +1150,7 @@ static void shell_execute_command(void)
     }
     else if (shell_streq(cmd, "desktop") || shell_streq(cmd, "gui"))
     {
-        ortos_boot_mode_set(ORTOS_BOOT_GUI);
+        ortos_boot_mode_set(ORTOS_BOOT_MODE_GUI);
         imp_text("Switching to GUI mode...\n");
         imp_text("Rebooting...\n");
         ortos_reboot();

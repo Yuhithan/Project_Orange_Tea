@@ -25,3 +25,5 @@ while (1) {
 
 set gfxmode=640x480
 set gfxpayload=disable
+
+docker build buildenv -t ort-build

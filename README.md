@@ -6,6 +6,21 @@ Read the repository first and understand how it currently works before making ch
 
 ORTos (Operating Re-systemize Technology) is my **pure bare-metal operating system**, built from the ground up without depending on another operating system.
 
+## Build with CMake
+
+The project is configured from its repository root:
+
+```sh
+cmake -S . -B build
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
+
+The bare-metal target requires `x86_64-elf-gcc`, `x86_64-elf-ld`, `nasm`,
+`grub-mkrescue`, and `xorriso`. The documented Docker environment in
+`buildenv/Dockerfile` provides these tools. The host compiler is used for the
+`storage_path_test` executable.
+
 Current known features:
 
 * GRUB bootloader support

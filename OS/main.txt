@@ -28,3 +28,13 @@ set gfxpayload=disable
 
 docker build buildenv -t ort-build
 docker run --rm -it -v "$(pwd)":/root/env ort-build
+
+
+::::::::::::::new commands:::::::::::::::::::::::::::
+cmake -S . -B build
+cmake --build build
+ctest --test-dir build --output-on-failure
+./build/storage_path_test
+docker build -f buildenv/Dockerfile -t ort-build .
+docker run --rm -v "$PWD:/root/env" -w /root/env ort-build \
+  sh -lc 'cmake -S . -B build && cmake --build build'

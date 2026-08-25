@@ -1,0 +1,8 @@
+/build/
+/CMakeFiles/
+/cmake_install.cmake
+/CTestTestfile.cmake
+/Makefile
+/compile_commands.json
+/kernel.bin
+/OrangeTeaOS.iso

@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/storage_path_test.dir/tests/storage_path_test.c.o -o storage_path_test  libortos_storage.a 

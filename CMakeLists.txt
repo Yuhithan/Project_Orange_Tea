@@ -51,7 +51,7 @@ foreach(source IN LISTS ORTOS_KERNEL_C_SOURCES)
         OUTPUT "${object}"
         COMMAND "${CMAKE_COMMAND}" -E make_directory "${ORTOS_BUILD_DIR}"
         COMMAND "${ORTOS_C_COMPILER}" -c "${source}" -o "${object}"
-            -I"${ORTOS_INCLUDE_DIR}" -ffreestanding -fno-pie -fno-stack-protector
+            -I${ORTOS_INCLUDE_DIR} -ffreestanding -fno-pie -fno-stack-protector
         DEPENDS "${source}"
         VERBATIM
     )
@@ -62,7 +62,7 @@ set(ORTOS_BOOT_OBJECTS)
 if(ORTOS_ASSEMBLER)
     foreach(source IN LISTS ORTOS_BOOT_ASM_SOURCES)
         get_filename_component(name "${source}" NAME_WE)
-        set(object "${ORTOS_BUILD_DIR}/${name}.o")
+        set(object "${ORTOS_BUILD_DIR}/boot_${name}.o")
         add_custom_command(
             OUTPUT "${object}"
             COMMAND "${CMAKE_COMMAND}" -E make_directory "${ORTOS_BUILD_DIR}"

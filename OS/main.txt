@@ -38,3 +38,8 @@ ctest --test-dir build --output-on-failure
 docker build -f buildenv/Dockerfile -t ort-build .
 docker run --rm -v "$PWD:/root/env" -w /root/env ort-build \
   sh -lc 'cmake -S . -B build && cmake --build build'
+
+::::::::::::::::::::new commands:::::::::::::::::::::::
+
+docker run --rm -v "$PWD:/root/env" -w /root/env ort-build \
+  sh -lc 'cmake -S . -B build-docker && cmake --build build-docker'

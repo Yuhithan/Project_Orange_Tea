@@ -43,3 +43,73 @@ docker run --rm -v "$PWD:/root/env" -w /root/env ort-build \
 
 docker run --rm -v "$PWD:/root/env" -w /root/env ort-build \
   sh -lc 'cmake -S . -B build-docker && cmake --build build-docker'
+
+OS Features
+
+Core:
+- Bootloader
+- Kernel
+- Memory management
+- Process and thread management
+- Interrupt handling
+- System calls
+- Device drivers
+- File system
+- Command-line shell
+
+User Interface:
+- Graphical desktop
+- Windows
+- Taskbar/panel
+- Mouse and keyboard support
+- File manager
+- Settings
+- Notifications
+- Login/lock screen
+- Clipboard
+- Terminal
+
+Networking:
+- Ethernet
+- Wi-Fi
+- TCP/IP
+- DNS
+- Network settings
+- Sockets/API
+- Firewall
+
+Security:
+- User accounts
+- Permissions
+- Process isolation
+- File permissions
+- Secure boot
+- Application sandboxing
+- Password/PIN authentication
+- Security updates
+
+Applications:
+- Application/executable format
+- Package manager
+- App store/repository
+- Shared libraries
+- Application APIs/SDK
+- Configuration system
+- System logs
+- Crash reporting
+
+Advanced:
+- USB support
+- Bluetooth
+- Audio
+- GPU acceleration
+- Multicore CPU support
+- Power management
+- Sleep/hibernate
+- Printing
+- Camera/microphone support
+- Virtualization
+- Containers
+- Disk encryption
+- System recovery
+- Accessibility features

@@ -6,6 +6,7 @@
 #include "test.h"
 #include "timer.h"
 #include "framebuffer.h"
+#include "desktop.h"
 #include "irq.h"
 #include "memory.h"
 #include "process.h"
@@ -48,11 +49,6 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr)
     memory_init();
     process_init();
 
-    /* Start in shell mode; the shell can enter the framebuffer desktop. */
-    ortos_boot_mode_set(ORTOS_BOOT_MODE_SHELL);
-
-    imp_text("BOOT MODE: setting SHELL...\n");
-
     /*
      * Test boot_mode.
      */
@@ -61,10 +57,20 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr)
     irq_init();
     timer_init(1000);
 
-    /*
-     * Continue into the shell.
-     */
-    imp_text("Starting shell...\n");
+    if (fb_is_available()) {
+        ortos_boot_mode_set(ORTOS_BOOT_MODE_GUI);
+        enable_key_input();
+        enable_network();
 
+        imp_text("Starting graphical desktop...\n");
+        desktop_init(0);
+        desktop_run();
+    } else {
+        imp_text("No compatible framebuffer; starting shell...\n");
+    }
+
+    /* The VGA console remains available if the framebuffer is unavailable or
+     * the user exits the desktop. */
+    ortos_boot_mode_set(ORTOS_BOOT_MODE_SHELL);
     start_shell();
 }

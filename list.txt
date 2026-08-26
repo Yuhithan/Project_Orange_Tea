@@ -1,0 +1,61 @@
+OS Features
+
+Done:
+- Core: Bootloader
+- Core: Kernel
+- Core: Command-line shell
+
+Not done:
+- Core: Memory management (partial)
+- Core: Process and thread management (partial)
+- Core: Interrupt handling (partial)
+- Core: System calls
+- Core: Device drivers
+- Core: File system (partial)
+- User Interface: Graphical desktop
+- User Interface: Windows
+- User Interface: Taskbar/panel
+- User Interface: Mouse and keyboard support
+- User Interface: File manager
+- User Interface: Settings
+- User Interface: Notifications
+- User Interface: Login/lock screen
+- User Interface: Clipboard
+- User Interface: Terminal
+- Networking: Ethernet (partial)
+- Networking: Wi-Fi
+- Networking: TCP/IP
+- Networking: DNS
+- Networking: Network settings
+- Networking: Sockets/API
+- Networking: Firewall
+- Security: User accounts
+- Security: Permissions
+- Security: Process isolation
+- Security: File permissions
+- Security: Secure boot
+- Security: Application sandboxing
+- Security: Password/PIN authentication
+- Security: Security updates
+- Applications: Application/executable format
+- Applications: Package manager
+- Applications: App store/repository
+- Applications: Shared libraries
+- Applications: Application APIs/SDK
+- Applications: Configuration system
+- Applications: System logs
+- Applications: Crash reporting
+- Advanced: USB support
+- Advanced: Bluetooth
+- Advanced: Audio
+- Advanced: GPU acceleration
+- Advanced: Multicore CPU support
+- Advanced: Power management
+- Advanced: Sleep/hibernate
+- Advanced: Printing
+- Advanced: Camera/microphone support
+- Advanced: Virtualization
+- Advanced: Containers
+- Advanced: Disk encryption
+- Advanced: System recovery
+- Advanced: Accessibility features

@@ -47,29 +47,29 @@ docker run --rm -v "$PWD:/root/env" -w /root/env ort-build \
 OS Features
 
 Core:
-- Bootloader
-- Kernel
-- Memory management
-- Process and thread management
-- Interrupt handling
-- System calls
-- Device drivers
-- File system
-- Command-line shell
+- Bootloader - done
+- Kernel - done
+- Memory management - kinda
+- Process and thread management - kinda
+- Interrupt handling - kinda
+- System calls - no
+- Device drivers - no
+- File system - kinda
+- Command-line shell - done
 
 User Interface:
-- Graphical desktop
-- Windows
-- Taskbar/panel
-- Mouse and keyboard support
-- File manager
-- Settings
-- Notifications
-- Login/lock screen
-- Clipboard
-- Terminal
+- Graphical desktop - not done
+- Windows - not done
+- Taskbar/panel - not done
+- Mouse and keyboard support - not done
+- File manager - not done
+- Settings - not done
+- Notifications - not done
+- Login/lock screen - not done
+- Clipboard - not done
+- Terminal - not done
 
-Networking:
+Networking: - kinda not done
 - Ethernet
 - Wi-Fi
 - TCP/IP
@@ -78,7 +78,7 @@ Networking:
 - Sockets/API
 - Firewall
 
-Security:
+Security: - not done
 - User accounts
 - Permissions
 - Process isolation
@@ -88,7 +88,7 @@ Security:
 - Password/PIN authentication
 - Security updates
 
-Applications:
+Applications: - not done
 - Application/executable format
 - Package manager
 - App store/repository
@@ -98,7 +98,7 @@ Applications:
 - System logs
 - Crash reporting
 
-Advanced:
+Advanced: - not done
 - USB support
 - Bluetooth
 - Audio

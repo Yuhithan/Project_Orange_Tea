@@ -1,3 +1,0 @@
-storage_path_test 2 0.000761366
-core_subsystem_test 2 0.000942121
----

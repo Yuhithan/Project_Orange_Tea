@@ -14,7 +14,7 @@ CostDataFile:
 Site: 24adcabfb6b6
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
-BuildName: Linux-unknown
+BuildName: Linux-cc
 
 # Subprojects
 LabelsForSubprojects: 

@@ -10,6 +10,7 @@ static volatile int kb_head = 0;
 static volatile int kb_tail = 0;
 static volatile char kb_buf[128];
 static volatile int kb_enabled = 0;
+static volatile int extended_scancode = 0;
 
 static const char base_map[128] = {
 	[0x01] = 27,
@@ -125,8 +126,25 @@ static void keyboard_poll(void) {
     if (!kb_enabled || !(io_inb(KBD_STATUS_PORT) & 1)) return;
 
     uint8_t sc = io_inb(KBD_DATA_PORT);
+
+	if (sc == 0xE0) {
+		extended_scancode = 1;
+		return;
+	}
+
     int released = sc & 0x80;
     uint8_t code = sc & 0x7F;
+
+	if (extended_scancode) {
+		extended_scancode = 0;
+		if (!released) {
+			if (code == 0x48) kb_push(KEY_SCROLL_UP);
+			else if (code == 0x50) kb_push(KEY_SCROLL_DOWN);
+			else if (code == 0x49) kb_push(KEY_PAGE_UP);
+			else if (code == 0x51) kb_push(KEY_PAGE_DOWN);
+		}
+		return;
+	}
 
     if (code == 0x2A || code == 0x36) {
         shift_state = released ? 0 : 1;

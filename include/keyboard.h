@@ -3,6 +3,12 @@
 #include <stdint.h>
 #include <stddef.h>
 
+/* Internal non-printable key values returned by keyboard_getchar(). */
+#define KEY_SCROLL_UP 0x11
+#define KEY_SCROLL_DOWN 0x12
+#define KEY_PAGE_UP 0x13
+#define KEY_PAGE_DOWN 0x14
+
 void enable_key_input();
 void disable_key_input();
 

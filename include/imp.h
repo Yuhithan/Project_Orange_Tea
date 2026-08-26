@@ -41,3 +41,5 @@ void imp_uint64_bin(uint64_t value);
 void imp_cls(void);
 void imp_color(uint8_t foreground, uint8_t background);
 void imp_text(const char *str);
+void imp_scroll_up(size_t lines);
+void imp_scroll_down(size_t lines);

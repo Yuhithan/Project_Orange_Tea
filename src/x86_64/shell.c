@@ -1182,6 +1182,23 @@ void shell_run()
         {
             char c = (char)keyboard_getchar();
 
+            if (c == KEY_SCROLL_UP) {
+                imp_scroll_up(1);
+                continue;
+            }
+            if (c == KEY_SCROLL_DOWN) {
+                imp_scroll_down(1);
+                continue;
+            }
+            if (c == KEY_PAGE_UP) {
+                imp_scroll_up(10);
+                continue;
+            }
+            if (c == KEY_PAGE_DOWN) {
+                imp_scroll_down(10);
+                continue;
+            }
+
             if (c == '\n')
             {
                 cmd[pos] = '\0';

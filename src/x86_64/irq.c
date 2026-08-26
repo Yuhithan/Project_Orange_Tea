@@ -1,6 +1,7 @@
 #include "irq.h"
 #include "timer.h"
 #include "keyboard.h"
+#include "mouse.h"
 #include "imp.h"
 #include <stdint.h>
 
@@ -30,7 +31,7 @@ extern void isr16(void); extern void isr17(void); extern void isr18(void); exter
 extern void isr20(void); extern void isr21(void); extern void isr22(void); extern void isr23(void);
 extern void isr24(void); extern void isr25(void); extern void isr26(void); extern void isr27(void);
 extern void isr28(void); extern void isr29(void); extern void isr30(void); extern void isr31(void);
-extern void irq0_stub(void); extern void irq1_stub(void);
+extern void irq0_stub(void); extern void irq1_stub(void); extern void irq12_stub(void);
 
 static inline void outb(uint16_t port, uint8_t value)
 {
@@ -59,9 +60,9 @@ static void pic_remap(void)
     outb(0x21, 0x20); outb(0xA1, 0x28);
     outb(0x21, 0x04); outb(0xA1, 0x02);
     outb(0x21, 0x01); outb(0xA1, 0x01);
-    /* Only PIT and PS/2 keyboard are active drivers. */
+    /* PIT, PS/2 keyboard, and the cascaded PS/2 mouse IRQ are active. */
     outb(0x21, 0xFC);
-    outb(0xA1, 0xFF);
+    outb(0xA1, 0xEF);
 }
 
 void irq_init(void)
@@ -74,6 +75,7 @@ void irq_init(void)
     for (int i = 0; i < 32; i++) idt_set_gate((uint8_t)i, exceptions[i]);
     idt_set_gate(32, irq0_stub);
     idt_set_gate(33, irq1_stub);
+    idt_set_gate(44, irq12_stub);
     pic_remap();
     struct idt_pointer pointer = { sizeof(idt) - 1, (uint64_t)(uintptr_t)idt };
     __asm__ volatile ("lidt %0" : : "m"(pointer));
@@ -87,6 +89,7 @@ void irq_dispatch(uint8_t vector)
     if (handlers[vector]) handlers[vector](vector);
     else if (vector == 32) timer_handler();
     else if (vector == 33) keyboard_handle_irq();
+    else if (vector == 44) mouse_handle_irq();
     if (vector >= 40 && vector < 48) outb(0xA0, 0x20);
     if (vector >= 32 && vector < 48) outb(0x20, 0x20);
 }

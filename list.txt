@@ -4,8 +4,6 @@ Done:
 - Core: Bootloader
 - Core: Kernel
 - Core: Command-line shell
-
-Not done:
 - Core: Memory management (partial)
 - Core: Process and thread management (partial)
 - Core: Interrupt handling (partial)
@@ -15,7 +13,10 @@ Not done:
 - User Interface: Graphical desktop
 - User Interface: Windows
 - User Interface: Taskbar/panel
-- User Interface: Mouse and keyboard support
+- User Interface: keyboard
+- User Interface: Mouse
+
+Not done:
 - User Interface: File manager
 - User Interface: Settings
 - User Interface: Notifications

@@ -113,3 +113,8 @@ global irq1_stub
 irq1_stub:
     push qword 33
     jmp irq_common
+
+global irq12_stub
+irq12_stub:
+    push qword 44
+    jmp irq_common

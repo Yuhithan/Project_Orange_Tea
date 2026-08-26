@@ -36,6 +36,7 @@ set(ORTOS_KERNEL_C_SOURCES
     "${ORTOS_SOURCE_DIR}/x86_64/first_app.c"
     "${ORTOS_SOURCE_DIR}/x86_64/irq.c"
     "${ORTOS_SOURCE_DIR}/x86_64/keyboard.c"
+    "${ORTOS_SOURCE_DIR}/x86_64/mouse.c"
     "${ORTOS_SOURCE_DIR}/x86_64/network.c"
     "${ORTOS_SOURCE_DIR}/x86_64/print.c"
     "${ORTOS_SOURCE_DIR}/x86_64/shell.c"

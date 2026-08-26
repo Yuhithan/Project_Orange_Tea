@@ -14,6 +14,7 @@ file(REMOVE_RECURSE
   "ortos-objects/keyboard.o"
   "ortos-objects/main.o"
   "ortos-objects/memory.o"
+  "ortos-objects/mouse.o"
   "ortos-objects/network.o"
   "ortos-objects/print.o"
   "ortos-objects/process.o"

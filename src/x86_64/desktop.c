@@ -3,6 +3,7 @@
 #include "ORgui.h"
 #include "first_app.h"
 #include "keyboard.h"
+#include "mouse.h"
 #include "taskbar.h"
 #include "imp.h"
 
@@ -13,6 +14,7 @@ void desktop_init(uint64_t multiboot_info_addr)
     if (multiboot_info_addr != 0) fb_init(multiboot_info_addr);
     if (!fb_is_available()) { desktop_ready = 0; return; }
     ORgui_init();
+    mouse_init();
     first_app_init();
     ORWindow *window = ORgui_active_window();
     if (window) {
@@ -33,6 +35,7 @@ void desktop_draw(void)
     ORgui_draw_text(150, 14, "WILDFIRE", OR_COLOR_FIRE_ORANGE);
     ORgui_draw();
     taskbar_draw();
+    mouse_draw_cursor();
 }
 
 void desktop_run(void)
@@ -44,10 +47,18 @@ void desktop_run(void)
     desktop_draw();
     for (;;) {
         int key;
-        if (!keyboard_try_getchar(&key)) continue;
-        if (key == 27 || key == 'q' || key == 'Q') break;
-        OREvent event = { OR_EVENT_KEY_DOWN, key, 0, 0, 0 };
-        ORgui_handle_event(&event);
-        desktop_draw();
+        OREvent event;
+        int redraw = 0;
+        while (mouse_try_get_event(&event)) {
+            ORgui_handle_event(&event);
+            redraw = 1;
+        }
+        while (keyboard_try_getchar(&key)) {
+            if (key == 27 || key == 'q' || key == 'Q') return;
+            event = (OREvent){ OR_EVENT_KEY_DOWN, key, 0, 0, 0 };
+            ORgui_handle_event(&event);
+            redraw = 1;
+        }
+        if (redraw) desktop_draw();
     }
 }

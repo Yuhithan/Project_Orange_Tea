@@ -5,6 +5,9 @@ static ORWindow windows[ORGUI_MAX_WINDOWS];
 static int z_order[ORGUI_MAX_WINDOWS];
 static int window_count;
 static ORWindow *active_window;
+static ORWindow *drag_window;
+static int drag_offset_x;
+static int drag_offset_y;
 
 static int within(int x, int y, int left, int top, int width, int height)
 {
@@ -15,6 +18,7 @@ void ORgui_init(void)
 {
     window_count = 0;
     active_window = 0;
+    drag_window = 0;
     for (int i = 0; i < ORGUI_MAX_WINDOWS; i++) { windows[i].visible = 0; z_order[i] = i; }
 }
 
@@ -43,6 +47,7 @@ void ORgui_destroy_window(ORWindow *window)
     window->visible = 0;
     window->close_requested = 1;
     if (active_window == window) active_window = 0;
+    if (drag_window == window) drag_window = 0;
 }
 
 void ORgui_set_active(ORWindow *window)
@@ -98,13 +103,27 @@ static void draw_window(ORWindow *window)
 void ORgui_handle_event(const OREvent *event)
 {
     if (event == 0) return;
+    if (event->type == OR_EVENT_MOUSE_MOVE && drag_window && drag_window->visible) {
+        drag_window->x = event->x - drag_offset_x;
+        drag_window->y = event->y - drag_offset_y;
+        if (drag_window->x < 0) drag_window->x = 0;
+        if (drag_window->y < 0) drag_window->y = 0;
+        return;
+    }
+    if (event->type == OR_EVENT_MOUSE_UP && event->button == 1) drag_window = 0;
     if (event->type == OR_EVENT_MOUSE_DOWN) {
+        if (event->button != 1) return;
         for (int i = window_count - 1; i >= 0; i--) {
             ORWindow *window = &windows[z_order[i]];
             if (!window->visible || !within(event->x, event->y, window->x, window->y, window->width, window->height)) continue;
             ORgui_set_active(window);
             if (within(event->x, event->y, window->x + window->width - 24, window->y + 4, 17, 14))
                 ORgui_destroy_window(window);
+            else if (window->movable && within(event->x, event->y, window->x, window->y, window->width, 20)) {
+                drag_window = window;
+                drag_offset_x = event->x - window->x;
+                drag_offset_y = event->y - window->y;
+            }
             else if (window->on_event) window->on_event(window, event);
             return;
         }

@@ -80,6 +80,7 @@ kernel.bin: ortos-objects/taskbar.o
 kernel.bin: ortos-objects/first_app.o
 kernel.bin: ortos-objects/irq.o
 kernel.bin: ortos-objects/keyboard.o
+kernel.bin: ortos-objects/mouse.o
 kernel.bin: ortos-objects/network.o
 kernel.bin: ortos-objects/print.o
 kernel.bin: ortos-objects/shell.o
@@ -92,7 +93,7 @@ kernel.bin: ortos-objects/boot_main64.o
 kernel.bin: ortos-objects/boot_interrupts.o
 kernel.bin: /root/env/targets/x86_64/linker.ld
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating kernel.bin"
-	/usr/local/bin/x86_64-elf-ld -n -o /root/env/build-docker/kernel.bin -T /root/env/targets/x86_64/linker.ld /root/env/build-docker/ortos-objects/main.o /root/env/build-docker/ortos-objects/boot_mode.o /root/env/build-docker/ortos-objects/memory.o /root/env/build-docker/ortos-objects/process.o /root/env/build-docker/ortos-objects/syscall.o /root/env/build-docker/ortos-objects/framebuffer.o /root/env/build-docker/ortos-objects/ORgui.o /root/env/build-docker/ortos-objects/desktop.o /root/env/build-docker/ortos-objects/taskbar.o /root/env/build-docker/ortos-objects/first_app.o /root/env/build-docker/ortos-objects/irq.o /root/env/build-docker/ortos-objects/keyboard.o /root/env/build-docker/ortos-objects/network.o /root/env/build-docker/ortos-objects/print.o /root/env/build-docker/ortos-objects/shell.o /root/env/build-docker/ortos-objects/storage.o /root/env/build-docker/ortos-objects/test.o /root/env/build-docker/ortos-objects/timer.o /root/env/build-docker/ortos-objects/boot_header.o /root/env/build-docker/ortos-objects/boot_main.o /root/env/build-docker/ortos-objects/boot_main64.o /root/env/build-docker/ortos-objects/boot_interrupts.o
+	/usr/local/bin/x86_64-elf-ld -n -o /root/env/build-docker/kernel.bin -T /root/env/targets/x86_64/linker.ld /root/env/build-docker/ortos-objects/main.o /root/env/build-docker/ortos-objects/boot_mode.o /root/env/build-docker/ortos-objects/memory.o /root/env/build-docker/ortos-objects/process.o /root/env/build-docker/ortos-objects/syscall.o /root/env/build-docker/ortos-objects/framebuffer.o /root/env/build-docker/ortos-objects/ORgui.o /root/env/build-docker/ortos-objects/desktop.o /root/env/build-docker/ortos-objects/taskbar.o /root/env/build-docker/ortos-objects/first_app.o /root/env/build-docker/ortos-objects/irq.o /root/env/build-docker/ortos-objects/keyboard.o /root/env/build-docker/ortos-objects/mouse.o /root/env/build-docker/ortos-objects/network.o /root/env/build-docker/ortos-objects/print.o /root/env/build-docker/ortos-objects/shell.o /root/env/build-docker/ortos-objects/storage.o /root/env/build-docker/ortos-objects/test.o /root/env/build-docker/ortos-objects/timer.o /root/env/build-docker/ortos-objects/boot_header.o /root/env/build-docker/ortos-objects/boot_main.o /root/env/build-docker/ortos-objects/boot_main64.o /root/env/build-docker/ortos-objects/boot_interrupts.o
 
 ortos-objects/ORgui.o: /root/env/src/x86_64/ORgui.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating ortos-objects/ORgui.o"
@@ -159,48 +160,53 @@ ortos-objects/memory.o: /root/env/src/x86_64/memory.c
 	/usr/bin/cmake -E make_directory /root/env/build-docker/ortos-objects
 	/usr/local/bin/x86_64-elf-gcc -c /root/env/src/x86_64/memory.c -o /root/env/build-docker/ortos-objects/memory.o -I/root/env/include -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
 
+ortos-objects/mouse.o: /root/env/src/x86_64/mouse.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Generating ortos-objects/mouse.o"
+	/usr/bin/cmake -E make_directory /root/env/build-docker/ortos-objects
+	/usr/local/bin/x86_64-elf-gcc -c /root/env/src/x86_64/mouse.c -o /root/env/build-docker/ortos-objects/mouse.o -I/root/env/include -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
+
 ortos-objects/network.o: /root/env/src/x86_64/network.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Generating ortos-objects/network.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Generating ortos-objects/network.o"
 	/usr/bin/cmake -E make_directory /root/env/build-docker/ortos-objects
 	/usr/local/bin/x86_64-elf-gcc -c /root/env/src/x86_64/network.c -o /root/env/build-docker/ortos-objects/network.o -I/root/env/include -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
 
 ortos-objects/print.o: /root/env/src/x86_64/print.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Generating ortos-objects/print.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Generating ortos-objects/print.o"
 	/usr/bin/cmake -E make_directory /root/env/build-docker/ortos-objects
 	/usr/local/bin/x86_64-elf-gcc -c /root/env/src/x86_64/print.c -o /root/env/build-docker/ortos-objects/print.o -I/root/env/include -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
 
 ortos-objects/process.o: /root/env/src/x86_64/process.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Generating ortos-objects/process.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Generating ortos-objects/process.o"
 	/usr/bin/cmake -E make_directory /root/env/build-docker/ortos-objects
 	/usr/local/bin/x86_64-elf-gcc -c /root/env/src/x86_64/process.c -o /root/env/build-docker/ortos-objects/process.o -I/root/env/include -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
 
 ortos-objects/shell.o: /root/env/src/x86_64/shell.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Generating ortos-objects/shell.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Generating ortos-objects/shell.o"
 	/usr/bin/cmake -E make_directory /root/env/build-docker/ortos-objects
 	/usr/local/bin/x86_64-elf-gcc -c /root/env/src/x86_64/shell.c -o /root/env/build-docker/ortos-objects/shell.o -I/root/env/include -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
 
 ortos-objects/storage.o: /root/env/src/x86_64/storage.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Generating ortos-objects/storage.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Generating ortos-objects/storage.o"
 	/usr/bin/cmake -E make_directory /root/env/build-docker/ortos-objects
 	/usr/local/bin/x86_64-elf-gcc -c /root/env/src/x86_64/storage.c -o /root/env/build-docker/ortos-objects/storage.o -I/root/env/include -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
 
 ortos-objects/syscall.o: /root/env/src/x86_64/syscall.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Generating ortos-objects/syscall.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Generating ortos-objects/syscall.o"
 	/usr/bin/cmake -E make_directory /root/env/build-docker/ortos-objects
 	/usr/local/bin/x86_64-elf-gcc -c /root/env/src/x86_64/syscall.c -o /root/env/build-docker/ortos-objects/syscall.o -I/root/env/include -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
 
 ortos-objects/taskbar.o: /root/env/src/x86_64/taskbar.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Generating ortos-objects/taskbar.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Generating ortos-objects/taskbar.o"
 	/usr/bin/cmake -E make_directory /root/env/build-docker/ortos-objects
 	/usr/local/bin/x86_64-elf-gcc -c /root/env/src/x86_64/taskbar.c -o /root/env/build-docker/ortos-objects/taskbar.o -I/root/env/include -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
 
 ortos-objects/test.o: /root/env/src/x86_64/test.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Generating ortos-objects/test.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Generating ortos-objects/test.o"
 	/usr/bin/cmake -E make_directory /root/env/build-docker/ortos-objects
 	/usr/local/bin/x86_64-elf-gcc -c /root/env/src/x86_64/test.c -o /root/env/build-docker/ortos-objects/test.o -I/root/env/include -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
 
 ortos-objects/timer.o: /root/env/src/x86_64/timer.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Generating ortos-objects/timer.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Generating ortos-objects/timer.o"
 	/usr/bin/cmake -E make_directory /root/env/build-docker/ortos-objects
 	/usr/local/bin/x86_64-elf-gcc -c /root/env/src/x86_64/timer.c -o /root/env/build-docker/ortos-objects/timer.o -I/root/env/include -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
 
@@ -219,6 +225,7 @@ ortos_kernel: ortos-objects/irq.o
 ortos_kernel: ortos-objects/keyboard.o
 ortos_kernel: ortos-objects/main.o
 ortos_kernel: ortos-objects/memory.o
+ortos_kernel: ortos-objects/mouse.o
 ortos_kernel: ortos-objects/network.o
 ortos_kernel: ortos-objects/print.o
 ortos_kernel: ortos-objects/process.o

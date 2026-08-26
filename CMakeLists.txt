@@ -26,7 +26,14 @@ endif()
 set(ORTOS_KERNEL_C_SOURCES
     "${ORTOS_SOURCE_DIR}/kernel/main.c"
     "${ORTOS_SOURCE_DIR}/x86_64/boot_mode.c"
+    "${ORTOS_SOURCE_DIR}/x86_64/memory.c"
+    "${ORTOS_SOURCE_DIR}/x86_64/process.c"
+    "${ORTOS_SOURCE_DIR}/x86_64/syscall.c"
     "${ORTOS_SOURCE_DIR}/x86_64/framebuffer.c"
+    "${ORTOS_SOURCE_DIR}/x86_64/ORgui.c"
+    "${ORTOS_SOURCE_DIR}/x86_64/desktop.c"
+    "${ORTOS_SOURCE_DIR}/x86_64/taskbar.c"
+    "${ORTOS_SOURCE_DIR}/x86_64/first_app.c"
     "${ORTOS_SOURCE_DIR}/x86_64/irq.c"
     "${ORTOS_SOURCE_DIR}/x86_64/keyboard.c"
     "${ORTOS_SOURCE_DIR}/x86_64/network.c"
@@ -41,6 +48,7 @@ set(ORTOS_BOOT_ASM_SOURCES
     "${ORTOS_SOURCE_DIR}/x86_64/boot/header.asm"
     "${ORTOS_SOURCE_DIR}/x86_64/boot/main.asm"
     "${ORTOS_SOURCE_DIR}/x86_64/boot/main64.asm"
+    "${ORTOS_SOURCE_DIR}/x86_64/boot/interrupts.asm"
 )
 
 set(ORTOS_KERNEL_OBJECTS)
@@ -51,7 +59,7 @@ foreach(source IN LISTS ORTOS_KERNEL_C_SOURCES)
         OUTPUT "${object}"
         COMMAND "${CMAKE_COMMAND}" -E make_directory "${ORTOS_BUILD_DIR}"
         COMMAND "${ORTOS_C_COMPILER}" -c "${source}" -o "${object}"
-            -I${ORTOS_INCLUDE_DIR} -ffreestanding -fno-pie -fno-stack-protector
+            -I${ORTOS_INCLUDE_DIR} -ffreestanding -fno-pie -fno-stack-protector -mno-red-zone
         DEPENDS "${source}"
         VERBATIM
     )
@@ -120,6 +128,15 @@ target_include_directories(ortos_storage PUBLIC "${ORTOS_INCLUDE_DIR}")
 add_executable(storage_path_test tests/storage_path_test.c)
 target_link_libraries(storage_path_test PRIVATE ortos_storage)
 
+add_executable(core_subsystem_test
+    tests/core_subsystem_test.c
+    "${ORTOS_SOURCE_DIR}/x86_64/memory.c"
+    "${ORTOS_SOURCE_DIR}/x86_64/process.c"
+    "${ORTOS_SOURCE_DIR}/x86_64/syscall.c"
+)
+target_link_libraries(core_subsystem_test PRIVATE ortos_storage)
+
 if(BUILD_TESTING)
     add_test(NAME storage_path_test COMMAND storage_path_test)
+    add_test(NAME core_subsystem_test COMMAND core_subsystem_test)
 endif()

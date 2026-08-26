@@ -1,10 +1,13 @@
 file(REMOVE_RECURSE
   "CMakeFiles/ortos_kernel"
   "kernel.bin"
+  "ortos-objects/ORgui.o"
   "ortos-objects/boot_header.o"
   "ortos-objects/boot_main.o"
   "ortos-objects/boot_main64.o"
   "ortos-objects/boot_mode.o"
+  "ortos-objects/desktop.o"
+  "ortos-objects/first_app.o"
   "ortos-objects/framebuffer.o"
   "ortos-objects/irq.o"
   "ortos-objects/keyboard.o"
@@ -13,6 +16,7 @@ file(REMOVE_RECURSE
   "ortos-objects/print.o"
   "ortos-objects/shell.o"
   "ortos-objects/storage.o"
+  "ortos-objects/taskbar.o"
   "ortos-objects/test.o"
   "ortos-objects/timer.o"
 )

@@ -160,6 +160,11 @@ static void keyboard_poll(void) {
     }
 }
 
+void keyboard_handle_irq(void)
+{
+    keyboard_poll();
+}
+
 void enable_key_input() {
 	kb_enabled = 1;
 }

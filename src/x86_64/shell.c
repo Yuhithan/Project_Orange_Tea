@@ -4,6 +4,7 @@
 #include "storage.h"
 #include "network.h"
 #include "boot_mode.h"
+#include "desktop.h"
 
 #define MAX_CMD 128
 #define MAX_HISTORY 16
@@ -312,7 +313,7 @@ static void shell_print_help(void)
     imp_text("  env         - variables d'environnement\n");
     imp_text("  ping        - test réseau (ping <host> [eth|wifi])\n");
     imp_text("  wifi        - wifi connect/disconnect/status\n");
-    imp_text("  gui         - redemarre dans l'environnement graphique ORgui\n");
+    imp_text("  gui         - ouvre l'environnement graphique ORgui\n");
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
 }
 
@@ -1152,8 +1153,11 @@ static void shell_execute_command(void)
     {
         ortos_boot_mode_set(ORTOS_BOOT_MODE_GUI);
         imp_text("Switching to GUI mode...\n");
-        imp_text("Rebooting...\n");
-        ortos_reboot();
+        desktop_init(0);
+        desktop_run();
+        ortos_boot_mode_set(ORTOS_BOOT_MODE_SHELL);
+        imp_cls();
+        imp_text("Returned from ORgui.\n");
     }
     else
     {

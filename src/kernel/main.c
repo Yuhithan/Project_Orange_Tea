@@ -5,8 +5,10 @@
 #include "boot_mode.h"
 #include "test.h"
 #include "timer.h"
-
-extern int gui_start(uint64_t multiboot_info_addr);
+#include "framebuffer.h"
+#include "irq.h"
+#include "memory.h"
+#include "process.h"
 
 static void start_shell(void)
 {
@@ -42,9 +44,11 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr)
         return;
     }
 
-    /*
-     * Start in SHELL mode.
-     */
+    fb_init(multiboot_info_addr);
+    memory_init();
+    process_init();
+
+    /* Start in shell mode; the shell can enter the framebuffer desktop. */
     ortos_boot_mode_set(ORTOS_BOOT_MODE_SHELL);
 
     imp_text("BOOT MODE: setting SHELL...\n");
@@ -54,6 +58,7 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr)
      */
     //test_boot();
 
+    irq_init();
     timer_init(1000);
 
     /*

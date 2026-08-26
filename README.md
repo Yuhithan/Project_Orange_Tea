@@ -15,6 +15,12 @@ cmake -S . -B build
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
+then
+
+```sh
+docker run --rm -v "$PWD:/root/env" -w /root/env ort-build \
+  sh -lc 'cmake -S . -B build-docker && cmake --build build-docker'
+```
 
 The bare-metal target requires `x86_64-elf-gcc`, `x86_64-elf-ld`, `nasm`,
 `grub-mkrescue`, and `xorriso`. The documented Docker environment in

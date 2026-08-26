@@ -78,4 +78,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/ortos_iso.dir/DependInfo.cmake"
   "CMakeFiles/ortos_storage.dir/DependInfo.cmake"
   "CMakeFiles/storage_path_test.dir/DependInfo.cmake"
+  "CMakeFiles/core_subsystem_test.dir/DependInfo.cmake"
   )

@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/core_subsystem_test.dir/tests/core_subsystem_test.c.o CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.o -o core_subsystem_test  libortos_storage.a 

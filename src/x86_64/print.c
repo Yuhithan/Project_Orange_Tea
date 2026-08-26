@@ -211,6 +211,35 @@ void imp_text(const char* str) {
     }
 }
 
+void imp_uint64_dec(uint64_t value) {
+    char digits[20];
+    size_t count = 0;
+
+    do {
+        digits[count++] = (char)('0' + (value % 10));
+        value /= 10;
+    } while (value != 0);
+
+    while (count != 0) {
+        imp_char(digits[--count]);
+    }
+}
+
+void imp_uint64_hex(uint64_t value) {
+    static const char digits[] = "0123456789abcdef";
+    char output[16];
+    size_t count = 0;
+
+    do {
+        output[count++] = digits[value & 0x0f];
+        value >>= 4;
+    } while (value != 0);
+
+    while (count != 0) {
+        imp_char(output[--count]);
+    }
+}
+
 void imp_color(uint8_t foreground, uint8_t background) {
     color = foreground + (background << 4);
     if (backend && backend->active()) {

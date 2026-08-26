@@ -1,0 +1,34 @@
+Start testing: Aug 26 10:55 UTC
+----------------------------------------------------------
+1/2 Testing: storage_path_test
+1/2 Test: storage_path_test
+Command: "/root/env/build-docker/storage_path_test"
+Directory: /root/env/build-docker
+"storage_path_test" start time: Aug 26 10:55 UTC
+Output:
+----------------------------------------------------------
+storage path test passed
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"storage_path_test" end time: Aug 26 10:55 UTC
+"storage_path_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/2 Testing: core_subsystem_test
+2/2 Test: core_subsystem_test
+Command: "/root/env/build-docker/core_subsystem_test"
+Directory: /root/env/build-docker
+"core_subsystem_test" start time: Aug 26 10:55 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"core_subsystem_test" end time: Aug 26 10:55 UTC
+"core_subsystem_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Aug 26 10:55 UTC

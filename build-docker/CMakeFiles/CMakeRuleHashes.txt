@@ -30,9 +30,10 @@ c3a285237a9b7963f4bcd4f9c3afcb8b CMakeFiles/NightlySubmit
 e12d9595e73cbb9ef48e4fb522822798 CMakeFiles/ortos_iso
 e12d9595e73cbb9ef48e4fb522822798 CMakeFiles/ortos_kernel
 e514f30068e40710ec30eef00792848f OrangeTeaOS.iso
-381af911aa17f57dad1b20416690ba83 kernel.bin
+52c4ea8e7bcdf677dcce43aa6b8e1990 kernel.bin
 a837c2248b232b6b1ea35609b4e1d635 ortos-objects/ORgui.o
 913848dd5bfa9544a92d8a60ab6537a7 ortos-objects/boot_header.o
+c42c4ede8c2fe21bdf8cd37d9b8a09ce ortos-objects/boot_interrupts.o
 3b04e49f3e9d49adb7ffd6ad040c3368 ortos-objects/boot_main.o
 23725e6e2a4c023f57a08fd13bcf88a6 ortos-objects/boot_main64.o
 3717f07d670040c67029b5e6f8439154 ortos-objects/boot_mode.o
@@ -42,10 +43,13 @@ a837c2248b232b6b1ea35609b4e1d635 ortos-objects/ORgui.o
 4c0eb27594a06e9985280d7d7abac50d ortos-objects/irq.o
 0bb9c5df5e7291999c6e2c302cb44f76 ortos-objects/keyboard.o
 898225a519d2dc1a55935b02d2211f00 ortos-objects/main.o
+4c03d9180cc5263a2db6be9a6308a2ae ortos-objects/memory.o
 d2f86d739874dbd70a12959e9c292b2a ortos-objects/network.o
 b443af5e2c9bbe2f0b6744217da86c7c ortos-objects/print.o
+26c83a14a58fb38100a9f49c8b495dde ortos-objects/process.o
 c363631c8b44d34121b221122346477b ortos-objects/shell.o
 cbd6abe54ffd7c0f8ff3b2766b29aacc ortos-objects/storage.o
+18c23361032f20bb53bd6e87c337ab2d ortos-objects/syscall.o
 a95184c9cc03bacaaa3513b5a51e1957 ortos-objects/taskbar.o
 a8ba421150f51098c3b2c9ae4d74d4f1 ortos-objects/test.o
 6bc5710e494c14978a40d0ede23a5b47 ortos-objects/timer.o

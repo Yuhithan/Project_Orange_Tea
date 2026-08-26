@@ -6,12 +6,12 @@ static int clicked;
 
 static void welcome_draw(ORWindow *window)
 {
-    int x = window->x + 20;
-    int y = window->y + 49;
+    int x = window->x + 18;
+    int y = window->y + 39;
     ORgui_draw_text(x, y, "ENVIRONEMENT GRAPHIQUE DE ORTOS", OR_COLOR_TEXT);
     ORgui_draw_text(x, y + 18, "APPLICATION DE ORGUI(LIB)", OR_COLOR_FIRE_YELLOW);
     ORgui_draw_text(x, y + 36, "BUREAU BARE METAL", OR_COLOR_TEXT_DIM);
-    ORgui_draw_text(x, y + 54, "SHOUT OUT POUR (@DM)DEV_TOOLS1", OR_COLOR_TEXT);
+    //ORgui_draw_text(x, y + 54, "SHOUT OUT POUR (@DM)DEV_TOOLS1", OR_COLOR_TEXT);
     ORgui_draw_button(x, y + 60, 94, 22, "CLICK ME", clicked);
     ORgui_draw_text(x, y + 91, clicked ? "THE FIRE IS LIT" : "PRESS ENTER", OR_COLOR_FIRE_ORANGE);
 }

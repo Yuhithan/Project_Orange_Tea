@@ -8,8 +8,8 @@ static void welcome_draw(ORWindow *window)
 {
     int x = window->x + 18;
     int y = window->y + 39;
-    ORgui_draw_text(x, y, "ORTOS GRAPHICAL ENVIRONMENT", OR_COLOR_TEXT);
-    ORgui_draw_text(x, y + 18, "POWERED BY ORGUI", OR_COLOR_FIRE_YELLOW);
+    ORgui_draw_text(x, y, "ORTOS GRAPHICAL ENVIRONMENT", OR_COLOR_TEXT_DIM);
+    ORgui_draw_text(x, y + 18, "POWERED BY ORGUI", OR_COLOR_TEXT_DIM);
     ORgui_draw_text(x, y + 36, "BARE METAL DESKTOP", OR_COLOR_TEXT_DIM);
     ORgui_draw_button(x, y + 60, 94, 22, "CLICK ME", clicked);
     ORgui_draw_text(x, y + 91, clicked ? "THE FIRE IS LIT" : "PRESS ENTER", OR_COLOR_FIRE_ORANGE);

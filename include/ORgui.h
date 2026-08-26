@@ -5,7 +5,7 @@
 #define ORGUI_MAX_WINDOWS 8
 
 enum {
-    OR_COLOR_BACKGROUND    = 0xB71C1C,
+    OR_COLOR_BACKGROUND    = 0x00FFC0,
     OR_COLOR_PANEL         = 0x7F0000,
     OR_COLOR_WINDOW        = 0xFFEBEE,
     OR_COLOR_BORDER        = 0x4A0000,

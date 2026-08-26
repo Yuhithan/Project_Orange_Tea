@@ -57,19 +57,20 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr)
     irq_init();
     timer_init(1000);
 
-    if (fb_is_available()) {
-        ortos_boot_mode_set(ORTOS_BOOT_MODE_GUI);
-        enable_key_input();
-        enable_network();
+//    if (fb_is_available()) {
+//      ortos_boot_mode_set(ORTOS_BOOT_MODE_GUI);
+//      enable_key_input();
+//      enable_network();
 
-        imp_text("Starting graphical desktop...\n");
-        desktop_init(0);
-        desktop_run();
-    } else {
-        imp_text("No compatible framebuffer; starting shell...\n");
-    }
+//      imp_text("Starting graphical desktop...\n");
+//      desktop_init(0);
+//      desktop_run();
+//  } else {
+//      imp_text("No compatible framebuffer; starting shell...\n");
+//  }
 
     /* The VGA console. */
+    imp_text("Shell mode has start");
     ortos_boot_mode_set(ORTOS_BOOT_MODE_SHELL);
     start_shell();
 }

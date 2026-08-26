@@ -69,8 +69,7 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr)
         imp_text("No compatible framebuffer; starting shell...\n");
     }
 
-    /* The VGA console remains available if the framebuffer is unavailable or
-     * the user exits the desktop. */
+    /* The VGA console. */
     ortos_boot_mode_set(ORTOS_BOOT_MODE_SHELL);
     start_shell();
 }

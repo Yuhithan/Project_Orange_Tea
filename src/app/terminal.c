@@ -7,7 +7,7 @@
 #define TERMINAL_LINE_SIZE 128
 #define TERMINAL_CHAR_WIDTH 6
 #define TERMINAL_LINE_HEIGHT 8
-#define TERMINAL_PROMPT "ORTOS> "
+#define TERMINAL_PROMPT "ORangeTea//+ "
 
 static ORWindow *terminal_window;
 static char terminal_lines[TERMINAL_MAX_LINES][TERMINAL_LINE_SIZE];

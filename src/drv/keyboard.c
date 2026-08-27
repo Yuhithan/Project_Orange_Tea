@@ -187,12 +187,10 @@ void keyboard_set_layout(const char* layout) {
 }
 
 int keyboard_has_char() {
-    keyboard_poll();
     return kb_head != kb_tail;
 }
 
 int keyboard_try_getchar(int *out) {
-    keyboard_poll();
     if (kb_head == kb_tail) return 0;
     if (out != NULL) *out = (int)kb_buf[kb_tail];
     kb_tail = (kb_tail + 1) % (int)sizeof(kb_buf);
@@ -200,9 +198,9 @@ int keyboard_try_getchar(int *out) {
 }
 
 int keyboard_getchar() {
-	// Busy-wait until a character is available
+	/* The IRQ handler owns PS/2 reads; this function only waits for queued data. */
 	while (kb_head == kb_tail) {
-		keyboard_poll();
+		__asm__ volatile ("hlt");
 	}
 
 	char c = kb_buf[kb_tail];

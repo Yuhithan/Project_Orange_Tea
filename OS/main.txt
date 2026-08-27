@@ -27,7 +27,7 @@ set gfxmode=640x480
 set gfxpayload=disable
 
 docker build buildenv -t ort-build
-docker run --rm -it -v "$(pwd)":/root/env ort-build
+docker run --rm -it -v "$(pwd)":/root/env ort-build.
 
 
 ::::::::::::::new commands:::::::::::::::::::::::::::

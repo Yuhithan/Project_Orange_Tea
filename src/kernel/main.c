@@ -10,6 +10,8 @@
 #include "irq.h"
 #include "memory.h"
 #include "process.h"
+#include "mouse.h"
+
 
 static void start_shell(void)
 {
@@ -29,7 +31,9 @@ static void start_shell(void)
     shell_run();
 }
 
-void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr)
+
+void kmain(uint64_t multiboot_magic,
+           uint64_t multiboot_info_addr)
 {
     imp_text("BOOT 1: kernel entry\n");
 
@@ -45,32 +49,61 @@ void kmain(uint64_t multiboot_magic, uint64_t multiboot_info_addr)
         return;
     }
 
+
+    /* Initialize framebuffer. */
     fb_init(multiboot_info_addr);
+
+    /* Initialize memory/processes. */
     memory_init();
     process_init();
 
-    /*
-     * Test boot_mode.
-     */
-    //test_boot();
 
+    /*
+     * Initialize interrupts and timer.
+     */
     irq_init();
     timer_init(1000);
 
-    if (fb_is_available()) {
-      ortos_boot_mode_set(ORTOS_BOOT_MODE_GUI);
-      enable_key_input();
-      enable_network();
 
-      imp_text("Starting graphical desktop...\n");
-      desktop_init(0);
-      desktop_run();
-  } else {
-      imp_text("No compatible framebuffer; starting shell...\n");
-  }
+    /*
+     * GUI mode.
+     */
+    if (fb_is_available())
+    {
+        ortos_boot_mode_set(ORTOS_BOOT_MODE_GUI);
 
-    /* The VGA console. */
-    imp_text("Shell mode has start");
+        enable_key_input();
+        enable_network();
+
+        imp_text("Starting graphical desktop...\n");
+
+
+        /*
+         * IMPORTANT:
+         * Initialize mouse BEFORE desktop_run().
+         */
+        mouse_init();
+
+
+        /*
+         * Start desktop.
+         *
+         * This is probably an infinite loop,
+         * so anything after desktop_run() may never execute.
+         */
+        desktop_init(0);
+        desktop_run();
+    }
+
+
+    /*
+     * Shell mode.
+     */
+    imp_text("No compatible framebuffer; starting shell...\n");
+
+    imp_text("Shell mode has start\n");
+
     ortos_boot_mode_set(ORTOS_BOOT_MODE_SHELL);
+
     start_shell();
 }

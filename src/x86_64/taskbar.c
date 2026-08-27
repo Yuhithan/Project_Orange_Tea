@@ -4,10 +4,6 @@
 #include "ORgui.h"
 #include "timer.h"
 
-
-/* ---------------------------------------------------------
- * Draw a number
- * --------------------------------------------------------- */
 static void draw_number(int x, int y, uint64_t value)
 {
     char text[12];
@@ -26,76 +22,9 @@ static void draw_number(int x, int y, uint64_t value)
 
     text[length] = '\0';
 
-    fb_draw_string(
-        x,
-        y,
-        text,
-        OR_COLOR_TEXT
-    );
+    fb_draw_string(x, y, text, OR_COLOR_TEXT_DIM);
 }
 
-
-/* ---------------------------------------------------------
- * Application button
- * --------------------------------------------------------- */
-static void taskbar_app_button(
-    int x,
-    int y,
-    int width,
-    const char *name
-)
-{
-    /*
-     * Panel
-     */
-    fb_fill_rect(
-        x,
-        y,
-        width,
-        18,
-        OR_COLOR_WINDOW
-    );
-
-    /*
-     * Border
-     */
-    fb_draw_rect(
-        x,
-        y,
-        width,
-        18,
-        OR_COLOR_BORDER
-    );
-
-    /*
-     * Small icon
-     */
-    fb_fill_rect(
-        x + 5,
-        y + 5,
-        7,
-        7,
-        OR_COLOR_FIRE_ORANGE
-    );
-
-    /*
-     * TEXT
-     *
-     * This uses OR_COLOR_TEXT instead of
-     * OR_COLOR_TEXT_DIM so it is clearly visible.
-     */
-    fb_draw_string(
-        x + 17,
-        y + 12,
-        name,
-        OR_COLOR_TEXT
-    );
-}
-
-
-/* ---------------------------------------------------------
- * Taskbar
- * --------------------------------------------------------- */
 void taskbar_draw(void)
 {
     int height = fb_height();
@@ -104,137 +33,72 @@ void taskbar_draw(void)
     if (height < 28 || width < 100)
         return;
 
-
-    int y = height - 28;
-
-
-    /* -----------------------------------------------------
-     * Background
-     * ----------------------------------------------------- */
-
+    /* Taskbar */
     fb_fill_rect(
         0,
-        y,
+        height - 28,
         width,
         28,
         OR_COLOR_PANEL
     );
 
-
-    /* -----------------------------------------------------
-     * Top border
-     * ----------------------------------------------------- */
-
+    /* Top line */
     fb_draw_line(
         0,
-        y,
+        height - 28,
         width - 1,
-        y,
+        height - 28,
         OR_COLOR_FIRE_ORANGE
     );
 
-
-    /* -----------------------------------------------------
-     * ORT
-     * ----------------------------------------------------- */
-
+    /* ORT */
     ORgui_draw_button(
         7,
-        y + 5,
+        height - 23,
         58,
         18,
         "ORT",
         0
     );
 
+    /*
+     * NOTEPAD ONLY
+     */
 
-    /* -----------------------------------------------------
-     * Notepad
-     * ----------------------------------------------------- */
-
-    taskbar_app_button(
-        72,
-        y + 5,
-        78,
-        "Notepad"
+    fb_fill_rect(
+        74,
+        height - 23,
+        100,
+        18,
+        OR_COLOR_WINDOW
     );
 
-
-    /* -----------------------------------------------------
-     * System
-     * ----------------------------------------------------- */
-
-    taskbar_app_button(
-        155,
-        y + 5,
-        70,
-        "System"
+    fb_draw_rect(
+        74,
+        height - 23,
+        100,
+        18,
+        OR_COLOR_BORDER
     );
-
-
-    /* -----------------------------------------------------
-     * Terminal
-     * ----------------------------------------------------- */
-
-    taskbar_app_button(
-        230,
-        y + 5,
-        82,
-        "Terminal"
-    );
-
-
-    /* -----------------------------------------------------
-     * Active window
-     * ----------------------------------------------------- */
-
-    ORWindow *active = ORgui_active_window();
-
-    if (active && active->visible) {
-
-        int active_x = 320;
-        int active_y = y + 5;
-
-        fb_fill_rect(
-            active_x,
-            active_y,
-            150,
-            18,
-            OR_COLOR_WINDOW
-        );
-
-        fb_draw_rect(
-            active_x,
-            active_y,
-            150,
-            18,
-            OR_COLOR_BORDER
-        );
-
-        fb_draw_string(
-            active_x + 7,
-            active_y + 12,
-            active->title,
-            OR_COLOR_TEXT
-        );
-    }
-
-
-    /* -----------------------------------------------------
-     * TICKS
-     * ----------------------------------------------------- */
 
     fb_draw_string(
-        width - 86,
-        y + 12,
-        "TICKS",
-        OR_COLOR_TEXT
+        82,
+        height - 17,
+        "Notepad",
+        OR_COLOR_TEXT_DIM
     );
 
+    /* Ticks */
+    fb_draw_string(
+        width - 86,
+        height - 17,
+        "TICKS",
+        OR_COLOR_TEXT_DIM
+    );
 
     draw_number(
         width - 50,
-        y + 12,
+        height - 17,
         timer_get_ticks()
     );
 }

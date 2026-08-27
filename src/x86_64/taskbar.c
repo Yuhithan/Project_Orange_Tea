@@ -30,90 +30,86 @@ static void draw_number(int x, int y, uint64_t value)
         x,
         y,
         text,
-        OR_COLOR_TEXT_DIM
+        OR_COLOR_TEXT
     );
 }
 
 
 /* ---------------------------------------------------------
- * Draw a taskbar application button
+ * Application button
  * --------------------------------------------------------- */
 static void taskbar_app_button(
     int x,
     int y,
-    const char *name,
-    int active
+    int width,
+    const char *name
 )
 {
-    int width = 78;
-    int height = 20;
-
     /*
-     * Button background
+     * Panel
      */
     fb_fill_rect(
         x,
         y,
         width,
-        height,
-        active ? OR_COLOR_WINDOW : OR_COLOR_PANEL
+        18,
+        OR_COLOR_WINDOW
     );
 
     /*
-     * Button border
+     * Border
      */
     fb_draw_rect(
         x,
         y,
         width,
-        height,
+        18,
         OR_COLOR_BORDER
     );
 
     /*
-     * Small application icon
+     * Small icon
      */
     fb_fill_rect(
         x + 5,
-        y + 6,
+        y + 5,
         7,
         7,
         OR_COLOR_FIRE_ORANGE
     );
 
     /*
-     * Application name
+     * TEXT
      *
-     * y + 7 keeps the text inside the 20px button.
+     * This uses OR_COLOR_TEXT instead of
+     * OR_COLOR_TEXT_DIM so it is clearly visible.
      */
     fb_draw_string(
         x + 17,
-        y + 7,
+        y + 12,
         name,
-        OR_COLOR_TEXT_DIM
+        OR_COLOR_TEXT
     );
 }
 
 
 /* ---------------------------------------------------------
- * Draw taskbar
+ * Taskbar
  * --------------------------------------------------------- */
 void taskbar_draw(void)
 {
     int height = fb_height();
     int width = fb_width();
 
-    /*
-     * Don't draw if the screen is too small.
-     */
     if (height < 28 || width < 100)
         return;
+
 
     int y = height - 28;
 
 
     /* -----------------------------------------------------
-     * Main taskbar
+     * Background
      * ----------------------------------------------------- */
 
     fb_fill_rect(
@@ -126,7 +122,7 @@ void taskbar_draw(void)
 
 
     /* -----------------------------------------------------
-     * Orange top line
+     * Top border
      * ----------------------------------------------------- */
 
     fb_draw_line(
@@ -139,7 +135,7 @@ void taskbar_draw(void)
 
 
     /* -----------------------------------------------------
-     * ORT / Start button
+     * ORT
      * ----------------------------------------------------- */
 
     ORgui_draw_button(
@@ -153,39 +149,38 @@ void taskbar_draw(void)
 
 
     /* -----------------------------------------------------
-     * Pinned applications
+     * Notepad
      * ----------------------------------------------------- */
 
-    /*
-     * Notepad
-     */
     taskbar_app_button(
         72,
-        y + 4,
-        "Notepad",
-        0
+        y + 5,
+        78,
+        "Notepad"
     );
 
 
-    /*
+    /* -----------------------------------------------------
      * System
-     */
+     * ----------------------------------------------------- */
+
     taskbar_app_button(
-        153,
-        y + 4,
-        "System",
-        0
+        155,
+        y + 5,
+        70,
+        "System"
     );
 
 
-    /*
+    /* -----------------------------------------------------
      * Terminal
-     */
+     * ----------------------------------------------------- */
+
     taskbar_app_button(
-        234,
-        y + 4,
-        "Terminal",
-        0
+        230,
+        y + 5,
+        82,
+        "Terminal"
     );
 
 
@@ -198,62 +193,48 @@ void taskbar_draw(void)
     if (active && active->visible) {
 
         int active_x = 320;
-        int active_y = y + 4;
-        int active_width = 150;
-        int active_height = 20;
+        int active_y = y + 5;
 
-
-        /*
-         * Active window background
-         */
         fb_fill_rect(
             active_x,
             active_y,
-            active_width,
-            active_height,
+            150,
+            18,
             OR_COLOR_WINDOW
         );
 
-
-        /*
-         * Active window border
-         */
         fb_draw_rect(
             active_x,
             active_y,
-            active_width,
-            active_height,
+            150,
+            18,
             OR_COLOR_BORDER
         );
 
-
-        /*
-         * Active window title
-         */
         fb_draw_string(
             active_x + 7,
-            active_y + 7,
+            active_y + 12,
             active->title,
-            OR_COLOR_TEXT_DIM
+            OR_COLOR_TEXT
         );
     }
 
 
     /* -----------------------------------------------------
-     * System information
+     * TICKS
      * ----------------------------------------------------- */
 
     fb_draw_string(
         width - 86,
-        y + 7,
+        y + 12,
         "TICKS",
-        OR_COLOR_TEXT_DIM
+        OR_COLOR_TEXT
     );
 
 
     draw_number(
         width - 50,
-        y + 7,
+        y + 12,
         timer_get_ticks()
     );
 }

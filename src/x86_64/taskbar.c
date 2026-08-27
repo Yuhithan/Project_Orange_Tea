@@ -20,7 +20,7 @@ void taskbar_draw(void)
     if (height < 28 || width < 100) return;
     fb_fill_rect(0, height - 28, width, 28, OR_COLOR_PANEL);
     fb_draw_line(0, height - 28, width - 1, height - 28, OR_COLOR_FIRE_ORANGE);
-    ORgui_draw_button(7, height - 23, 58, 18, "ORTOS", 0);
+    ORgui_draw_button(7, height - 23, 58, 18, "ORT", 0);
     ORWindow *active = ORgui_active_window();
     if (active && active->visible) {
         fb_fill_rect(74, height - 23, 145, 18, OR_COLOR_WINDOW);

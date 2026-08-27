@@ -10,7 +10,7 @@
 #include "irq.h"
 #include "memory.h"
 #include "process.h"
-#include "mouse.h"
+#include "cursor.h"
 
 
 static void start_shell(void)
@@ -83,8 +83,8 @@ void kmain(uint64_t multiboot_magic,
     /*
      * Start desktop.
      */
-    desktop_init(0);
-    desktop_run();
+    //desktop_init(0);
+    //desktop_run();
     }
 
 

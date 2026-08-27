@@ -69,28 +69,28 @@ include CMakeFiles/ortos_storage.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/ortos_storage.dir/flags.make
 
-CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o: CMakeFiles/ortos_storage.dir/flags.make
-CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o: /root/env/src/x86_64/storage.c
-CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o: CMakeFiles/ortos_storage.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o -MF CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o.d -o CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o -c /root/env/src/x86_64/storage.c
+CMakeFiles/ortos_storage.dir/src/core/storage.c.o: CMakeFiles/ortos_storage.dir/flags.make
+CMakeFiles/ortos_storage.dir/src/core/storage.c.o: /root/env/src/core/storage.c
+CMakeFiles/ortos_storage.dir/src/core/storage.c.o: CMakeFiles/ortos_storage.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/ortos_storage.dir/src/core/storage.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ortos_storage.dir/src/core/storage.c.o -MF CMakeFiles/ortos_storage.dir/src/core/storage.c.o.d -o CMakeFiles/ortos_storage.dir/src/core/storage.c.o -c /root/env/src/core/storage.c
 
-CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/env/src/x86_64/storage.c > CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.i
+CMakeFiles/ortos_storage.dir/src/core/storage.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/ortos_storage.dir/src/core/storage.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/env/src/core/storage.c > CMakeFiles/ortos_storage.dir/src/core/storage.c.i
 
-CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/x86_64/storage.c -o CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.s
+CMakeFiles/ortos_storage.dir/src/core/storage.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/ortos_storage.dir/src/core/storage.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/core/storage.c -o CMakeFiles/ortos_storage.dir/src/core/storage.c.s
 
 # Object files for target ortos_storage
 ortos_storage_OBJECTS = \
-"CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o"
+"CMakeFiles/ortos_storage.dir/src/core/storage.c.o"
 
 # External object files for target ortos_storage
 ortos_storage_EXTERNAL_OBJECTS =
 
-libortos_storage.a: CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o
+libortos_storage.a: CMakeFiles/ortos_storage.dir/src/core/storage.c.o
 libortos_storage.a: CMakeFiles/ortos_storage.dir/build.make
 libortos_storage.a: CMakeFiles/ortos_storage.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C static library libortos_storage.a"

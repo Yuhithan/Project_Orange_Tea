@@ -555,101 +555,101 @@ core_subsystem_test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/build
 .PHONY : core_subsystem_test/fast
 
-src/x86_64/memory.o: src/x86_64/memory.c.o
-.PHONY : src/x86_64/memory.o
+src/core/memory.o: src/core/memory.c.o
+.PHONY : src/core/memory.o
 
 # target to build an object file
-src/x86_64/memory.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o
-.PHONY : src/x86_64/memory.c.o
+src/core/memory.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o
+.PHONY : src/core/memory.c.o
 
-src/x86_64/memory.i: src/x86_64/memory.c.i
-.PHONY : src/x86_64/memory.i
+src/core/memory.i: src/core/memory.c.i
+.PHONY : src/core/memory.i
 
 # target to preprocess a source file
-src/x86_64/memory.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.i
-.PHONY : src/x86_64/memory.c.i
+src/core/memory.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/memory.c.i
+.PHONY : src/core/memory.c.i
 
-src/x86_64/memory.s: src/x86_64/memory.c.s
-.PHONY : src/x86_64/memory.s
+src/core/memory.s: src/core/memory.c.s
+.PHONY : src/core/memory.s
 
 # target to generate assembly for a file
-src/x86_64/memory.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.s
-.PHONY : src/x86_64/memory.c.s
+src/core/memory.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/memory.c.s
+.PHONY : src/core/memory.c.s
 
-src/x86_64/process.o: src/x86_64/process.c.o
-.PHONY : src/x86_64/process.o
+src/core/process.o: src/core/process.c.o
+.PHONY : src/core/process.o
 
 # target to build an object file
-src/x86_64/process.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o
-.PHONY : src/x86_64/process.c.o
+src/core/process.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/process.c.o
+.PHONY : src/core/process.c.o
 
-src/x86_64/process.i: src/x86_64/process.c.i
-.PHONY : src/x86_64/process.i
+src/core/process.i: src/core/process.c.i
+.PHONY : src/core/process.i
 
 # target to preprocess a source file
-src/x86_64/process.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.i
-.PHONY : src/x86_64/process.c.i
+src/core/process.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/process.c.i
+.PHONY : src/core/process.c.i
 
-src/x86_64/process.s: src/x86_64/process.c.s
-.PHONY : src/x86_64/process.s
+src/core/process.s: src/core/process.c.s
+.PHONY : src/core/process.s
 
 # target to generate assembly for a file
-src/x86_64/process.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.s
-.PHONY : src/x86_64/process.c.s
+src/core/process.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/process.c.s
+.PHONY : src/core/process.c.s
 
-src/x86_64/storage.o: src/x86_64/storage.c.o
-.PHONY : src/x86_64/storage.o
+src/core/storage.o: src/core/storage.c.o
+.PHONY : src/core/storage.o
 
 # target to build an object file
-src/x86_64/storage.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_storage.dir/build.make CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o
-.PHONY : src/x86_64/storage.c.o
+src/core/storage.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_storage.dir/build.make CMakeFiles/ortos_storage.dir/src/core/storage.c.o
+.PHONY : src/core/storage.c.o
 
-src/x86_64/storage.i: src/x86_64/storage.c.i
-.PHONY : src/x86_64/storage.i
+src/core/storage.i: src/core/storage.c.i
+.PHONY : src/core/storage.i
 
 # target to preprocess a source file
-src/x86_64/storage.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_storage.dir/build.make CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.i
-.PHONY : src/x86_64/storage.c.i
+src/core/storage.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_storage.dir/build.make CMakeFiles/ortos_storage.dir/src/core/storage.c.i
+.PHONY : src/core/storage.c.i
 
-src/x86_64/storage.s: src/x86_64/storage.c.s
-.PHONY : src/x86_64/storage.s
+src/core/storage.s: src/core/storage.c.s
+.PHONY : src/core/storage.s
 
 # target to generate assembly for a file
-src/x86_64/storage.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_storage.dir/build.make CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.s
-.PHONY : src/x86_64/storage.c.s
+src/core/storage.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_storage.dir/build.make CMakeFiles/ortos_storage.dir/src/core/storage.c.s
+.PHONY : src/core/storage.c.s
 
-src/x86_64/syscall.o: src/x86_64/syscall.c.o
-.PHONY : src/x86_64/syscall.o
+src/core/syscall.o: src/core/syscall.c.o
+.PHONY : src/core/syscall.o
 
 # target to build an object file
-src/x86_64/syscall.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.o
-.PHONY : src/x86_64/syscall.c.o
+src/core/syscall.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o
+.PHONY : src/core/syscall.c.o
 
-src/x86_64/syscall.i: src/x86_64/syscall.c.i
-.PHONY : src/x86_64/syscall.i
+src/core/syscall.i: src/core/syscall.c.i
+.PHONY : src/core/syscall.i
 
 # target to preprocess a source file
-src/x86_64/syscall.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.i
-.PHONY : src/x86_64/syscall.c.i
+src/core/syscall.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.i
+.PHONY : src/core/syscall.c.i
 
-src/x86_64/syscall.s: src/x86_64/syscall.c.s
-.PHONY : src/x86_64/syscall.s
+src/core/syscall.s: src/core/syscall.c.s
+.PHONY : src/core/syscall.s
 
 # target to generate assembly for a file
-src/x86_64/syscall.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.s
-.PHONY : src/x86_64/syscall.c.s
+src/core/syscall.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.s
+.PHONY : src/core/syscall.c.s
 
 tests/core_subsystem_test.o: tests/core_subsystem_test.c.o
 .PHONY : tests/core_subsystem_test.o
@@ -741,18 +741,18 @@ help:
 	@echo "... core_subsystem_test"
 	@echo "... ortos_storage"
 	@echo "... storage_path_test"
-	@echo "... src/x86_64/memory.o"
-	@echo "... src/x86_64/memory.i"
-	@echo "... src/x86_64/memory.s"
-	@echo "... src/x86_64/process.o"
-	@echo "... src/x86_64/process.i"
-	@echo "... src/x86_64/process.s"
-	@echo "... src/x86_64/storage.o"
-	@echo "... src/x86_64/storage.i"
-	@echo "... src/x86_64/storage.s"
-	@echo "... src/x86_64/syscall.o"
-	@echo "... src/x86_64/syscall.i"
-	@echo "... src/x86_64/syscall.s"
+	@echo "... src/core/memory.o"
+	@echo "... src/core/memory.i"
+	@echo "... src/core/memory.s"
+	@echo "... src/core/process.o"
+	@echo "... src/core/process.i"
+	@echo "... src/core/process.s"
+	@echo "... src/core/storage.o"
+	@echo "... src/core/storage.i"
+	@echo "... src/core/storage.s"
+	@echo "... src/core/syscall.o"
+	@echo "... src/core/syscall.i"
+	@echo "... src/core/syscall.s"
 	@echo "... tests/core_subsystem_test.o"
 	@echo "... tests/core_subsystem_test.i"
 	@echo "... tests/core_subsystem_test.s"

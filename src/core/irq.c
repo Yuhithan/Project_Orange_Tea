@@ -1,7 +1,7 @@
 #include "irq.h"
 #include "timer.h"
 #include "keyboard.h"
-#include "mouse.h"
+#include "cursor.h"
 #include "imp.h"
 #include <stdint.h>
 

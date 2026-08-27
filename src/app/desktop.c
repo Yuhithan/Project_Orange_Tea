@@ -15,7 +15,7 @@ void desktop_init(uint64_t multiboot_info_addr)
     if (!fb_is_available()) { desktop_ready = 0; return; }
     ORgui_init();
     mouse_init();
-    first_app_init();
+    terminal_init();
     ORWindow *window = ORgui_active_window();
     if (window) {
         window->x = (fb_width() - window->width) / 2;

@@ -1165,6 +1165,17 @@ static void shell_execute_command(void)
     }
 }
 
+void shell_execute_line(const char *line)
+{
+    if (line == 0)
+    {
+        return;
+    }
+
+    shell_execute_text(line);
+    shell_execute_command();
+}
+
 void shell_init()
 {
     storage_init();
@@ -1228,6 +1239,6 @@ void shell_run()
             }
         }
 
-        shell_execute_command();
+        shell_execute_line(cmd);
     }
 };

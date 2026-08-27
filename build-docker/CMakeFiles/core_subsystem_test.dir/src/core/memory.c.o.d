@@ -1,6 +1,7 @@
-CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o: \
- /root/env/src/x86_64/process.c /usr/include/stdc-predef.h \
- /root/env/include/process.h \
+CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o: \
+ /root/env/src/core/memory.c /usr/include/stdc-predef.h \
+ /root/env/include/memory.h \
+ /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \

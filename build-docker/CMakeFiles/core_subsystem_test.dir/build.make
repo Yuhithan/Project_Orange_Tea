@@ -83,62 +83,62 @@ CMakeFiles/core_subsystem_test.dir/tests/core_subsystem_test.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/core_subsystem_test.dir/tests/core_subsystem_test.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/tests/core_subsystem_test.c -o CMakeFiles/core_subsystem_test.dir/tests/core_subsystem_test.c.s
 
-CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o: CMakeFiles/core_subsystem_test.dir/flags.make
-CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o: /root/env/src/x86_64/memory.c
-CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o: CMakeFiles/core_subsystem_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o -MF CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o.d -o CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o -c /root/env/src/x86_64/memory.c
+CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o: CMakeFiles/core_subsystem_test.dir/flags.make
+CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o: /root/env/src/core/memory.c
+CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o: CMakeFiles/core_subsystem_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o -MF CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o.d -o CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o -c /root/env/src/core/memory.c
 
-CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/env/src/x86_64/memory.c > CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.i
+CMakeFiles/core_subsystem_test.dir/src/core/memory.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/core_subsystem_test.dir/src/core/memory.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/env/src/core/memory.c > CMakeFiles/core_subsystem_test.dir/src/core/memory.c.i
 
-CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/x86_64/memory.c -o CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.s
+CMakeFiles/core_subsystem_test.dir/src/core/memory.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/core_subsystem_test.dir/src/core/memory.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/core/memory.c -o CMakeFiles/core_subsystem_test.dir/src/core/memory.c.s
 
-CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o: CMakeFiles/core_subsystem_test.dir/flags.make
-CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o: /root/env/src/x86_64/process.c
-CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o: CMakeFiles/core_subsystem_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o -MF CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o.d -o CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o -c /root/env/src/x86_64/process.c
+CMakeFiles/core_subsystem_test.dir/src/core/process.c.o: CMakeFiles/core_subsystem_test.dir/flags.make
+CMakeFiles/core_subsystem_test.dir/src/core/process.c.o: /root/env/src/core/process.c
+CMakeFiles/core_subsystem_test.dir/src/core/process.c.o: CMakeFiles/core_subsystem_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/core_subsystem_test.dir/src/core/process.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/core_subsystem_test.dir/src/core/process.c.o -MF CMakeFiles/core_subsystem_test.dir/src/core/process.c.o.d -o CMakeFiles/core_subsystem_test.dir/src/core/process.c.o -c /root/env/src/core/process.c
 
-CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/env/src/x86_64/process.c > CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.i
+CMakeFiles/core_subsystem_test.dir/src/core/process.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/core_subsystem_test.dir/src/core/process.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/env/src/core/process.c > CMakeFiles/core_subsystem_test.dir/src/core/process.c.i
 
-CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/x86_64/process.c -o CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.s
+CMakeFiles/core_subsystem_test.dir/src/core/process.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/core_subsystem_test.dir/src/core/process.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/core/process.c -o CMakeFiles/core_subsystem_test.dir/src/core/process.c.s
 
-CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.o: CMakeFiles/core_subsystem_test.dir/flags.make
-CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.o: /root/env/src/x86_64/syscall.c
-CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.o: CMakeFiles/core_subsystem_test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.o -MF CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.o.d -o CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.o -c /root/env/src/x86_64/syscall.c
+CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o: CMakeFiles/core_subsystem_test.dir/flags.make
+CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o: /root/env/src/core/syscall.c
+CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o: CMakeFiles/core_subsystem_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o -MF CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o.d -o CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o -c /root/env/src/core/syscall.c
 
-CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/env/src/x86_64/syscall.c > CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.i
+CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/env/src/core/syscall.c > CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.i
 
-CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/x86_64/syscall.c -o CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.s
+CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/core/syscall.c -o CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.s
 
 # Object files for target core_subsystem_test
 core_subsystem_test_OBJECTS = \
 "CMakeFiles/core_subsystem_test.dir/tests/core_subsystem_test.c.o" \
-"CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o" \
-"CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o" \
-"CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.o"
+"CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o" \
+"CMakeFiles/core_subsystem_test.dir/src/core/process.c.o" \
+"CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o"
 
 # External object files for target core_subsystem_test
 core_subsystem_test_EXTERNAL_OBJECTS =
 
 core_subsystem_test: CMakeFiles/core_subsystem_test.dir/tests/core_subsystem_test.c.o
-core_subsystem_test: CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o
-core_subsystem_test: CMakeFiles/core_subsystem_test.dir/src/x86_64/process.c.o
-core_subsystem_test: CMakeFiles/core_subsystem_test.dir/src/x86_64/syscall.c.o
+core_subsystem_test: CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o
+core_subsystem_test: CMakeFiles/core_subsystem_test.dir/src/core/process.c.o
+core_subsystem_test: CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o
 core_subsystem_test: CMakeFiles/core_subsystem_test.dir/build.make
 core_subsystem_test: libortos_storage.a
 core_subsystem_test: CMakeFiles/core_subsystem_test.dir/link.txt

@@ -80,12 +80,9 @@ void kmain(uint64_t multiboot_magic,
         enable_network();
 
         imp_text("Starting graphical desktop...\n");
-
-    /*
-     * Start desktop.
-     */
-    //desktop_init(0);
-    //desktop_run();
+        desktop_init(multiboot_info_addr);
+        desktop_run();
+        return;
     }
 
 

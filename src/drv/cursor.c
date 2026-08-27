@@ -1,4 +1,4 @@
-#include "mouse.h"
+#include "cursor.h"
 #include "framebuffer.h"
 #include "io.h"
 

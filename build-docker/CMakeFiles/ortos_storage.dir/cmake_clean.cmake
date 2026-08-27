@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o"
-  "CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o.d"
+  "CMakeFiles/ortos_storage.dir/src/core/storage.c.o"
+  "CMakeFiles/ortos_storage.dir/src/core/storage.c.o.d"
   "libortos_storage.a"
   "libortos_storage.pdb"
 )

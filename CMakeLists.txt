@@ -33,7 +33,7 @@ set(ORTOS_KERNEL_C_SOURCES
     "${ORTOS_SOURCE_DIR}/app/ORgui.c"
     "${ORTOS_SOURCE_DIR}/app/desktop.c"
     "${ORTOS_SOURCE_DIR}/app/taskbar.c"
-    "${ORTOS_SOURCE_DIR}/app/first_app.c"
+    "${ORTOS_SOURCE_DIR}/app/terminal.c"
     "${ORTOS_SOURCE_DIR}/core/irq.c"
     "${ORTOS_SOURCE_DIR}/drv/keyboard.c"
     "${ORTOS_SOURCE_DIR}/drv/cursor.c"

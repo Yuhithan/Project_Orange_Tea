@@ -1,7 +1,6 @@
-CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o: \
- /root/env/src/x86_64/memory.c /usr/include/stdc-predef.h \
- /root/env/include/memory.h \
- /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
+CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o: \
+ /root/env/src/core/syscall.c /usr/include/stdc-predef.h \
+ /root/env/include/syscall.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
@@ -16,4 +15,7 @@ CMakeFiles/core_subsystem_test.dir/src/x86_64/memory.c.o: \
  /usr/include/x86_64-linux-gnu/bits/time64.h \
  /usr/include/x86_64-linux-gnu/bits/wchar.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
- /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h
+ /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+ /root/env/include/storage.h \
+ /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
+ /root/env/include/process.h

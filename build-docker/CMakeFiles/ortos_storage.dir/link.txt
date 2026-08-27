@@ -1,2 +1,2 @@
-/usr/bin/ar qc libortos_storage.a CMakeFiles/ortos_storage.dir/src/x86_64/storage.c.o
+/usr/bin/ar qc libortos_storage.a CMakeFiles/ortos_storage.dir/src/core/storage.c.o
 /usr/bin/ranlib libortos_storage.a

@@ -80,23 +80,6 @@ void kmain(uint64_t multiboot_magic,
 
         imp_text("Starting graphical desktop...\n");
 
-        /*
-         * Initialize PS/2 mouse.
-         */
-        mouse_init();
-
-        /*
-        * Test: draw cursor in the center of the screen.
-        */
-        if (mouse_is_available())
-        {
-            mouse_draw_cursor();
-        }
-        else
-        {
-        imp_text("ERROR: Mouse initialization failed.\n");
-        }
-
     /*
      * Start desktop.
      */

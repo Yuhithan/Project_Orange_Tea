@@ -112,23 +112,33 @@ static void terminal_draw(ORWindow *window)
 static void terminal_event(ORWindow *window, const OREvent *event)
 {
     (void)window;
-    if (event->type != OR_EVENT_KEY_DOWN) return;
+
+    if (event->type != OR_EVENT_KEY_DOWN)
+        return;
+
+    /* Debug: inspect exactly what the keyboard system sends */
+    // debug_printf("KEY_DOWN: %d '%c'\n", event->key, event->key);
+
     if (event->key == '\b')
     {
         if (terminal_input_length > 0)
             terminal_input[--terminal_input_length] = '\0';
         return;
     }
+
     if (event->key == '\n')
     {
         terminal_put_text(TERMINAL_PROMPT);
         terminal_put_text(terminal_input);
         terminal_put_char('\n');
+
         shell_execute_line(terminal_input);
+
         terminal_input_length = 0;
         terminal_input[0] = '\0';
         return;
     }
+
     if (event->key >= 32 && event->key < 127 &&
         terminal_input_length < TERMINAL_LINE_SIZE - 1)
     {
@@ -136,7 +146,6 @@ static void terminal_event(ORWindow *window, const OREvent *event)
         terminal_input[terminal_input_length] = '\0';
     }
 }
-
 void terminal_init(void)
 {
     terminal_window = ORgui_create_window(40, 48, 640, 400, "ORTOS TERMINAL");

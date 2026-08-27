@@ -159,9 +159,11 @@ void mouse_init(void)
     uint8_t controller_config = io_inb(PS2_DATA_PORT);
 
     /*
-     * Enable IRQ12.
+     * Enable IRQ12 and the auxiliary device clock.
+     * Bit 1 = IRQ12 enable. Bit 5 = mouse clock disable (must be clear).
      */
     controller_config |= 0x02;
+    controller_config &= (uint8_t)~0x20;
 
     /*
      * Write configuration byte.
@@ -215,10 +217,10 @@ void mouse_handle_irq(void)
     if (!(status & PS2_STATUS_AUX_DATA))
         return;
 
+    uint8_t value = io_inb(PS2_DATA_PORT);
+
     if (!mouse_available)
         return;
-
-    uint8_t value = io_inb(PS2_DATA_PORT);
 
     /*
      * First byte must have bit 3 set.

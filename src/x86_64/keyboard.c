@@ -123,7 +123,12 @@ static void kb_push(char c) {
 /* Polling is intentional: ORTos has no IRQ dispatcher yet. Keep all PS/2
  * decoding in one place so shell and ORgui observe identical input. */
 static void keyboard_poll(void) {
-    if (!kb_enabled || !(io_inb(KBD_STATUS_PORT) & 1)) return;
+    if (!kb_enabled) return;
+
+    uint8_t status = io_inb(KBD_STATUS_PORT);
+    if (!(status & 1)) return;
+    /* Bit 5 means the waiting byte is from the mouse, not the keyboard. */
+    if (status & 0x20) return;
 
     uint8_t sc = io_inb(KBD_DATA_PORT);
 

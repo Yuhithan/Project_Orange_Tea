@@ -60,8 +60,8 @@ static void pic_remap(void)
     outb(0x21, 0x20); outb(0xA1, 0x28);
     outb(0x21, 0x04); outb(0xA1, 0x02);
     outb(0x21, 0x01); outb(0xA1, 0x01);
-    /* PIT, PS/2 keyboard, and the cascaded PS/2 mouse IRQ are active. */
-    outb(0x21, 0xFC);
+    /* PIT, PS/2 keyboard, cascade (IRQ2), and PS/2 mouse (IRQ12) are active. */
+    outb(0x21, 0xF8);
     outb(0xA1, 0xEF);
 }
 

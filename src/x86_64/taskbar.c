@@ -22,7 +22,7 @@ static void draw_number(int x, int y, uint64_t value)
 
     text[length] = '\0';
 
-    fb_draw_string(x, y, text, OR_COLOR_TEXT_DIM);
+    fb_draw_string(x, y, text, OR_COLOR_TEXT);
 }
 
 void taskbar_draw(void)
@@ -85,7 +85,7 @@ void taskbar_draw(void)
         82,
         height - 17,
         "Notepad",
-        OR_COLOR_TEXT_DIM
+        OR_COLOR_TEXT
     );
 
     /* Ticks */
@@ -93,7 +93,7 @@ void taskbar_draw(void)
         width - 86,
         height - 17,
         "TICKS",
-        OR_COLOR_TEXT_DIM
+        OR_COLOR_TEXT
     );
 
     draw_number(

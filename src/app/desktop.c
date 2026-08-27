@@ -1,9 +1,9 @@
 #include "desktop.h"
 #include "framebuffer.h"
 #include "ORgui.h"
-#include "first_app.h"
+#include "terminal.h"
 #include "keyboard.h"
-#include "mouse.h"
+#include "cursor.h"
 #include "taskbar.h"
 #include "imp.h"
 

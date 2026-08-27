@@ -25,24 +25,24 @@ endif()
 
 set(ORTOS_KERNEL_C_SOURCES
     "${ORTOS_SOURCE_DIR}/kernel/main.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/boot_mode.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/memory.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/process.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/syscall.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/framebuffer.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/ORgui.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/desktop.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/taskbar.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/first_app.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/irq.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/keyboard.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/mouse.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/network.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/print.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/shell.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/storage.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/test.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/timer.c"
+    "${ORTOS_SOURCE_DIR}/core/boot_mode.c"
+    "${ORTOS_SOURCE_DIR}/core/memory.c"
+    "${ORTOS_SOURCE_DIR}/core/process.c"
+    "${ORTOS_SOURCE_DIR}/core/syscall.c"
+    "${ORTOS_SOURCE_DIR}/core/framebuffer.c"
+    "${ORTOS_SOURCE_DIR}/app/ORgui.c"
+    "${ORTOS_SOURCE_DIR}/app/desktop.c"
+    "${ORTOS_SOURCE_DIR}/app/taskbar.c"
+    "${ORTOS_SOURCE_DIR}/app/first_app.c"
+    "${ORTOS_SOURCE_DIR}/core/irq.c"
+    "${ORTOS_SOURCE_DIR}/drv/keyboard.c"
+    "${ORTOS_SOURCE_DIR}/drv/cursor.c"
+    "${ORTOS_SOURCE_DIR}/drv/network.c"
+    "${ORTOS_SOURCE_DIR}/core/print.c"
+    "${ORTOS_SOURCE_DIR}/core/shell.c"
+    "${ORTOS_SOURCE_DIR}/core/storage.c"
+    "${ORTOS_SOURCE_DIR}/test/test.c"
+    "${ORTOS_SOURCE_DIR}/core/timer.c"
 )
 
 set(ORTOS_BOOT_ASM_SOURCES
@@ -123,7 +123,7 @@ if(ORTOS_ASSEMBLER AND ORTOS_BOOT_OBJECTS)
 endif()
 
 enable_language(C)
-add_library(ortos_storage STATIC "${ORTOS_SOURCE_DIR}/x86_64/storage.c")
+add_library(ortos_storage STATIC "${ORTOS_SOURCE_DIR}/core/storage.c")
 target_include_directories(ortos_storage PUBLIC "${ORTOS_INCLUDE_DIR}")
 
 add_executable(storage_path_test tests/storage_path_test.c)
@@ -131,9 +131,9 @@ target_link_libraries(storage_path_test PRIVATE ortos_storage)
 
 add_executable(core_subsystem_test
     tests/core_subsystem_test.c
-    "${ORTOS_SOURCE_DIR}/x86_64/memory.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/process.c"
-    "${ORTOS_SOURCE_DIR}/x86_64/syscall.c"
+    "${ORTOS_SOURCE_DIR}/core/memory.c"
+    "${ORTOS_SOURCE_DIR}/core/process.c"
+    "${ORTOS_SOURCE_DIR}/core/syscall.c"
 )
 target_link_libraries(core_subsystem_test PRIVATE ortos_storage)
 

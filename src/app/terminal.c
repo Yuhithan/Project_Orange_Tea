@@ -1,10 +1,11 @@
-#include "first_app.h"
+#include "terminal.h"
 #include "ORgui.h"
+#include "shell.h"
 
 static ORWindow *welcome_window;
 static int clicked;
 
-static void welcome_draw(ORWindow *window)
+static void shell_draw(ORWindow *window)
 {
     int x = window->x + 18;
     int y = window->y + 39;
@@ -15,7 +16,7 @@ static void welcome_draw(ORWindow *window)
     ORgui_draw_text(x, y + 91, clicked ? "THE FIRE IS LIT" : "PRESS ENTER", OR_COLOR_FIRE_ORANGE);
 }
 
-static void welcome_event(ORWindow *window, const OREvent *event)
+static void shell_event(ORWindow *window, const OREvent *event)
 {
     (void)window;
     if (event->type == OR_EVENT_KEY_DOWN && (event->key == '\n' || event->key == ' ')) clicked = !clicked;
@@ -24,11 +25,11 @@ static void welcome_event(ORWindow *window, const OREvent *event)
         event->y < welcome_window->y + 121) clicked = !clicked;
 }
 
-void first_app_init(void)
+void terminal_init(void)
 {
     welcome_window = ORgui_create_window(0, 0, 310, 155, "WELCOME TO ORTOS");
     if (welcome_window == 0) return;
-    welcome_window->on_draw = welcome_draw;
-    welcome_window->on_event = welcome_event;
+    welcome_window->on_draw = shell_draw;
+    welcome_window->on_event = shell_event;
     clicked = 0;
 }

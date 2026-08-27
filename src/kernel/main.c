@@ -11,6 +11,7 @@
 #include "memory.h"
 #include "process.h"
 #include "cursor.h"
+#include "terminal.h"
 
 
 static void start_shell(void)

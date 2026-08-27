@@ -29,6 +29,8 @@
 /root/env/build-docker/CMakeFiles/test.dir
 /root/env/build-docker/CMakeFiles/edit_cache.dir
 /root/env/build-docker/CMakeFiles/rebuild_cache.dir
+/root/env/build-docker/src/CMakeFiles/ortos_kernel.dir
+/root/env/build-docker/src/CMakeFiles/orangetea_iso.dir
 /root/env/build-docker/src/CMakeFiles/test.dir
 /root/env/build-docker/src/CMakeFiles/edit_cache.dir
 /root/env/build-docker/src/CMakeFiles/rebuild_cache.dir

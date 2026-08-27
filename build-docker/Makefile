@@ -492,6 +492,32 @@ ContinuousSubmit/fast:
 .PHONY : ContinuousSubmit/fast
 
 #=============================================================================
+# Target rules for targets named ortos_kernel
+
+# Build rule for target.
+ortos_kernel: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ortos_kernel
+.PHONY : ortos_kernel
+
+# fast build rule for target.
+ortos_kernel/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ortos_kernel.dir/build.make src/CMakeFiles/ortos_kernel.dir/build
+.PHONY : ortos_kernel/fast
+
+#=============================================================================
+# Target rules for targets named orangetea_iso
+
+# Build rule for target.
+orangetea_iso: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 orangetea_iso
+.PHONY : orangetea_iso
+
+# fast build rule for target.
+orangetea_iso/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/orangetea_iso.dir/build.make src/CMakeFiles/orangetea_iso.dir/build
+.PHONY : orangetea_iso/fast
+
+#=============================================================================
 # Target rules for targets named ortos_storage
 
 # Build rule for target.
@@ -567,6 +593,8 @@ help:
 	@echo "... NightlySubmit"
 	@echo "... NightlyTest"
 	@echo "... NightlyUpdate"
+	@echo "... orangetea_iso"
+	@echo "... ortos_kernel"
 	@echo "... core_subsystem_test"
 	@echo "... ortos_storage"
 	@echo "... storage_path_test"

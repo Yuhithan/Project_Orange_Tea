@@ -21,8 +21,12 @@ file(GLOB_RECURSE ORTOS_KERNEL_C_SOURCES CONFIGURE_DEPENDS
     "${ORTOS_SOURCE_DIR}/lib/*.c"
     "${ORTOS_SOURCE_DIR}/test/*.c"
 )
+set(ORTOS_BOOT_ARCH x86)
+if(ORTOS_ARCH STREQUAL "x86")
+    set(ORTOS_BOOT_ARCH x86)
+endif()
 file(GLOB ORTOS_BOOT_ASM_SOURCES CONFIGURE_DEPENDS
-    "${ORTOS_SOURCE_DIR}/arch/${ORTOS_ARCH}/boot/*.asm")
+    "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/boot/*.asm")
 
 set(ORTOS_KERNEL_OBJECTS)
 foreach(source IN LISTS ORTOS_KERNEL_C_SOURCES)
@@ -74,7 +78,7 @@ if(ORTOS_ASSEMBLER AND ORTOS_BOOT_OBJECTS)
 
     if(GRUB_MKRESCUE)
         set(ORTOS_ISO_ROOT "${CMAKE_CURRENT_BINARY_DIR}/iso")
-        set(ORTOS_ISO "${CMAKE_CURRENT_BINARY_DIR}/../OrangeTeaOS.iso")
+        set(ORTOS_ISO "${CMAKE_CURRENT_BINARY_DIR}/../OrangeteaOS.iso")
         configure_file("${ORTOS_TARGET_DIR}/iso/boot/grub/grub.cfg"
             "${ORTOS_ISO_ROOT}/boot/grub/grub.cfg" COPYONLY)
         add_custom_command(
@@ -85,7 +89,7 @@ if(ORTOS_ASSEMBLER AND ORTOS_BOOT_OBJECTS)
                 -o "${ORTOS_ISO}" "${ORTOS_ISO_ROOT}"
             DEPENDS ortos_kernel "${ORTOS_TARGET_DIR}/iso/boot/grub/grub.cfg"
             VERBATIM)
-        add_custom_target(ortos_iso ALL DEPENDS "${ORTOS_ISO}")
+        add_custom_target(orangetea_iso ALL DEPENDS "${ORTOS_ISO}")
     else()
         message(WARNING "grub-mkrescue was not found; only the kernel target is available.")
     endif()

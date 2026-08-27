@@ -11,7 +11,7 @@ BuildDirectory: /root/env/build-docker
 CostDataFile: 
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: cbe2416f0c5b
+Site: af7b99d76e58
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
 BuildName: Linux-cc

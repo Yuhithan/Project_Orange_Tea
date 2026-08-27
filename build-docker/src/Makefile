@@ -127,6 +127,34 @@ depend:
 	cd /root/env/build-docker && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
+# Convenience name for target.
+src/CMakeFiles/ortos_kernel.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/ortos_kernel.dir/rule
+.PHONY : src/CMakeFiles/ortos_kernel.dir/rule
+
+# Convenience name for target.
+ortos_kernel: src/CMakeFiles/ortos_kernel.dir/rule
+.PHONY : ortos_kernel
+
+# fast build rule for target.
+ortos_kernel/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ortos_kernel.dir/build.make src/CMakeFiles/ortos_kernel.dir/build
+.PHONY : ortos_kernel/fast
+
+# Convenience name for target.
+src/CMakeFiles/orangetea_iso.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/orangetea_iso.dir/rule
+.PHONY : src/CMakeFiles/orangetea_iso.dir/rule
+
+# Convenience name for target.
+orangetea_iso: src/CMakeFiles/orangetea_iso.dir/rule
+.PHONY : orangetea_iso
+
+# fast build rule for target.
+orangetea_iso/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/orangetea_iso.dir/build.make src/CMakeFiles/orangetea_iso.dir/build
+.PHONY : orangetea_iso/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -136,6 +164,8 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... test"
+	@echo "... orangetea_iso"
+	@echo "... ortos_kernel"
 .PHONY : help
 
 

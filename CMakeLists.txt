@@ -11,4 +11,3 @@ set(ORTOS_TARGET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/targets/${ORTOS_ARCH}")
 
 add_subdirectory(src)
 add_subdirectory(tests)
-find_program(ORTOS_LINKER NAMES x86_64-elf-ld ld)

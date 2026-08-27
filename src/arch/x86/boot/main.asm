@@ -138,7 +138,7 @@ boot_magic:
 boot_info:
 	resq 1
 
-align 4096
+alignb 4096
 page_table_l4:
 	resb 4096
 page_table_l3:

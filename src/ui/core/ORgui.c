@@ -24,8 +24,15 @@ void ORgui_init(void)
 
 ORWindow *ORgui_create_window(int x, int y, int width, int height, const char *title)
 {
-    if (window_count >= ORGUI_MAX_WINDOWS || width < 80 || height < 55 || title == 0) return 0;
-    ORWindow *window = &windows[window_count++];
+    if (width < 80 || height < 55 || title == 0) return 0;
+    int index = 0;
+    while (index < window_count && windows[index].visible) index++;
+    if (index == window_count) {
+        if (window_count >= ORGUI_MAX_WINDOWS) return 0;
+        z_order[window_count] = window_count;
+        window_count++;
+    }
+    ORWindow *window = &windows[index];
     window->x = x;
     window->y = y;
     window->width = width;
@@ -46,7 +53,15 @@ void ORgui_destroy_window(ORWindow *window)
     if (window == 0) return;
     window->visible = 0;
     window->close_requested = 1;
-    if (active_window == window) active_window = 0;
+    if (active_window == window) {
+        active_window = 0;
+        for (int i = window_count - 1; i >= 0; i--) {
+            if (windows[z_order[i]].visible) {
+                ORgui_set_active(&windows[z_order[i]]);
+                break;
+            }
+        }
+    }
     if (drag_window == window) drag_window = 0;
 }
 

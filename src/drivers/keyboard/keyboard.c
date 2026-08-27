@@ -191,19 +191,24 @@ int keyboard_has_char() {
 }
 
 int keyboard_try_getchar(int *out) {
-    if (kb_head == kb_tail) return 0;
-    if (out != NULL) *out = (int)kb_buf[kb_tail];
-    kb_tail = (kb_tail + 1) % (int)sizeof(kb_buf);
-    return 1;
+	unsigned long flags;
+	int available;
+
+	__asm__ volatile ("pushfq; popq %0; cli" : "=r"(flags) : : "memory");
+	available = kb_head != kb_tail;
+	if (available) {
+		if (out != NULL) *out = (int)kb_buf[kb_tail];
+		kb_tail = (kb_tail + 1) % (int)sizeof(kb_buf);
+	}
+	__asm__ volatile ("pushq %0; popfq" : : "r"(flags) : "memory");
+	return available;
 }
 
 int keyboard_getchar() {
 	/* The IRQ handler owns PS/2 reads; this function only waits for queued data. */
-	while (kb_head == kb_tail) {
+		int character;
+		while (!keyboard_try_getchar(&character)) {
 		__asm__ volatile ("hlt");
 	}
-
-	char c = kb_buf[kb_tail];
-	kb_tail = (kb_tail + 1) % (int)sizeof(kb_buf);
-	return (int)c;
+		return character;
 }

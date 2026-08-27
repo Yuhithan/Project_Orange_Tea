@@ -1078,7 +1078,11 @@ static void shell_execute_command(void)
         }
         else
         {
-            network_ping(host, shell_streq(mode, "wifi"));
+            int result = network_ping(host, shell_streq(mode, "wifi"));
+            if (result == NETWORK_ERR_NOT_SUPPORTED)
+                imp_text("Network protocol stack is not supported yet.\n");
+            else if (result == NETWORK_ERR_NOT_CONNECTED)
+                imp_text("Network interface is not connected.\n");
         }
     }
     else if (shell_starts_with(cmd, "wifi"))
@@ -1098,10 +1102,16 @@ static void shell_execute_command(void)
             }
             else
             {
-                network_connect_wifi(ssid);
-                imp_text("Wi-Fi connected to ");
-                imp_text(ssid);
-                imp_char('\n');
+                if (network_connect_wifi(ssid) == NETWORK_OK)
+                {
+                    imp_text("Wi-Fi connected to ");
+                    imp_text(ssid);
+                    imp_char('\n');
+                }
+                else
+                {
+                    imp_text("Wi-Fi hardware is not supported yet.\n");
+                }
             }
         }
         else if (shell_streq(subcmd, "disconnect"))

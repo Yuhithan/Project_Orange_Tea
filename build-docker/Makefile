@@ -123,6 +123,7 @@ preinstall/fast:
 
 # clear depends
 depend:
+	$(CMAKE_COMMAND) -P /root/env/build-docker/CMakeFiles/VerifyGlobs.cmake
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
@@ -491,32 +492,6 @@ ContinuousSubmit/fast:
 .PHONY : ContinuousSubmit/fast
 
 #=============================================================================
-# Target rules for targets named ortos_kernel
-
-# Build rule for target.
-ortos_kernel: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ortos_kernel
-.PHONY : ortos_kernel
-
-# fast build rule for target.
-ortos_kernel/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_kernel.dir/build.make CMakeFiles/ortos_kernel.dir/build
-.PHONY : ortos_kernel/fast
-
-#=============================================================================
-# Target rules for targets named ortos_iso
-
-# Build rule for target.
-ortos_iso: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ortos_iso
-.PHONY : ortos_iso
-
-# fast build rule for target.
-ortos_iso/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_iso.dir/build.make CMakeFiles/ortos_iso.dir/build
-.PHONY : ortos_iso/fast
-
-#=============================================================================
 # Target rules for targets named ortos_storage
 
 # Build rule for target.
@@ -526,7 +501,7 @@ ortos_storage: cmake_check_build_system
 
 # fast build rule for target.
 ortos_storage/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_storage.dir/build.make CMakeFiles/ortos_storage.dir/build
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_storage.dir/build.make tests/CMakeFiles/ortos_storage.dir/build
 .PHONY : ortos_storage/fast
 
 #=============================================================================
@@ -539,7 +514,7 @@ storage_path_test: cmake_check_build_system
 
 # fast build rule for target.
 storage_path_test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/storage_path_test.dir/build.make CMakeFiles/storage_path_test.dir/build
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_path_test.dir/build.make tests/CMakeFiles/storage_path_test.dir/build
 .PHONY : storage_path_test/fast
 
 #=============================================================================
@@ -552,152 +527,8 @@ core_subsystem_test: cmake_check_build_system
 
 # fast build rule for target.
 core_subsystem_test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/build
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/core_subsystem_test.dir/build.make tests/CMakeFiles/core_subsystem_test.dir/build
 .PHONY : core_subsystem_test/fast
-
-src/core/memory.o: src/core/memory.c.o
-.PHONY : src/core/memory.o
-
-# target to build an object file
-src/core/memory.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/memory.c.o
-.PHONY : src/core/memory.c.o
-
-src/core/memory.i: src/core/memory.c.i
-.PHONY : src/core/memory.i
-
-# target to preprocess a source file
-src/core/memory.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/memory.c.i
-.PHONY : src/core/memory.c.i
-
-src/core/memory.s: src/core/memory.c.s
-.PHONY : src/core/memory.s
-
-# target to generate assembly for a file
-src/core/memory.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/memory.c.s
-.PHONY : src/core/memory.c.s
-
-src/core/process.o: src/core/process.c.o
-.PHONY : src/core/process.o
-
-# target to build an object file
-src/core/process.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/process.c.o
-.PHONY : src/core/process.c.o
-
-src/core/process.i: src/core/process.c.i
-.PHONY : src/core/process.i
-
-# target to preprocess a source file
-src/core/process.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/process.c.i
-.PHONY : src/core/process.c.i
-
-src/core/process.s: src/core/process.c.s
-.PHONY : src/core/process.s
-
-# target to generate assembly for a file
-src/core/process.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/process.c.s
-.PHONY : src/core/process.c.s
-
-src/core/storage.o: src/core/storage.c.o
-.PHONY : src/core/storage.o
-
-# target to build an object file
-src/core/storage.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_storage.dir/build.make CMakeFiles/ortos_storage.dir/src/core/storage.c.o
-.PHONY : src/core/storage.c.o
-
-src/core/storage.i: src/core/storage.c.i
-.PHONY : src/core/storage.i
-
-# target to preprocess a source file
-src/core/storage.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_storage.dir/build.make CMakeFiles/ortos_storage.dir/src/core/storage.c.i
-.PHONY : src/core/storage.c.i
-
-src/core/storage.s: src/core/storage.c.s
-.PHONY : src/core/storage.s
-
-# target to generate assembly for a file
-src/core/storage.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ortos_storage.dir/build.make CMakeFiles/ortos_storage.dir/src/core/storage.c.s
-.PHONY : src/core/storage.c.s
-
-src/core/syscall.o: src/core/syscall.c.o
-.PHONY : src/core/syscall.o
-
-# target to build an object file
-src/core/syscall.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.o
-.PHONY : src/core/syscall.c.o
-
-src/core/syscall.i: src/core/syscall.c.i
-.PHONY : src/core/syscall.i
-
-# target to preprocess a source file
-src/core/syscall.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.i
-.PHONY : src/core/syscall.c.i
-
-src/core/syscall.s: src/core/syscall.c.s
-.PHONY : src/core/syscall.s
-
-# target to generate assembly for a file
-src/core/syscall.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/src/core/syscall.c.s
-.PHONY : src/core/syscall.c.s
-
-tests/core_subsystem_test.o: tests/core_subsystem_test.c.o
-.PHONY : tests/core_subsystem_test.o
-
-# target to build an object file
-tests/core_subsystem_test.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/tests/core_subsystem_test.c.o
-.PHONY : tests/core_subsystem_test.c.o
-
-tests/core_subsystem_test.i: tests/core_subsystem_test.c.i
-.PHONY : tests/core_subsystem_test.i
-
-# target to preprocess a source file
-tests/core_subsystem_test.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/tests/core_subsystem_test.c.i
-.PHONY : tests/core_subsystem_test.c.i
-
-tests/core_subsystem_test.s: tests/core_subsystem_test.c.s
-.PHONY : tests/core_subsystem_test.s
-
-# target to generate assembly for a file
-tests/core_subsystem_test.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/core_subsystem_test.dir/build.make CMakeFiles/core_subsystem_test.dir/tests/core_subsystem_test.c.s
-.PHONY : tests/core_subsystem_test.c.s
-
-tests/storage_path_test.o: tests/storage_path_test.c.o
-.PHONY : tests/storage_path_test.o
-
-# target to build an object file
-tests/storage_path_test.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/storage_path_test.dir/build.make CMakeFiles/storage_path_test.dir/tests/storage_path_test.c.o
-.PHONY : tests/storage_path_test.c.o
-
-tests/storage_path_test.i: tests/storage_path_test.c.i
-.PHONY : tests/storage_path_test.i
-
-# target to preprocess a source file
-tests/storage_path_test.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/storage_path_test.dir/build.make CMakeFiles/storage_path_test.dir/tests/storage_path_test.c.i
-.PHONY : tests/storage_path_test.c.i
-
-tests/storage_path_test.s: tests/storage_path_test.c.s
-.PHONY : tests/storage_path_test.s
-
-# target to generate assembly for a file
-tests/storage_path_test.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/storage_path_test.dir/build.make CMakeFiles/storage_path_test.dir/tests/storage_path_test.c.s
-.PHONY : tests/storage_path_test.c.s
 
 # Help Target
 help:
@@ -736,29 +567,9 @@ help:
 	@echo "... NightlySubmit"
 	@echo "... NightlyTest"
 	@echo "... NightlyUpdate"
-	@echo "... ortos_iso"
-	@echo "... ortos_kernel"
 	@echo "... core_subsystem_test"
 	@echo "... ortos_storage"
 	@echo "... storage_path_test"
-	@echo "... src/core/memory.o"
-	@echo "... src/core/memory.i"
-	@echo "... src/core/memory.s"
-	@echo "... src/core/process.o"
-	@echo "... src/core/process.i"
-	@echo "... src/core/process.s"
-	@echo "... src/core/storage.o"
-	@echo "... src/core/storage.i"
-	@echo "... src/core/storage.s"
-	@echo "... src/core/syscall.o"
-	@echo "... src/core/syscall.i"
-	@echo "... src/core/syscall.s"
-	@echo "... tests/core_subsystem_test.o"
-	@echo "... tests/core_subsystem_test.i"
-	@echo "... tests/core_subsystem_test.s"
-	@echo "... tests/storage_path_test.o"
-	@echo "... tests/storage_path_test.i"
-	@echo "... tests/storage_path_test.s"
 .PHONY : help
 
 
@@ -770,6 +581,7 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
+	$(CMAKE_COMMAND) -P /root/env/build-docker/CMakeFiles/VerifyGlobs.cmake
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

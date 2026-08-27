@@ -10,7 +10,10 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/root/env/CMakeLists.txt"
   "CMakeFiles/3.25.1/CMakeCCompiler.cmake"
   "CMakeFiles/3.25.1/CMakeSystem.cmake"
-  "/root/env/targets/x86_64/iso/boot/grub/grub.cfg"
+  "CMakeFiles/VerifyGlobs.cmake"
+  "CMakeFiles/cmake.verify_globs"
+  "/root/env/src/CMakeLists.txt"
+  "/root/env/tests/CMakeLists.txt"
   "/usr/share/cmake-3.25/Modules/CMakeCCompiler.cmake.in"
   "/usr/share/cmake-3.25/Modules/CMakeCCompilerABI.c"
   "/usr/share/cmake-3.25/Modules/CMakeCInformation.cmake"
@@ -98,11 +101,12 @@ set(CMAKE_MAKEFILE_OUTPUTS
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/3.25.1/CMakeSystem.cmake"
+  "CMakeFiles/3.25.1/CMakeCCompiler.cmake"
+  "CMakeFiles/3.25.1/CMakeCCompiler.cmake"
   "DartConfiguration.tcl"
-  "iso/boot/grub/grub.cfg"
-  "CMakeFiles/3.25.1/CMakeCCompiler.cmake"
-  "CMakeFiles/3.25.1/CMakeCCompiler.cmake"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
+  "src/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "tests/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -135,9 +139,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/ContinuousCoverage.dir/DependInfo.cmake"
   "CMakeFiles/ContinuousMemCheck.dir/DependInfo.cmake"
   "CMakeFiles/ContinuousSubmit.dir/DependInfo.cmake"
-  "CMakeFiles/ortos_kernel.dir/DependInfo.cmake"
-  "CMakeFiles/ortos_iso.dir/DependInfo.cmake"
-  "CMakeFiles/ortos_storage.dir/DependInfo.cmake"
-  "CMakeFiles/storage_path_test.dir/DependInfo.cmake"
-  "CMakeFiles/core_subsystem_test.dir/DependInfo.cmake"
+  "tests/CMakeFiles/ortos_storage.dir/DependInfo.cmake"
+  "tests/CMakeFiles/storage_path_test.dir/DependInfo.cmake"
+  "tests/CMakeFiles/core_subsystem_test.dir/DependInfo.cmake"
   )

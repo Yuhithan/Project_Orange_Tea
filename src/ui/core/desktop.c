@@ -8,6 +8,7 @@
 #include "imp.h"
 
 static int desktop_ready;
+static int desktop_running;
 
 void desktop_init(uint64_t multiboot_info_addr)
 {
@@ -44,6 +45,8 @@ void desktop_run(void)
         imp_text("ORgui unavailable: GRUB did not supply a compatible framebuffer.\n");
         return;
     }
+    if (desktop_running) return;
+    desktop_running = 1;
     desktop_draw();
     for (;;) {
         int key;
@@ -54,11 +57,19 @@ void desktop_run(void)
             redraw = 1;
         }
         while (keyboard_try_getchar(&key)) {
-            if (key == 27 || key == 'q' || key == 'Q') return;
+            if (key == 27 || key == 'q' || key == 'Q') {
+                desktop_running = 0;
+                return;
+            }
             event = (OREvent){ OR_EVENT_KEY_DOWN, key, 0, 0, 0 };
             ORgui_handle_event(&event);
             redraw = 1;
         }
         if (redraw) desktop_draw();
     }
+}
+
+int desktop_is_running(void)
+{
+    return desktop_running;
 }

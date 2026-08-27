@@ -94,7 +94,10 @@ static void terminal_draw(ORWindow *window)
         int column = 0;
         while (terminal_lines[line][column] != '\0' && column < columns &&
                column < TERMINAL_LINE_SIZE - 1)
-            visible[column] = terminal_lines[line][column++];
+        {
+            visible[column] = terminal_lines[line][column];
+            column++;
+        }
         visible[column] = '\0';
         ORgui_draw_text(left, y, visible, OR_COLOR_TEXT);
         y += TERMINAL_LINE_HEIGHT;

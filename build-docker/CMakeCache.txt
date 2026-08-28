@@ -242,7 +242,7 @@ ORTos_IS_TOP_LEVEL:STATIC=ON
 ORTos_SOURCE_DIR:STATIC=/root/env
 
 //Name of the computer/site where compile is being run
-SITE:STRING=af7b99d76e58
+SITE:STRING=7f58257219df
 
 
 ########################

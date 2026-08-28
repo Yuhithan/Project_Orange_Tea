@@ -315,6 +315,7 @@ static void shell_print_help(void)
     imp_text("  wifi        - wifi connect/disconnect/status\n");
     imp_text("  gui         - ouvre l'environnement graphique ORgui\n");
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
+    imp_text("  opsec       - Special command");
 }
 
 static void shell_set_current_dir(const char* path)
@@ -396,48 +397,6 @@ static void shell_go_to_parent(void)
     {
         shell_set_current_dir("/");
     }
-}
-
-static void shell_enter_directory(const char* name)
-{
-    int len = 0;
-    while (current_dir[len] != '\0' && len < 31)
-    {
-        len++;
-    }
-
-    if (len <= 1)
-    {
-        shell_set_current_dir("/");
-        len = 1;
-    }
-
-    if (current_dir[0] == '/' && current_dir[1] == '\0')
-    {
-        if (len + 1 < 31)
-        {
-            current_dir[len] = '/';
-            current_dir[len + 1] = '\0';
-            len++;
-        }
-    }
-    else if (current_dir[len - 1] != '/')
-    {
-        if (len + 1 < 31)
-        {
-            current_dir[len] = '/';
-            current_dir[len + 1] = '\0';
-            len++;
-        }
-    }
-
-    int i = 0;
-    while (name[i] != '\0' && len + i < 31)
-    {
-        current_dir[len + i] = name[i];
-        i++;
-    }
-    current_dir[len + i] = '\0';
 }
 
 static void shell_print_current_directory(void)
@@ -1168,6 +1127,82 @@ static void shell_execute_command(void)
         ortos_boot_mode_set(ORTOS_BOOT_MODE_SHELL);
         imp_cls();
         imp_text("Returned from ORgui.\n");
+    }
+    else if (shell_streq(cmd, "ospecial"))
+    {
+        imp_text("ORTOS Special Command Executed!\n");
+        imp_text(
+        "                                                                                                    \n"
+        "                                                                                                    \n"
+        "                                                                                                    \n"
+        "                                                                                                    \n"
+        "                                                                                                    \n"
+        "                                                                                                    \n"
+        "                        AAAAAAAAAA                                                                  \n"
+        "                    AAAA          AAAAAA                                           AAAAAAAAAA       \n"
+        "                   A                    AAAA                                AAAAAAA                 \n"
+        "                   AA                       AAA                       AAAAAA               AA       \n"
+        "                     AA                        AAA              AAAAAA               AA   AA        \n"
+        "                      AA        A                 AAA       AAAA                  AA     AA         \n"
+        "                        AA        A                  AAAAAAA                   AA       AA          \n"
+        "                         AA         A                     A AAAAAAA         AA          A           \n"
+        "                          A         AAA      AAA     AAAAA           AAA      AA       AA           \n"
+        "                          A      AA       AA                             AA      AA    A            \n"
+        "                          A    A      AA                                    A          A            \n"
+        "                          A          A                                        A        A            \n"
+        "                         AA       AA                                           AA       A           \n"
+        "                        AA      AA                                               A      A           \n"
+        "                      AA       A                                             A    AA    AA          \n"
+        "                      A       A                       AA                      A     A    A           \n"
+        "                      AA    A    A                                             A     A    A         \n"
+        "                        AAAA    A                       A                       A     A  A           \n"
+        "                         AA                              A     AA                      AA            \n"
+        "                        AA                    AA     A        A  A               A     AA            \n"
+        "                       AA     A                      A    A   A  A         A      A     AA           \n"
+        "                      AA     A                A AA   A    AA  A  A         A      A      A          \n"
+        "                      A            A         AA    AA       A       AAA           A      A          \n"
+        "                     A      A      A     AAAA      A  A    A     A   A   AA A             A         \n"
+        "                     A      A      A   A    A     AAAA A       AAAA  A   A                A         \n"
+        "                     A      A       A       A  AAAAAAA       AAAA A  A    A       A       A         \n"
+        "                     A      A          A    A   AAAA   A      AAA                        AA         \n"
+        "                     A      A          A             A      A        A   A              AA          \n"
+        "                     AA                 A    A     AA       A AA AA  A   A             AA           \n"
+        "                      A      A           A    A                      A   A     A     AA             \n"
+        "                       AA     A           A   A                         A     A     AA              \n"
+        "                        AAA     A          A   A                    A   A    A    AAA               \n"
+        "                          AAA     A         A   A                 AAA  A   A    AAA                 \n"
+        "                             AAAA    AAA     A  AA AAAAA    AAAA      A        AA                   \n"
+        "                                AAAA          A     AA             A        AAA                     \n"
+        "                                    AAAA          A A           AAA      AAAA                       \n"
+        "                                        AAAAA   AAA   AA    AA    AAAAAAAA                          \n"
+        "                                             AAAAA      A         AAA                               \n"
+        "                                               AAA    AA     A   A  AAA                             \n"
+        "                                              AA     A   A A  A A     AA                           \n"
+        "                                             AA        AA   AA         AAA                         \n"
+        "                                            AA      A   A                AA                        \n"
+        "                                            A                             AA                        \n"
+        "                                           A            A   A              A                        \n"
+        "                                          AA                A              AA                       \n"
+        "                                          A            A                    A                       \n"
+        "                                         AA            A     A               A                      \n"
+        "                                         A                   A    AA    A    A                      \n"
+        "                                        AA            A      A               AA                     \n"
+        "                                        A             A      A                A                     \n"
+        "                                        A                    A                A                     \n"
+        "                                       AA                    A                A                     \n"
+        "                                       A             A       A                A                     \n"
+        "                                       A             A       A                A                     \n"
+        "                                       A                                      A                     \n"
+        "                                        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA                     \n"
+        "                                                                                                    \n"
+        "                                                                                                    \n"
+                                                                                                                );
+        imp_text("I know you location :)");
+    }
+    else if (shell_streq(cmd, "exit"))
+    {
+        imp_text("Exiting shell...\n");
+        asm volatile ("cli; hlt");
     }
     else
     {

@@ -369,10 +369,11 @@ void mouse_handle_irq(void)
     if (!(status & PS2_STATUS_AUX_DATA))
         return;
 
-    uint8_t value = io_inb(PS2_DATA_PORT);
-
+    /* Leave initialization replies for mouse_init() to consume. */
     if (!mouse_available)
         return;
+
+    uint8_t value = io_inb(PS2_DATA_PORT);
 
     /*
      * First byte must have bit 3 set.

@@ -81,6 +81,26 @@ int fb_is_available(void) { return fb_valid(); }
 int fb_width(void) { return (int)framebuffer_width; }
 int fb_height(void) { return (int)framebuffer_height; }
 
+uint32_t fb_get_pixel(int x, int y)
+{
+    if (!fb_valid() || x < 0 || y < 0 || (uint32_t)x >= framebuffer_width ||
+        (uint32_t)y >= framebuffer_height) return 0;
+
+    const volatile uint8_t *pixel = framebuffer +
+        (uint32_t)y * framebuffer_pitch + (uint32_t)x * framebuffer_bytes_per_pixel;
+    uint32_t native = 0;
+    for (uint8_t byte = 0; byte < framebuffer_bytes_per_pixel; byte++)
+        native |= (uint32_t)pixel[byte] << (byte * 8u);
+
+    uint32_t red = (native >> red_position) & ((1u << red_mask_size) - 1u);
+    uint32_t green = (native >> green_position) & ((1u << green_mask_size) - 1u);
+    uint32_t blue = (native >> blue_position) & ((1u << blue_mask_size) - 1u);
+    red = (red * 255u) / ((1u << red_mask_size) - 1u);
+    green = (green * 255u) / ((1u << green_mask_size) - 1u);
+    blue = (blue * 255u) / ((1u << blue_mask_size) - 1u);
+    return (red << 16) | (green << 8) | blue;
+}
+
 void fb_put_pixel(int x, int y, uint32_t color)
 {
     if (!fb_valid() || x < 0 || y < 0 || (uint32_t)x >= framebuffer_width || (uint32_t)y >= framebuffer_height) return;

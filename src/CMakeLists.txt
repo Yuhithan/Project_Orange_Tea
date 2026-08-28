@@ -21,6 +21,19 @@ file(GLOB_RECURSE ORTOS_KERNEL_C_SOURCES CONFIGURE_DEPENDS
     "${ORTOS_SOURCE_DIR}/lib/*.c"
     "${ORTOS_SOURCE_DIR}/test/*.c"
 )
+
+set(ORTOS_CURSOR_RESOURCE "${CMAKE_CURRENT_BINARY_DIR}/cursor_resource.c")
+add_custom_command(
+    OUTPUT "${ORTOS_CURSOR_RESOURCE}"
+    COMMAND "${CMAKE_COMMAND}"
+        -DINPUT=${ORTOS_SOURCE_DIR}/sysroot/cursor/cursor_arrow.cur
+        -DOUTPUT=${ORTOS_CURSOR_RESOURCE}
+        -P "${ORTOS_SOURCE_DIR}/../cmake/embed_binary.cmake"
+    DEPENDS "${ORTOS_SOURCE_DIR}/sysroot/cursor/cursor_arrow.cur"
+        "${ORTOS_SOURCE_DIR}/../cmake/embed_binary.cmake"
+    VERBATIM
+)
+list(APPEND ORTOS_KERNEL_C_SOURCES "${ORTOS_CURSOR_RESOURCE}")
 set(ORTOS_BOOT_ARCH x86)
 if(ORTOS_ARCH STREQUAL "x86")
     set(ORTOS_BOOT_ARCH x86)
@@ -85,9 +98,14 @@ if(ORTOS_ASSEMBLER AND ORTOS_BOOT_OBJECTS)
             OUTPUT "${ORTOS_ISO}"
             COMMAND "${CMAKE_COMMAND}" -E copy "${ORTOS_KERNEL_BIN}"
                 "${ORTOS_ISO_ROOT}/boot/kernel.bin"
+            COMMAND "${CMAKE_COMMAND}" -E make_directory "${ORTOS_ISO_ROOT}/cursor"
+            COMMAND "${CMAKE_COMMAND}" -E copy
+                "${ORTOS_SOURCE_DIR}/sysroot/cursor/cursor_arrow.cur"
+                "${ORTOS_ISO_ROOT}/cursor/cursor_arrow.cur"
             COMMAND "${GRUB_MKRESCUE}" /usr/lib/grub/i386-pc
                 -o "${ORTOS_ISO}" "${ORTOS_ISO_ROOT}"
             DEPENDS ortos_kernel "${ORTOS_TARGET_DIR}/iso/boot/grub/grub.cfg"
+                "${ORTOS_SOURCE_DIR}/sysroot/cursor/cursor_arrow.cur"
             VERBATIM)
         add_custom_target(orangetea_iso ALL DEPENDS "${ORTOS_ISO}")
     else()

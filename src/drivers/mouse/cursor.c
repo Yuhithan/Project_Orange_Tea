@@ -2,6 +2,8 @@
 #include "framebuffer.h"
 #include "io.h"
 
+#include <stddef.h>
+
 #define PS2_DATA_PORT          0x60
 #define PS2_STATUS_PORT        0x64
 #define PS2_COMMAND_PORT      0x64
@@ -23,6 +25,155 @@ static volatile uint8_t buttons;
 static volatile int event_head;
 static volatile int event_tail;
 static OREvent event_queue[MOUSE_QUEUE_SIZE];
+
+#define CURSOR_MAX_SIZE 128
+
+static uint32_t cursor_pixels[CURSOR_MAX_SIZE * CURSOR_MAX_SIZE];
+static uint32_t cursor_background[CURSOR_MAX_SIZE * CURSOR_MAX_SIZE];
+static uint8_t cursor_saved[CURSOR_MAX_SIZE * CURSOR_MAX_SIZE];
+static int cursor_width;
+static int cursor_height;
+static int cursor_hotspot_x;
+static int cursor_hotspot_y;
+static int cursor_loaded;
+static int cursor_visible = 1;
+static int cursor_rendered;
+static int cursor_rendered_x;
+static int cursor_rendered_y;
+
+extern const unsigned char ortos_cursor_resource[];
+extern const unsigned long ortos_cursor_resource_size;
+
+static uint16_t cursor_read_u16(const unsigned char *data, size_t offset)
+{
+    return (uint16_t)data[offset] | ((uint16_t)data[offset + 1] << 8);
+}
+
+static uint32_t cursor_read_u32(const unsigned char *data, size_t offset)
+{
+    return (uint32_t)data[offset] |
+        ((uint32_t)data[offset + 1] << 8) |
+        ((uint32_t)data[offset + 2] << 16) |
+        ((uint32_t)data[offset + 3] << 24);
+}
+
+static int cursor_range_valid(size_t offset, size_t length, size_t size)
+{
+    return offset <= size && length <= size - offset;
+}
+
+static uint32_t cursor_blend(uint32_t source, uint32_t destination)
+{
+    uint32_t alpha = source >> 24;
+    uint32_t inverse = 255u - alpha;
+    uint32_t red = (((source >> 16) & 0xFFu) * alpha +
+        ((destination >> 16) & 0xFFu) * inverse + 127u) / 255u;
+    uint32_t green = (((source >> 8) & 0xFFu) * alpha +
+        ((destination >> 8) & 0xFFu) * inverse + 127u) / 255u;
+    uint32_t blue = ((source & 0xFFu) * alpha +
+        (destination & 0xFFu) * inverse + 127u) / 255u;
+    return (red << 16) | (green << 8) | blue;
+}
+
+static void cursor_restore(void)
+{
+    if (!cursor_rendered) return;
+
+    for (int row = 0; row < cursor_height; row++) {
+        for (int column = 0; column < cursor_width; column++) {
+            int index = row * cursor_width + column;
+            if (cursor_saved[index]) {
+                fb_put_pixel(cursor_rendered_x + column,
+                    cursor_rendered_y + row, cursor_background[index]);
+            }
+        }
+    }
+    cursor_rendered = 0;
+}
+
+static int cursor_parse(const unsigned char *data, size_t size)
+{
+    if (data == 0 || size < 6) return CURSOR_ERROR_MALFORMED;
+    if (cursor_read_u16(data, 0) != 0 || cursor_read_u16(data, 2) != 2)
+        return CURSOR_ERROR_MALFORMED;
+
+    uint16_t image_count = cursor_read_u16(data, 4);
+    if (image_count == 0 || !cursor_range_valid(6, 16, size))
+        return CURSOR_ERROR_MALFORMED;
+
+    for (uint16_t image = 0; image < image_count; image++) {
+        size_t entry = 6u + (size_t)image * 16u;
+        if (!cursor_range_valid(entry, 16, size)) return CURSOR_ERROR_MALFORMED;
+
+        int width = data[entry] == 0 ? 256 : data[entry];
+        int height = data[entry + 1] == 0 ? 256 : data[entry + 1];
+        uint32_t image_size = cursor_read_u32(data, entry + 8);
+        uint32_t image_offset = cursor_read_u32(data, entry + 12);
+        if (width > CURSOR_MAX_SIZE || height > CURSOR_MAX_SIZE ||
+            image_size == 0 || image_offset > size ||
+            image_size > size - image_offset || image_size < 40)
+            continue;
+
+        size_t offset = image_offset;
+        uint32_t dib_size = cursor_read_u32(data, offset);
+        if (dib_size < 40 || dib_size > image_size) continue;
+        int32_t dib_width = (int32_t)cursor_read_u32(data, offset + 4);
+        int32_t dib_height = (int32_t)cursor_read_u32(data, offset + 8);
+        if (dib_width != width || dib_height <= 0 || dib_height != height * 2 ||
+            cursor_read_u16(data, offset + 12) != 1 ||
+            cursor_read_u16(data, offset + 14) != 32 ||
+            cursor_read_u32(data, offset + 16) != 0)
+            continue;
+
+        size_t pixel_bytes = (size_t)width * (size_t)height * 4u;
+        size_t mask_stride = ((size_t)width + 31u) / 32u * 4u;
+        size_t mask_bytes = mask_stride * (size_t)height;
+        size_t pixel_offset = offset + dib_size;
+        if (pixel_offset < offset || !cursor_range_valid(pixel_offset,
+            pixel_bytes, size) || !cursor_range_valid(pixel_offset + pixel_bytes,
+            mask_bytes, size) || pixel_offset + pixel_bytes + mask_bytes >
+            (size_t)image_offset + image_size)
+            continue;
+
+        int has_alpha = 0;
+        for (int row = 0; row < height; row++) {
+            int source_row = height - 1 - row;
+            for (int column = 0; column < width; column++) {
+                size_t pixel = pixel_offset + ((size_t)source_row * width + column) * 4u;
+                if (data[pixel + 3] != 0) has_alpha = 1;
+            }
+        }
+
+        for (int row = 0; row < height; row++) {
+            int source_row = height - 1 - row;
+            for (int column = 0; column < width; column++) {
+                size_t pixel = pixel_offset + ((size_t)source_row * width + column) * 4u;
+                uint8_t alpha = data[pixel + 3];
+                if (!has_alpha) {
+                    size_t mask = pixel_offset + pixel_bytes +
+                        (size_t)source_row * mask_stride + (size_t)column / 8u;
+                    alpha = (data[mask] & (uint8_t)(0x80u >> (column % 8))) ? 0 : 255;
+                }
+                cursor_pixels[row * width + column] =
+                    ((uint32_t)alpha << 24) |
+                    ((uint32_t)data[pixel + 2] << 16) |
+                    ((uint32_t)data[pixel + 1] << 8) |
+                    data[pixel];
+            }
+        }
+
+        cursor_width = width;
+        cursor_height = height;
+        cursor_hotspot_x = cursor_read_u16(data, entry + 4);
+        cursor_hotspot_y = cursor_read_u16(data, entry + 6);
+        if (cursor_hotspot_x >= width || cursor_hotspot_y >= height)
+            return CURSOR_ERROR_MALFORMED;
+        cursor_loaded = 1;
+        return CURSOR_OK;
+    }
+
+    return CURSOR_ERROR_UNSUPPORTED_FORMAT;
+}
 
 
 /* Wait until PS/2 controller can accept data. */
@@ -135,6 +286,7 @@ void mouse_init(void)
     /* Start cursor in center of screen. */
     cursor_x = fb_width() / 2;
     cursor_y = fb_height() / 2;
+    (void)cursor_load("/cursor/cursor_arrow.cur");
 
     /*
      * Enable PS/2 auxiliary device.
@@ -259,8 +411,7 @@ void mouse_handle_irq(void)
      * Move cursor.
      */
     if (dx != 0 || dy != 0) {
-        cursor_x += dx;
-        cursor_y -= dy;
+        cursor_set_position(cursor_x + dx, cursor_y - dy);
 
         int width = fb_width();
         int height = fb_height();
@@ -364,71 +515,99 @@ int mouse_try_get_event(OREvent *event)
 }
 
 
-/*
- * Draw mouse cursor.
- *
- * This is a simple 12x12 white arrow
- * with a black outline.
- */
+int cursor_load_data(const unsigned char *data, unsigned long size)
+{
+    cursor_destroy();
+    int result = cursor_parse(data, (size_t)size);
+    if (result == CURSOR_OK) cursor_visible = 1;
+    return result;
+}
+
+int cursor_load(const char *path)
+{
+    if (path == 0) return CURSOR_ERROR_INVALID_ARGUMENT;
+
+    const char *expected = "/cursor/cursor_arrow.cur";
+    int index = 0;
+    while (path[index] != '\0' && path[index] == expected[index]) index++;
+    if (path[index] != '\0' || expected[index] != '\0')
+        return CURSOR_ERROR_MISSING;
+
+    return cursor_load_data(ortos_cursor_resource,
+        ortos_cursor_resource_size);
+}
+
+void cursor_destroy(void)
+{
+    cursor_restore();
+    cursor_loaded = 0;
+    cursor_visible = 0;
+    cursor_width = 0;
+    cursor_height = 0;
+}
+
+void cursor_set_position(int x, int y)
+{
+    int width = fb_width();
+    int height = fb_height();
+    if (width > 0) {
+        if (x < 0) x = 0;
+        if (x >= width) x = width - 1;
+    }
+    if (height > 0) {
+        if (y < 0) y = 0;
+        if (y >= height) y = height - 1;
+    }
+    cursor_x = x;
+    cursor_y = y;
+}
+
+void cursor_begin_frame(void)
+{
+    cursor_rendered = 0;
+}
+
+void cursor_draw(void)
+{
+    if (!cursor_loaded || !cursor_visible || !fb_is_available()) return;
+    if (cursor_rendered && (cursor_rendered_x != cursor_x ||
+        cursor_rendered_y != cursor_y)) cursor_restore();
+    if (cursor_rendered) return;
+
+    int draw_x = cursor_x - cursor_hotspot_x;
+    int draw_y = cursor_y - cursor_hotspot_y;
+    for (int row = 0; row < cursor_height; row++) {
+        for (int column = 0; column < cursor_width; column++) {
+            int index = row * cursor_width + column;
+            int px = draw_x + column;
+            int py = draw_y + row;
+            cursor_saved[index] = 0;
+            if (px < 0 || py < 0 || px >= fb_width() || py >= fb_height()) continue;
+            uint32_t source = cursor_pixels[index];
+            if ((source >> 24) == 0) continue;
+            cursor_background[index] = fb_get_pixel(px, py);
+            cursor_saved[index] = 1;
+            fb_put_pixel(px, py, cursor_blend(source, cursor_background[index]));
+        }
+    }
+    cursor_rendered_x = draw_x;
+    cursor_rendered_y = draw_y;
+    cursor_rendered = 1;
+}
+
+void cursor_show(void)
+{
+    cursor_visible = 1;
+    cursor_draw();
+}
+
+void cursor_hide(void)
+{
+    cursor_restore();
+    cursor_visible = 0;
+}
+
 void mouse_draw_cursor(void)
 {
-    if (!mouse_available)
-        return;
-
-    int x = cursor_x;
-    int y = cursor_y;
-
-    /*
-     * Draw arrow.
-     */
-    for (int row = 0; row < 12; row++) {
-
-        for (int col = 0; col <= row / 2; col++) {
-
-            uint32_t color;
-
-            /*
-             * Black outline.
-             */
-            if (col == 0 ||
-                col == row / 2 ||
-                row == 11) {
-
-                color = 0x000000;
-
-            } else {
-
-                /* White inside. */
-                color = 0xFFFFFF;
-            }
-
-            int px = x + col;
-            int py = y + row;
-
-            if (px >= 0 &&
-                px < fb_width() &&
-                py >= 0 &&
-                py < fb_height()) {
-
-                fb_put_pixel(px, py, color);
-            }
-        }
-    }
-
-    /*
-     * Diagonal black edge.
-     */
-    for (int i = 0; i < 6; i++) {
-
-        int px = x + 3 + i;
-        int py = y + 8 + i;
-
-        if (px >= 0 &&
-            px < fb_width() &&
-            py >= 0 &&
-            py < fb_height()) {
-
-            fb_put_pixel(px, py, 0x000000);
-        }
-    }
+    cursor_draw();
 }

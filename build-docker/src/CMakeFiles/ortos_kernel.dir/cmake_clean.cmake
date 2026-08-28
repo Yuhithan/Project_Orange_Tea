@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "../kernel.bin"
   "CMakeFiles/ortos_kernel"
+  "cursor_resource.c"
   "ortos-objects/ORgui_8378951d1de981a6a28fa0d39036448f.o"
   "ortos-objects/boot_header.o"
   "ortos-objects/boot_interrupts.o"
@@ -8,6 +9,7 @@ file(REMOVE_RECURSE
   "ortos-objects/boot_main64.o"
   "ortos-objects/boot_mode_38aa3d1d423d5c12cc8a83a74a259133.o"
   "ortos-objects/cursor_cee9b83307365341dea3fd6203eb1221.o"
+  "ortos-objects/cursor_resource_f0a38a484c9df82ae237beadaa96bc55.o"
   "ortos-objects/desktop_45db98bc6508c4420481cf5982974823.o"
   "ortos-objects/framebuffer_719cbce6279bc463ae41d822a57e6dd8.o"
   "ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o"

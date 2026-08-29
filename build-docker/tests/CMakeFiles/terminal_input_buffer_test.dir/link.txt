@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/terminal_input_buffer_test.dir/terminal_input_buffer_test.c.o -o terminal_input_buffer_test 

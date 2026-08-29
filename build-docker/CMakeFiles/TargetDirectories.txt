@@ -36,6 +36,7 @@
 /root/env/build-docker/src/CMakeFiles/rebuild_cache.dir
 /root/env/build-docker/tests/CMakeFiles/ortos_storage.dir
 /root/env/build-docker/tests/CMakeFiles/storage_path_test.dir
+/root/env/build-docker/tests/CMakeFiles/terminal_input_buffer_test.dir
 /root/env/build-docker/tests/CMakeFiles/core_subsystem_test.dir
 /root/env/build-docker/tests/CMakeFiles/test.dir
 /root/env/build-docker/tests/CMakeFiles/edit_cache.dir

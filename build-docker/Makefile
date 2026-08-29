@@ -544,6 +544,19 @@ storage_path_test/fast:
 .PHONY : storage_path_test/fast
 
 #=============================================================================
+# Target rules for targets named terminal_input_buffer_test
+
+# Build rule for target.
+terminal_input_buffer_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 terminal_input_buffer_test
+.PHONY : terminal_input_buffer_test
+
+# fast build rule for target.
+terminal_input_buffer_test/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/terminal_input_buffer_test.dir/build.make tests/CMakeFiles/terminal_input_buffer_test.dir/build
+.PHONY : terminal_input_buffer_test/fast
+
+#=============================================================================
 # Target rules for targets named core_subsystem_test
 
 # Build rule for target.
@@ -598,6 +611,7 @@ help:
 	@echo "... core_subsystem_test"
 	@echo "... ortos_storage"
 	@echo "... storage_path_test"
+	@echo "... terminal_input_buffer_test"
 .PHONY : help
 
 

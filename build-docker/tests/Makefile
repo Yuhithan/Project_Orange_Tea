@@ -156,6 +156,20 @@ storage_path_test/fast:
 .PHONY : storage_path_test/fast
 
 # Convenience name for target.
+tests/CMakeFiles/terminal_input_buffer_test.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/terminal_input_buffer_test.dir/rule
+.PHONY : tests/CMakeFiles/terminal_input_buffer_test.dir/rule
+
+# Convenience name for target.
+terminal_input_buffer_test: tests/CMakeFiles/terminal_input_buffer_test.dir/rule
+.PHONY : terminal_input_buffer_test
+
+# fast build rule for target.
+terminal_input_buffer_test/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/terminal_input_buffer_test.dir/build.make tests/CMakeFiles/terminal_input_buffer_test.dir/build
+.PHONY : terminal_input_buffer_test/fast
+
+# Convenience name for target.
 tests/CMakeFiles/core_subsystem_test.dir/rule:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/core_subsystem_test.dir/rule
 .PHONY : tests/CMakeFiles/core_subsystem_test.dir/rule
@@ -313,6 +327,30 @@ storage_path_test.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_path_test.dir/build.make tests/CMakeFiles/storage_path_test.dir/storage_path_test.c.s
 .PHONY : storage_path_test.c.s
 
+terminal_input_buffer_test.o: terminal_input_buffer_test.c.o
+.PHONY : terminal_input_buffer_test.o
+
+# target to build an object file
+terminal_input_buffer_test.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/terminal_input_buffer_test.dir/build.make tests/CMakeFiles/terminal_input_buffer_test.dir/terminal_input_buffer_test.c.o
+.PHONY : terminal_input_buffer_test.c.o
+
+terminal_input_buffer_test.i: terminal_input_buffer_test.c.i
+.PHONY : terminal_input_buffer_test.i
+
+# target to preprocess a source file
+terminal_input_buffer_test.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/terminal_input_buffer_test.dir/build.make tests/CMakeFiles/terminal_input_buffer_test.dir/terminal_input_buffer_test.c.i
+.PHONY : terminal_input_buffer_test.c.i
+
+terminal_input_buffer_test.s: terminal_input_buffer_test.c.s
+.PHONY : terminal_input_buffer_test.s
+
+# target to generate assembly for a file
+terminal_input_buffer_test.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/terminal_input_buffer_test.dir/build.make tests/CMakeFiles/terminal_input_buffer_test.dir/terminal_input_buffer_test.c.s
+.PHONY : terminal_input_buffer_test.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -325,6 +363,7 @@ help:
 	@echo "... core_subsystem_test"
 	@echo "... ortos_storage"
 	@echo "... storage_path_test"
+	@echo "... terminal_input_buffer_test"
 	@echo "... __/src/fs/storage/storage.o"
 	@echo "... __/src/fs/storage/storage.i"
 	@echo "... __/src/fs/storage/storage.s"
@@ -343,6 +382,9 @@ help:
 	@echo "... storage_path_test.o"
 	@echo "... storage_path_test.i"
 	@echo "... storage_path_test.s"
+	@echo "... terminal_input_buffer_test.o"
+	@echo "... terminal_input_buffer_test.i"
+	@echo "... terminal_input_buffer_test.s"
 .PHONY : help
 
 

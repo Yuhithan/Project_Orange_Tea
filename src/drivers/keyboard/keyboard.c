@@ -1,16 +1,26 @@
 #include "keyboard.h"
 #include "io.h"
+#include "terminal_input_ring.h"
 #include <stdint.h>
 #include <stdbool.h>
 
 #define KBD_DATA_PORT 0x60
 #define KBD_STATUS_PORT 0x64
+#define KBD_RING_SIZE 128
 
-static volatile int kb_head = 0;
-static volatile int kb_tail = 0;
-static volatile char kb_buf[128];
+static char kb_buf[KBD_RING_SIZE];
+static terminal_input_ring_t keyboard_ring;
 static volatile int kb_enabled = 0;
 static volatile int extended_scancode = 0;
+
+static void keyboard_ring_init(void)
+{
+    static int initialized = 0;
+    if (!initialized) {
+        terminal_input_ring_init(&keyboard_ring, kb_buf, sizeof(kb_buf));
+        initialized = 1;
+    }
+}
 
 static const char base_map[128] = {
 	[0x01] = 27,
@@ -113,11 +123,18 @@ static inline char scancode_to_ascii(uint8_t sc) {
 }
 
 static void kb_push(char c) {
-	int next = (kb_head + 1) % (int)sizeof(kb_buf);
-	if (next != kb_tail) {
-		kb_buf[kb_head] = c;
-		kb_head = next;
-	}
+    keyboard_ring_init();
+    /*
+     * Keep the interrupt path tiny: simply enqueue the scancode-derived byte if
+     * there is room. Any terminal redraw or shell processing happens later in the
+     * non-interrupt path, so the IRQ remains bounded and does not touch the
+     * terminal window or rendering state.
+     */
+    if (!terminal_input_ring_push(&keyboard_ring, c)) {
+        /* Drop the newest character instead of corrupting the ring or crashing.
+         * This preserves the rest of the queue and prevents a burst of keys from
+         * overwriting active input. */
+    }
 }
 
 /* Polling is intentional: ORTos has no IRQ dispatcher yet. Keep all PS/2
@@ -171,6 +188,7 @@ void keyboard_handle_irq(void)
 }
 
 void enable_key_input() {
+    keyboard_ring_init();
 	kb_enabled = 1;
 }
 
@@ -187,28 +205,34 @@ void keyboard_set_layout(const char* layout) {
 }
 
 int keyboard_has_char() {
-    return kb_head != kb_tail;
+    keyboard_ring_init();
+    return !terminal_input_ring_empty(&keyboard_ring);
 }
 
 int keyboard_try_getchar(int *out) {
-	unsigned long flags;
-	int available;
+    unsigned long flags;
+    int available;
 
-	__asm__ volatile ("pushfq; popq %0; cli" : "=r"(flags) : : "memory");
-	available = kb_head != kb_tail;
-	if (available) {
-		if (out != NULL) *out = (int)kb_buf[kb_tail];
-		kb_tail = (kb_tail + 1) % (int)sizeof(kb_buf);
-	}
-	__asm__ volatile ("pushq %0; popfq" : : "r"(flags) : "memory");
-	return available;
+    keyboard_ring_init();
+    __asm__ volatile ("pushfq; popq %0; cli" : "=r"(flags) : : "memory");
+    available = !terminal_input_ring_empty(&keyboard_ring);
+    if (available) {
+        char value = 0;
+        if (!terminal_input_ring_pop(&keyboard_ring, &value)) {
+            available = 0;
+        } else if (out != NULL) {
+            *out = (unsigned char)value;
+        }
+    }
+    __asm__ volatile ("pushq %0; popfq" : : "r"(flags) : "memory");
+    return available;
 }
 
 int keyboard_getchar() {
-	/* The IRQ handler owns PS/2 reads; this function only waits for queued data. */
-		int character;
-		while (!keyboard_try_getchar(&character)) {
-		__asm__ volatile ("hlt");
-	}
-		return character;
+    /* The IRQ handler owns PS/2 reads; this function only waits for queued data. */
+    int character;
+    while (!keyboard_try_getchar(&character)) {
+        __asm__ volatile ("hlt");
+    }
+    return character;
 }

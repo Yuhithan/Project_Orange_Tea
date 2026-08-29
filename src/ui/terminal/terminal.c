@@ -15,6 +15,20 @@ static int terminal_line_count;
 static char terminal_input[TERMINAL_LINE_SIZE];
 static int terminal_input_length;
 
+/*
+ * Terminal input is edited and rendered from the same UI thread, so there is no
+ * need to touch the keyboard queue here. The key safety property is that the
+ * terminal evens do not read/write the input line while a redraw is in progress.
+ * This function keeps the line null-terminated and bounded to the terminal buffer.
+ */
+static void terminal_input_replace(char next_char)
+{
+    if (terminal_input_length < TERMINAL_LINE_SIZE - 1) {
+        terminal_input[terminal_input_length++] = next_char;
+        terminal_input[terminal_input_length] = '\0';
+    }
+}
+
 static void terminal_new_line(void)
 {
     if (terminal_line_count < TERMINAL_MAX_LINES)
@@ -142,11 +156,9 @@ static void terminal_event(ORWindow *window, const OREvent *event)
         return;
     }
 
-    if (event->key >= 32 && event->key < 127 &&
-        terminal_input_length < TERMINAL_LINE_SIZE - 1)
+    if (event->key >= 32 && event->key < 127)
     {
-        terminal_input[terminal_input_length++] = (char)event->key;
-        terminal_input[terminal_input_length] = '\0';
+        terminal_input_replace((char)event->key);
     }
 }
 void terminal_init(void)

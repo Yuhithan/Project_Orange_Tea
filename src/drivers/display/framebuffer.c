@@ -18,7 +18,11 @@ struct multiboot_framebuffer_tag {
     uint16_t reserved;
 };
 
+#define FB_BACKBUFFER_BYTES_MAX (1920u * 1080u * 4u)
+
 static volatile uint8_t *framebuffer;
+static volatile uint8_t *framebuffer_back;
+static uint8_t framebuffer_backing[FB_BACKBUFFER_BYTES_MAX];
 static uint32_t framebuffer_pitch;
 static uint32_t framebuffer_width;
 static uint32_t framebuffer_height;
@@ -26,6 +30,11 @@ static uint8_t framebuffer_bytes_per_pixel;
 static uint8_t red_position, red_mask_size;
 static uint8_t green_position, green_mask_size;
 static uint8_t blue_position, blue_mask_size;
+
+static inline volatile uint8_t *fb_active_buffer(void)
+{
+    return framebuffer_back != 0 ? framebuffer_back : framebuffer;
+}
 
 static int fb_valid(void)
 {
@@ -36,6 +45,7 @@ static int fb_valid(void)
 void fb_init(uint64_t multiboot_info_addr)
 {
     framebuffer = 0;
+    framebuffer_back = framebuffer_backing;
     framebuffer_pitch = 0;
     framebuffer_width = 0;
     framebuffer_height = 0;
@@ -70,6 +80,13 @@ void fb_init(uint64_t multiboot_info_addr)
                 red_position = colors[0]; red_mask_size = colors[1];
                 green_position = colors[2]; green_mask_size = colors[3];
                 blue_position = colors[4]; blue_mask_size = colors[5];
+                if (framebuffer_back != 0) {
+                    for (uint32_t row = 0; row < framebuffer_height; row++) {
+                        volatile uint8_t *dest = framebuffer_back + (uint32_t)row * framebuffer_pitch;
+                        for (uint32_t column = 0; column < framebuffer_pitch; column++)
+                            dest[column] = 0;
+                    }
+                }
             }
             return;
         }
@@ -86,7 +103,7 @@ uint32_t fb_get_pixel(int x, int y)
     if (!fb_valid() || x < 0 || y < 0 || (uint32_t)x >= framebuffer_width ||
         (uint32_t)y >= framebuffer_height) return 0;
 
-    const volatile uint8_t *pixel = framebuffer +
+    const volatile uint8_t *pixel = fb_active_buffer() +
         (uint32_t)y * framebuffer_pitch + (uint32_t)x * framebuffer_bytes_per_pixel;
     uint32_t native = 0;
     for (uint8_t byte = 0; byte < framebuffer_bytes_per_pixel; byte++)
@@ -107,8 +124,19 @@ void fb_put_pixel(int x, int y, uint32_t color)
     uint32_t native = (((color >> 16) & 0xFFu) >> (8u - red_mask_size)) << red_position;
     native |= (((color >> 8) & 0xFFu) >> (8u - green_mask_size)) << green_position;
     native |= ((color & 0xFFu) >> (8u - blue_mask_size)) << blue_position;
-    volatile uint8_t *pixel = framebuffer + (uint32_t)y * framebuffer_pitch + (uint32_t)x * framebuffer_bytes_per_pixel;
+    volatile uint8_t *pixel = fb_active_buffer() + (uint32_t)y * framebuffer_pitch + (uint32_t)x * framebuffer_bytes_per_pixel;
     for (uint8_t byte = 0; byte < framebuffer_bytes_per_pixel; byte++) pixel[byte] = (uint8_t)(native >> (byte * 8u));
+}
+
+void fb_flush(void)
+{
+    if (!fb_valid() || framebuffer == 0 || framebuffer_back == 0) return;
+    for (uint32_t row = 0; row < framebuffer_height; row++) {
+        const volatile uint8_t *source = framebuffer_back + (uint32_t)row * framebuffer_pitch;
+        volatile uint8_t *dest = framebuffer + (uint32_t)row * framebuffer_pitch;
+        for (uint32_t column = 0; column < framebuffer_pitch; column++)
+            dest[column] = source[column];
+    }
 }
 
 void fb_clear(uint32_t color)

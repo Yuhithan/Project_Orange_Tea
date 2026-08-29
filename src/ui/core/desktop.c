@@ -38,6 +38,8 @@ void desktop_draw(void)
     ORgui_draw();
     taskbar_draw();
     mouse_draw_cursor();
+    /* Draw to the off-screen buffer first, then copy the final frame once to the hardware framebuffer. */
+    fb_flush();
 }
 
 void desktop_run(void)

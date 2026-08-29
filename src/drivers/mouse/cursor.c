@@ -266,6 +266,31 @@ static void queue_event(OREventType type, int button)
     event_head = next;
 }
 
+/* PS/2 touchpad and mouse devices report motion as signed X/Y deltas.
+ * Clamp the new position to the framebuffer before redrawing the cursor. */
+static void mouse_apply_relative_motion(int dx, int dy)
+{
+    if (dx == 0 && dy == 0)
+        return;
+
+    int next_x = cursor_x + dx;
+    int next_y = cursor_y - dy;
+    int width = fb_width();
+    int height = fb_height();
+
+    if (width > 0) {
+        if (next_x < 0) next_x = 0;
+        if (next_x >= width) next_x = width - 1;
+    }
+
+    if (height > 0) {
+        if (next_y < 0) next_y = 0;
+        if (next_y >= height) next_y = height - 1;
+    }
+
+    cursor_set_position(next_x, next_y);
+}
+
 
 /*
  * Initialize PS/2 mouse.
@@ -403,7 +428,7 @@ void mouse_handle_irq(void)
         return;
 
     /*
-     * Convert movement to signed values.
+     * Touchpad and PS/2 mouse devices expose motion as signed X/Y deltas.
      */
     int dx = (int)(int8_t)packet[1];
     int dy = (int)(int8_t)packet[2];
@@ -412,30 +437,7 @@ void mouse_handle_irq(void)
      * Move cursor.
      */
     if (dx != 0 || dy != 0) {
-        cursor_set_position(cursor_x + dx, cursor_y - dy);
-
-        int width = fb_width();
-        int height = fb_height();
-
-        /*
-         * Keep cursor inside screen.
-         */
-        if (width > 0) {
-            if (cursor_x < 0)
-                cursor_x = 0;
-
-            if (cursor_x >= width)
-                cursor_x = width - 1;
-        }
-
-        if (height > 0) {
-            if (cursor_y < 0)
-                cursor_y = 0;
-
-            if (cursor_y >= height)
-                cursor_y = height - 1;
-        }
-
+        mouse_apply_relative_motion(dx, dy);
         queue_event(OR_EVENT_MOUSE_MOVE, 0);
     }
 

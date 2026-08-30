@@ -401,18 +401,21 @@ void mouse_handle_irq(void)
     uint8_t value = io_inb(PS2_DATA_PORT);
 
     /*
-     * First byte must have bit 3 set.
+     * Standard PS/2 packets begin with a status byte whose bit 3 must be set;
+     * otherwise the byte is out of sync and should be discarded.
      */
     if (packet_index == 0) {
-        if (!(value & 0x08))
+        if (!(value & 0x08u)) {
+            packet_index = 0;
             return;
+        }
     }
 
     packet[packet_index] = value;
     packet_index++;
 
     /*
-     * Need 3 bytes.
+     * Need 3 bytes: flags, X delta, Y delta.
      */
     if (packet_index < 3)
         return;
@@ -420,23 +423,31 @@ void mouse_handle_irq(void)
     packet_index = 0;
 
     uint8_t flags = packet[0];
+    uint8_t x_byte = packet[1];
+    uint8_t y_byte = packet[2];
 
     /*
-     * Some built-in Apple touchpads set the overflow bits while sending valid
-     * movement packets. Dropping those packets prevents the cursor from moving
-     * even though the touchpad is reporting motion correctly.
-     *
-     * The cursor position is still clamped below, so we can safely keep the
-     * packet and let the existing renderer update the visible cursor.
+     * QEMU's PS/2 mouse follows the standard packet format: the movement bytes
+     * are 8-bit quantities whose sign is encoded in bits 4 and 5 of the first
+     * byte. Ignore packets that report overflowed deltas because the motion data
+     * is not trustworthy.
      */
-    /*
-     * Touchpad and PS/2 mouse devices expose motion as signed X/Y deltas.
-     */
-    int dx = (int)(int8_t)packet[1];
-    int dy = (int)(int8_t)packet[2];
+    int dx = 0;
+    int dy = 0;
+    if ((flags & 0x40u) == 0 && (flags & 0x80u) == 0) {
+        dx = (int)x_byte;
+        if (flags & 0x10u)
+            dx -= 256;
+
+        dy = (int)y_byte;
+        if (flags & 0x20u)
+            dy -= 256;
+    }
 
     /*
-     * Move cursor.
+     * Move cursor. PS/2 Y motion is positive when moving upward, while the
+     * framebuffer coordinate system increases downward, so mouse_apply_relative_motion()
+     * uses the appropriate subtraction for the screen Y axis.
      */
     if (dx != 0 || dy != 0) {
         mouse_apply_relative_motion(dx, dy);

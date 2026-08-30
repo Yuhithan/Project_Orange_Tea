@@ -422,11 +422,13 @@ void mouse_handle_irq(void)
     uint8_t flags = packet[0];
 
     /*
-     * Ignore X/Y overflow.
+     * Some built-in Apple touchpads set the overflow bits while sending valid
+     * movement packets. Dropping those packets prevents the cursor from moving
+     * even though the touchpad is reporting motion correctly.
+     *
+     * The cursor position is still clamped below, so we can safely keep the
+     * packet and let the existing renderer update the visible cursor.
      */
-    if (flags & 0xC0)
-        return;
-
     /*
      * Touchpad and PS/2 mouse devices expose motion as signed X/Y deltas.
      */

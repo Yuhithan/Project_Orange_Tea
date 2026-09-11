@@ -15,6 +15,7 @@
 #define MOUSE_QUEUE_SIZE       32
 
 static volatile int mouse_available;
+static volatile uint32_t mouse_irq_total;
 static volatile int packet_index;
 static volatile uint8_t packet[3];
 
@@ -297,7 +298,11 @@ static void mouse_apply_relative_motion(int dx, int dy)
  */
 void mouse_init(void)
 {
+    unsigned long interrupt_flags;
+    int irq12_enabled = 0;
+
     mouse_available = 0;
+    mouse_irq_total = 0;
     packet_index = 0;
 
     event_head = 0;
@@ -313,25 +318,25 @@ void mouse_init(void)
     cursor_y = fb_height() / 2;
     (void)cursor_load("/cursor/cursor_arrow.cur");
 
+    __asm__ volatile ("pushfq; popq %0; cli" : "=r"(interrupt_flags) : : "memory");
+
+    /* Remove stale bytes before starting a new controller transaction. */
+    drain_output();
+
     /*
      * Enable PS/2 auxiliary device.
      */
     if (!write_command(0xA8))
-        return;
-
-    /*
-     * Remove old keyboard/mouse data.
-     */
-    drain_output();
+        goto done;
 
     /*
      * Read controller configuration byte.
      */
     if (!write_command(0x20))
-        return;
+        goto done;
 
     if (!wait_for_output_full())
-        return;
+        goto done;
 
     uint8_t controller_config = io_inb(PS2_DATA_PORT);
 
@@ -339,17 +344,17 @@ void mouse_init(void)
      * Enable IRQ12 and the auxiliary device clock.
      * Bit 1 = IRQ12 enable. Bit 5 = mouse clock disable (must be clear).
      */
-    controller_config |= 0x02;
+    controller_config &= (uint8_t)~0x02;
     controller_config &= (uint8_t)~0x20;
 
     /*
      * Write configuration byte.
      */
     if (!write_command(0x60))
-        return;
+        goto done;
 
     if (!wait_for_input_empty())
-        return;
+        goto done;
 
     io_outb(PS2_DATA_PORT, controller_config);
 
@@ -363,15 +368,31 @@ void mouse_init(void)
      * Set mouse defaults.
      */
     if (!write_mouse(0xF6))
-        return;
+        goto done;
 
     /*
      * Enable mouse data reporting.
      */
     if (!write_mouse(0xF4))
-        return;
+        goto done;
 
+    packet_index = 0;
+    buttons = 0;
     mouse_available = 1;
+
+    /* Enable IRQ12 only after all initialization replies were consumed. */
+    controller_config |= 0x02;
+    if (!write_command(0x60))
+        goto done;
+    if (!wait_for_input_empty())
+        goto done;
+    io_outb(PS2_DATA_PORT, controller_config);
+    irq12_enabled = 1;
+
+done:
+    if (!irq12_enabled)
+        mouse_available = 0;
+    __asm__ volatile ("pushq %0; popfq" : : "r"(interrupt_flags) : "memory");
 }
 
 
@@ -380,6 +401,8 @@ void mouse_init(void)
  */
 void mouse_handle_irq(void)
 {
+    mouse_irq_total++;
+
     uint8_t status = io_inb(PS2_STATUS_PORT);
 
     /*
@@ -494,6 +517,11 @@ int mouse_is_available(void)
     return mouse_available;
 }
 
+uint32_t mouse_irq_count(void)
+{
+    return mouse_irq_total;
+}
+
 
 /*
  * Current X position.
@@ -518,8 +546,15 @@ int mouse_y(void)
  */
 int mouse_try_get_event(OREvent *event)
 {
-    if (event_tail == event_head)
+    unsigned long interrupt_flags;
+    int available;
+
+    __asm__ volatile ("pushfq; popq %0; cli" : "=r"(interrupt_flags) : : "memory");
+    available = event_tail != event_head;
+    if (!available) {
+        __asm__ volatile ("pushq %0; popfq" : : "r"(interrupt_flags) : "memory");
         return 0;
+    }
 
     if (event != 0)
         *event = event_queue[event_tail];
@@ -527,6 +562,7 @@ int mouse_try_get_event(OREvent *event)
     event_tail =
         (event_tail + 1) % MOUSE_QUEUE_SIZE;
 
+    __asm__ volatile ("pushq %0; popfq" : : "r"(interrupt_flags) : "memory");
     return 1;
 }
 
@@ -580,7 +616,7 @@ void cursor_set_position(int x, int y)
 
 void cursor_begin_frame(void)
 {
-    cursor_rendered = 0;
+    cursor_restore();
 }
 
 void cursor_draw(void)

@@ -9,6 +9,7 @@
 
 static int desktop_ready;
 static int desktop_running;
+static int mouse_irq_reported;
 
 void desktop_init(uint64_t multiboot_info_addr)
 {
@@ -16,6 +17,7 @@ void desktop_init(uint64_t multiboot_info_addr)
     if (!fb_is_available()) { desktop_ready = 0; return; }
     ORgui_init();
     mouse_init();
+    mouse_irq_reported = 0;
     terminal_init();
     ORWindow *window = ORgui_active_window();
     if (window) {
@@ -55,6 +57,12 @@ void desktop_run(void)
         int key;
         OREvent event;
         int redraw = 0;
+        if (!mouse_irq_reported && mouse_irq_count() != 0) {
+            imp_text("PS/2 mouse IRQ12 count: ");
+            imp_uint64_dec(mouse_irq_count());
+            imp_text("\n");
+            mouse_irq_reported = 1;
+        }
         while (mouse_try_get_event(&event)) {
             ORgui_handle_event(&event);
             redraw = 1;

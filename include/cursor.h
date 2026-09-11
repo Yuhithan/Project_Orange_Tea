@@ -16,6 +16,7 @@ enum {
 void mouse_init(void);
 void mouse_handle_irq(void);
 int mouse_is_available(void);
+uint32_t mouse_irq_count(void);
 int mouse_try_get_event(OREvent *event);
 int mouse_x(void);
 int mouse_y(void);

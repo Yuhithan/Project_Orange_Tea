@@ -616,7 +616,8 @@ void cursor_set_position(int x, int y)
 
 void cursor_begin_frame(void)
 {
-    cursor_restore();
+    /* The desktop rebuilds the backbuffer before calling this function. */
+    cursor_rendered = 0;
 }
 
 void cursor_draw(void)

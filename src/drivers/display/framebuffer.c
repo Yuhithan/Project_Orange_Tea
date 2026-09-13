@@ -134,8 +134,14 @@ void fb_flush(void)
     for (uint32_t row = 0; row < framebuffer_height; row++) {
         const volatile uint8_t *source = framebuffer_back + (uint32_t)row * framebuffer_pitch;
         volatile uint8_t *dest = framebuffer + (uint32_t)row * framebuffer_pitch;
-        for (uint32_t column = 0; column < framebuffer_pitch; column++)
-            dest[column] = source[column];
+        uint32_t column = 0;
+        while (column < framebuffer_pitch) {
+            while (column < framebuffer_pitch && dest[column] == source[column]) column++;
+            while (column < framebuffer_pitch && dest[column] != source[column]) {
+                dest[column] = source[column];
+                column++;
+            }
+        }
     }
 }
 

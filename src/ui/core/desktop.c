@@ -31,7 +31,6 @@ void desktop_init(uint64_t multiboot_info_addr)
 void desktop_draw(void)
 {
     if (!desktop_ready) return;
-    cursor_begin_frame();
     fb_clear(OR_COLOR_BACKGROUND);
     fb_fill_rect(0, 0, fb_width(), 34, OR_COLOR_PANEL);
     fb_draw_line(0, 33, fb_width() - 1, 33, OR_COLOR_FIRE_RED);
@@ -39,6 +38,7 @@ void desktop_draw(void)
     ORgui_draw_text(190, 14, "WILDFIRE", OR_COLOR_FIRE_ORANGE);
     ORgui_draw();
     taskbar_draw();
+    cursor_begin_frame();
     mouse_draw_cursor();
     /* Draw to the off-screen buffer first, then copy the final frame once to the hardware framebuffer. */
     fb_flush();

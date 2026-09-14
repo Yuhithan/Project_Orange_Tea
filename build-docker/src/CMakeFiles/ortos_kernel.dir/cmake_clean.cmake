@@ -14,6 +14,7 @@ file(REMOVE_RECURSE
   "ortos-objects/framebuffer_719cbce6279bc463ae41d822a57e6dd8.o"
   "ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o"
   "ortos-objects/keyboard_c61c887baa3a65f59c312df80553a306.o"
+  "ortos-objects/login_4259357577d8f182a4536732f1429489.o"
   "ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o"
   "ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o"
   "ortos-objects/network_ee75fe5fee36e7e68ee0fa08117a2322.o"

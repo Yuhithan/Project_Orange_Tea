@@ -7,6 +7,7 @@
 #include "timer.h"
 #include "framebuffer.h"
 #include "desktop.h"
+#include "login.h"
 #include "irq.h"
 #include "memory.h"
 #include "process.h"
@@ -80,6 +81,11 @@ void kmain(uint64_t multiboot_magic,
         enable_network();
 
         imp_text("Starting graphical desktop...\n");
+        if (!login_run())
+        {
+            imp_text("Login cancelled.\n");
+            return;
+        }
         desktop_init(multiboot_info_addr);
         desktop_run();
         return;

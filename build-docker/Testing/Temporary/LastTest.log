@@ -1,0 +1,49 @@
+Start testing: Sep 14 05:49 UTC
+----------------------------------------------------------
+1/3 Testing: storage_path_test
+1/3 Test: storage_path_test
+Command: "/root/env/build-docker/tests/storage_path_test"
+Directory: /root/env/build-docker/tests
+"storage_path_test" start time: Sep 14 05:49 UTC
+Output:
+----------------------------------------------------------
+storage path test passed
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"storage_path_test" end time: Sep 14 05:49 UTC
+"storage_path_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/3 Testing: terminal_input_buffer_test
+2/3 Test: terminal_input_buffer_test
+Command: "/root/env/build-docker/tests/terminal_input_buffer_test"
+Directory: /root/env/build-docker/tests
+"terminal_input_buffer_test" start time: Sep 14 05:49 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"terminal_input_buffer_test" end time: Sep 14 05:49 UTC
+"terminal_input_buffer_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/3 Testing: core_subsystem_test
+3/3 Test: core_subsystem_test
+Command: "/root/env/build-docker/tests/core_subsystem_test"
+Directory: /root/env/build-docker/tests
+"core_subsystem_test" start time: Sep 14 05:49 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"core_subsystem_test" end time: Sep 14 05:49 UTC
+"core_subsystem_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 14 05:49 UTC

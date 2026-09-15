@@ -6,6 +6,9 @@
 #include "cursor.h"
 #include "taskbar.h"
 #include "imp.h"
+#include "timer.h"
+
+#define DESKTOP_FRAME_TIME_MS 16u
 
 static int desktop_ready;
 static int desktop_running;
@@ -76,7 +79,11 @@ void desktop_run(void)
             ORgui_handle_event(&event);
             redraw = 1;
         }
-        if (redraw) desktop_draw();
+        if (redraw) {
+            desktop_draw();
+        } else {
+            timer_sleep(DESKTOP_FRAME_TIME_MS);
+        }
     }
 }
 

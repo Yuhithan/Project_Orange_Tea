@@ -107,8 +107,8 @@ int login_run(void)
             } else if (key == '\n' || key == '\r') {
                 if (login_field == 0) {
                     login_field = 1;
-                } else if (login_equals(login_user, "admin") &&
-                           login_equals(login_password, "orange")) {
+                } else if (login_equals(login_user, "s") &&
+                           login_equals(login_password, "s")) {
                     return 1;
                 } else {
                     login_message = 1;

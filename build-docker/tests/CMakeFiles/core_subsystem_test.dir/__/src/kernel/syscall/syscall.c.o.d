@@ -18,4 +18,4 @@ tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/syscall/syscall.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
  /root/env/include/storage.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
- /root/env/include/process.h
+ /root/env/include/block_device.h /root/env/include/process.h

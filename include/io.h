@@ -14,3 +14,15 @@ static inline void io_outb(uint16_t port, uint8_t value)
 {
     asm volatile ("outb %0, %1" : : "a"(value), "Nd"(port));
 }
+
+static inline uint16_t io_inw(uint16_t port)
+{
+    uint16_t value;
+    asm volatile ("inw %1, %0" : "=a"(value) : "Nd"(port));
+    return value;
+}
+
+static inline void io_outw(uint16_t port, uint16_t value)
+{
+    asm volatile ("outw %0, %1" : : "a"(value), "Nd"(port));
+}

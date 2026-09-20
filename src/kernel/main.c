@@ -13,6 +13,8 @@
 #include "process.h"
 #include "cursor.h"
 #include "terminal.h"
+#include "ata.h"
+#include "storage.h"
 
 
 static void start_shell(void)
@@ -58,6 +60,10 @@ void kmain(uint64_t multiboot_magic,
     /* Initialize memory/processes. */
     memory_init();
     process_init();
+
+    if (ata_primary_master_init() == 0)
+        storage_attach_block_device(ata_primary_master_device());
+    storage_init();
 
 
     /*

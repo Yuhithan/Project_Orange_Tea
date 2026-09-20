@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/ora_format_test.dir/ora_format_test.c.o CMakeFiles/ora_format_test.dir/__/src/kernel/exec/ora.c.o -o ora_format_test 

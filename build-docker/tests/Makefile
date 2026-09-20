@@ -142,6 +142,48 @@ ortos_storage/fast:
 .PHONY : ortos_storage/fast
 
 # Convenience name for target.
+tests/CMakeFiles/ora_format_test.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/ora_format_test.dir/rule
+.PHONY : tests/CMakeFiles/ora_format_test.dir/rule
+
+# Convenience name for target.
+ora_format_test: tests/CMakeFiles/ora_format_test.dir/rule
+.PHONY : ora_format_test
+
+# fast build rule for target.
+ora_format_test/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_format_test.dir/build.make tests/CMakeFiles/ora_format_test.dir/build
+.PHONY : ora_format_test/fast
+
+# Convenience name for target.
+tests/CMakeFiles/ora_pack.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/ora_pack.dir/rule
+.PHONY : tests/CMakeFiles/ora_pack.dir/rule
+
+# Convenience name for target.
+ora_pack: tests/CMakeFiles/ora_pack.dir/rule
+.PHONY : ora_pack
+
+# fast build rule for target.
+ora_pack/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_pack.dir/build.make tests/CMakeFiles/ora_pack.dir/build
+.PHONY : ora_pack/fast
+
+# Convenience name for target.
+tests/CMakeFiles/ora_example.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/ora_example.dir/rule
+.PHONY : tests/CMakeFiles/ora_example.dir/rule
+
+# Convenience name for target.
+ora_example: tests/CMakeFiles/ora_example.dir/rule
+.PHONY : ora_example
+
+# fast build rule for target.
+ora_example/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_example.dir/build.make tests/CMakeFiles/ora_example.dir/build
+.PHONY : ora_example/fast
+
+# Convenience name for target.
 tests/CMakeFiles/storage_path_test.dir/rule:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/storage_path_test.dir/rule
 .PHONY : tests/CMakeFiles/storage_path_test.dir/rule
@@ -206,6 +248,30 @@ __/src/fs/storage/storage.s: __/src/fs/storage/storage.c.s
 __/src/fs/storage/storage.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_storage.dir/build.make tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.s
 .PHONY : __/src/fs/storage/storage.c.s
+
+__/src/kernel/exec/ora.o: __/src/kernel/exec/ora.c.o
+.PHONY : __/src/kernel/exec/ora.o
+
+# target to build an object file
+__/src/kernel/exec/ora.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_format_test.dir/build.make tests/CMakeFiles/ora_format_test.dir/__/src/kernel/exec/ora.c.o
+.PHONY : __/src/kernel/exec/ora.c.o
+
+__/src/kernel/exec/ora.i: __/src/kernel/exec/ora.c.i
+.PHONY : __/src/kernel/exec/ora.i
+
+# target to preprocess a source file
+__/src/kernel/exec/ora.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_format_test.dir/build.make tests/CMakeFiles/ora_format_test.dir/__/src/kernel/exec/ora.c.i
+.PHONY : __/src/kernel/exec/ora.c.i
+
+__/src/kernel/exec/ora.s: __/src/kernel/exec/ora.c.s
+.PHONY : __/src/kernel/exec/ora.s
+
+# target to generate assembly for a file
+__/src/kernel/exec/ora.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_format_test.dir/build.make tests/CMakeFiles/ora_format_test.dir/__/src/kernel/exec/ora.c.s
+.PHONY : __/src/kernel/exec/ora.c.s
 
 __/src/kernel/memory/memory.o: __/src/kernel/memory/memory.c.o
 .PHONY : __/src/kernel/memory/memory.o
@@ -279,6 +345,30 @@ __/src/kernel/syscall/syscall.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/core_subsystem_test.dir/build.make tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/syscall/syscall.c.s
 .PHONY : __/src/kernel/syscall/syscall.c.s
 
+__/tools/ora_pack.o: __/tools/ora_pack.c.o
+.PHONY : __/tools/ora_pack.o
+
+# target to build an object file
+__/tools/ora_pack.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_pack.dir/build.make tests/CMakeFiles/ora_pack.dir/__/tools/ora_pack.c.o
+.PHONY : __/tools/ora_pack.c.o
+
+__/tools/ora_pack.i: __/tools/ora_pack.c.i
+.PHONY : __/tools/ora_pack.i
+
+# target to preprocess a source file
+__/tools/ora_pack.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_pack.dir/build.make tests/CMakeFiles/ora_pack.dir/__/tools/ora_pack.c.i
+.PHONY : __/tools/ora_pack.c.i
+
+__/tools/ora_pack.s: __/tools/ora_pack.c.s
+.PHONY : __/tools/ora_pack.s
+
+# target to generate assembly for a file
+__/tools/ora_pack.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_pack.dir/build.make tests/CMakeFiles/ora_pack.dir/__/tools/ora_pack.c.s
+.PHONY : __/tools/ora_pack.c.s
+
 core_subsystem_test.o: core_subsystem_test.c.o
 .PHONY : core_subsystem_test.o
 
@@ -302,6 +392,30 @@ core_subsystem_test.s: core_subsystem_test.c.s
 core_subsystem_test.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/core_subsystem_test.dir/build.make tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.s
 .PHONY : core_subsystem_test.c.s
+
+ora_format_test.o: ora_format_test.c.o
+.PHONY : ora_format_test.o
+
+# target to build an object file
+ora_format_test.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_format_test.dir/build.make tests/CMakeFiles/ora_format_test.dir/ora_format_test.c.o
+.PHONY : ora_format_test.c.o
+
+ora_format_test.i: ora_format_test.c.i
+.PHONY : ora_format_test.i
+
+# target to preprocess a source file
+ora_format_test.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_format_test.dir/build.make tests/CMakeFiles/ora_format_test.dir/ora_format_test.c.i
+.PHONY : ora_format_test.c.i
+
+ora_format_test.s: ora_format_test.c.s
+.PHONY : ora_format_test.s
+
+# target to generate assembly for a file
+ora_format_test.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_format_test.dir/build.make tests/CMakeFiles/ora_format_test.dir/ora_format_test.c.s
+.PHONY : ora_format_test.c.s
 
 storage_path_test.o: storage_path_test.c.o
 .PHONY : storage_path_test.o
@@ -360,13 +474,19 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... test"
+	@echo "... ora_example"
 	@echo "... core_subsystem_test"
+	@echo "... ora_format_test"
+	@echo "... ora_pack"
 	@echo "... ortos_storage"
 	@echo "... storage_path_test"
 	@echo "... terminal_input_buffer_test"
 	@echo "... __/src/fs/storage/storage.o"
 	@echo "... __/src/fs/storage/storage.i"
 	@echo "... __/src/fs/storage/storage.s"
+	@echo "... __/src/kernel/exec/ora.o"
+	@echo "... __/src/kernel/exec/ora.i"
+	@echo "... __/src/kernel/exec/ora.s"
 	@echo "... __/src/kernel/memory/memory.o"
 	@echo "... __/src/kernel/memory/memory.i"
 	@echo "... __/src/kernel/memory/memory.s"
@@ -376,9 +496,15 @@ help:
 	@echo "... __/src/kernel/syscall/syscall.o"
 	@echo "... __/src/kernel/syscall/syscall.i"
 	@echo "... __/src/kernel/syscall/syscall.s"
+	@echo "... __/tools/ora_pack.o"
+	@echo "... __/tools/ora_pack.i"
+	@echo "... __/tools/ora_pack.s"
 	@echo "... core_subsystem_test.o"
 	@echo "... core_subsystem_test.i"
 	@echo "... core_subsystem_test.s"
+	@echo "... ora_format_test.o"
+	@echo "... ora_format_test.i"
+	@echo "... ora_format_test.s"
 	@echo "... storage_path_test.o"
 	@echo "... storage_path_test.i"
 	@echo "... storage_path_test.s"

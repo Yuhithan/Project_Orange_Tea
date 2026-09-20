@@ -4,13 +4,53 @@
 #define STORAGE_NAME_LEN 16
 #define STORAGE_CONTENT_LEN 256
 #define STORAGE_MAX_FDS 16
+#define STORAGE_DISK_MAGIC 0x5346524fu
+#define STORAGE_DISK_VERSION 1u
+#define STORAGE_DISK_RECORD_SIZE 512u
 
 struct storage_entry { char path[STORAGE_MAX_PATH]; char name[STORAGE_NAME_LEN]; char type; char content[STORAGE_CONTENT_LEN]; size_t size; };
 struct storage_fd { int entry; size_t offset; int used; };
 static struct storage_entry entries[STORAGE_MAX_ENTRIES];
 static struct storage_fd fds[STORAGE_MAX_FDS];
 static int entry_count;
+static const struct block_device *storage_device;
 static int create(const char *path, char type, const char *content);
+
+static void disk_copy(unsigned char *out, const void *in, size_t length)
+{
+    const unsigned char *bytes = in;
+    for (size_t i = 0; i < length; i++) out[i] = bytes[i];
+}
+
+static int disk_load(void)
+{
+    unsigned char sector[BLOCK_SECTOR_SIZE];
+    uint32_t magic;
+    uint16_t version;
+    uint16_t count;
+    if (!storage_device || storage_device->read_sector(storage_device->context, 0, sector) != 0) return STORAGE_ERR_IO;
+    disk_copy((unsigned char *)&magic, sector, sizeof(magic));
+    disk_copy((unsigned char *)&version, sector + 4, sizeof(version));
+    disk_copy((unsigned char *)&count, sector + 6, sizeof(count));
+    if (magic != STORAGE_DISK_MAGIC || version != STORAGE_DISK_VERSION || count > STORAGE_MAX_ENTRIES ||
+        storage_device->sector_count < (uint64_t)count + 1) return STORAGE_ERR_NOENT;
+    entry_count = 0;
+    for (int i = 0; i < count; i++) {
+        struct storage_entry *entry = &entries[i];
+        uint64_t size;
+        if (storage_device->read_sector(storage_device->context, (uint64_t)i + 1, sector) != 0) return STORAGE_ERR_IO;
+        disk_copy((unsigned char *)entry->path, sector, sizeof(entry->path));
+        disk_copy((unsigned char *)entry->name, sector + 64, sizeof(entry->name));
+        entry->type = (char)sector[80];
+        disk_copy((unsigned char *)&size, sector + 88, sizeof(size));
+        if ((entry->type != 'f' && entry->type != 'd') || size >= STORAGE_CONTENT_LEN) return STORAGE_ERR_INVAL;
+        entry->size = (size_t)size;
+        disk_copy((unsigned char *)entry->content, sector + 96, sizeof(entry->content));
+        entry->content[entry->size] = 0;
+        entry_count++;
+    }
+    return STORAGE_OK;
+}
 
 static int equal(const char *a, const char *b) { while (*a && *b) if (*a++ != *b++) return 0; return *a == *b; }
 static void copy(char *out, const char *in, int max) { int i = 0; while (in && in[i] && i + 1 < max) { out[i] = in[i]; i++; } out[i] = 0; }
@@ -80,12 +120,55 @@ void storage_init(void)
 {
     if (entry_count) return;
     for (int i = 0; i < STORAGE_MAX_FDS; i++) fds[i].used = 0;
+    if (storage_device && disk_load() == STORAGE_OK) return;
     (void)create("/bin", 'd', 0);
     (void)create("/README", 'f', "ORT kernel shell\n");
+    (void)storage_sync();
 }
 
-int storage_create_entry(const char *path, char type, const char *content) { return create(path, type, content) == STORAGE_OK; }
-int storage_mkdir(const char *path) { return create(path, 'd', 0); }
+int storage_attach_block_device(const struct block_device *device)
+{
+    if (!device || !device->read_sector || !device->write_sector || device->sector_count == 0) return STORAGE_ERR_INVAL;
+    storage_device = device;
+    return STORAGE_OK;
+}
+
+int storage_sync(void)
+{
+    unsigned char sector[BLOCK_SECTOR_SIZE];
+    if (!storage_device) return STORAGE_ERR_NOENT;
+    for (size_t i = 0; i < BLOCK_SECTOR_SIZE; i++) sector[i] = 0;
+    disk_copy(sector, &(uint32_t){ STORAGE_DISK_MAGIC }, sizeof(uint32_t));
+    disk_copy(sector + 4, &(uint16_t){ STORAGE_DISK_VERSION }, sizeof(uint16_t));
+    disk_copy(sector + 6, &(uint16_t){ (uint16_t)entry_count }, sizeof(uint16_t));
+    if (storage_device->write_sector(storage_device->context, 0, sector) != 0) return STORAGE_ERR_IO;
+    for (int i = 0; i < entry_count; i++) {
+        const struct storage_entry *entry = &entries[i];
+        uint64_t size = entry->size;
+        for (size_t j = 0; j < BLOCK_SECTOR_SIZE; j++) sector[j] = 0;
+        disk_copy(sector, entry->path, sizeof(entry->path));
+        disk_copy(sector + 64, entry->name, sizeof(entry->name));
+        sector[80] = (unsigned char)entry->type;
+        disk_copy(sector + 88, &size, sizeof(size));
+        disk_copy(sector + 96, entry->content, sizeof(entry->content));
+        if (storage_device->write_sector(storage_device->context, (uint64_t)i + 1, sector) != 0) return STORAGE_ERR_IO;
+    }
+    return STORAGE_OK;
+}
+
+int storage_create_entry(const char *path, char type, const char *content)
+{
+    int result = create(path, type, content);
+    if (result == STORAGE_OK && storage_device && storage_sync() != STORAGE_OK) return 0;
+    return result == STORAGE_OK;
+}
+
+int storage_mkdir(const char *path)
+{
+    int result = create(path, 'd', 0);
+    if (result == STORAGE_OK && storage_device && storage_sync() != STORAGE_OK) return STORAGE_ERR_IO;
+    return result;
+}
 
 int storage_remove_entry(const char *path)
 {
@@ -100,6 +183,7 @@ int storage_remove_entry(const char *path)
     for (int i = index; i + 1 < entry_count; i++) entries[i] = entries[i + 1];
     entry_count--;
     for (int fd = 0; fd < STORAGE_MAX_FDS; fd++) if (fds[fd].used && fds[fd].entry > index) fds[fd].entry--;
+    if (storage_device && storage_sync() != STORAGE_OK) return 0;
     return 1;
 }
 
@@ -137,6 +221,7 @@ int storage_write(int fd, const void *buffer, size_t length)
     const char *in = buffer; struct storage_entry *entry = &entries[fds[fd].entry];
     for (size_t i = 0; i < length; i++) entry->content[fds[fd].offset + i] = in[i];
     fds[fd].offset += length; if (fds[fd].offset > entry->size) entry->size = fds[fd].offset; entry->content[entry->size] = 0;
+    if (storage_device && storage_sync() != STORAGE_OK) return STORAGE_ERR_IO;
     return (int)length;
 }
 int storage_seek(int fd, size_t offset) { if (fd < 0 || fd >= STORAGE_MAX_FDS || !fds[fd].used) return STORAGE_ERR_BADFD; if (offset >= STORAGE_CONTENT_LEN) return STORAGE_ERR_INVAL; fds[fd].offset = offset; return STORAGE_OK; }

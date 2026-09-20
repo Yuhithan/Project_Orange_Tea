@@ -1,6 +1,38 @@
 add_library(ortos_storage STATIC "${ORTOS_SOURCE_DIR}/fs/storage/storage.c")
 target_include_directories(ortos_storage PUBLIC "${ORTOS_INCLUDE_DIR}")
 
+add_executable(ora_format_test
+    ora_format_test.c
+    "${ORTOS_SOURCE_DIR}/kernel/exec/ora.c")
+target_include_directories(ora_format_test PRIVATE "${ORTOS_INCLUDE_DIR}")
+
+add_executable(ora_pack "${ORTOS_SOURCE_DIR}/../tools/ora_pack.c")
+target_include_directories(ora_pack PRIVATE "${ORTOS_INCLUDE_DIR}")
+
+if(ORTOS_ASSEMBLER)
+    set(ORA_EXAMPLE_TEXT "${CMAKE_CURRENT_BINARY_DIR}/hello.text.bin")
+    set(ORA_EXAMPLE_DATA "${CMAKE_CURRENT_BINARY_DIR}/hello.data.bin")
+    set(ORA_EXAMPLE "${CMAKE_CURRENT_BINARY_DIR}/hello.ora")
+    add_custom_command(
+        OUTPUT "${ORA_EXAMPLE_TEXT}"
+        COMMAND "${ORTOS_ASSEMBLER}" -f bin
+            "${ORTOS_SOURCE_DIR}/../examples/hello.text.asm"
+            -o "${ORA_EXAMPLE_TEXT}"
+        DEPENDS "${ORTOS_SOURCE_DIR}/../examples/hello.text.asm"
+        VERBATIM)
+    add_custom_command(
+        OUTPUT "${ORA_EXAMPLE_DATA}"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${ORA_EXAMPLE_DATA}"
+        VERBATIM)
+    add_custom_command(
+        OUTPUT "${ORA_EXAMPLE}"
+        COMMAND "$<TARGET_FILE:ora_pack>" "${ORA_EXAMPLE_TEXT}"
+            "${ORA_EXAMPLE_DATA}" "${ORA_EXAMPLE}"
+        DEPENDS ora_pack "${ORA_EXAMPLE_TEXT}" "${ORA_EXAMPLE_DATA}"
+        VERBATIM)
+    add_custom_target(ora_example ALL DEPENDS "${ORA_EXAMPLE}")
+endif()
+
 add_executable(storage_path_test storage_path_test.c)
 target_link_libraries(storage_path_test PRIVATE ortos_storage)
 
@@ -16,6 +48,7 @@ target_link_libraries(core_subsystem_test PRIVATE ortos_storage)
 
 if(BUILD_TESTING)
     add_test(NAME storage_path_test COMMAND storage_path_test)
+    add_test(NAME ora_format_test COMMAND ora_format_test)
     add_test(NAME terminal_input_buffer_test COMMAND terminal_input_buffer_test)
     add_test(NAME core_subsystem_test COMMAND core_subsystem_test)
 endif()

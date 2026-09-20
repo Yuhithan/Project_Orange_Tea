@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stddef.h>
+#include "block_device.h"
 
 #define STORAGE_MAX_PATH 64
 
@@ -13,10 +14,13 @@ enum {
     STORAGE_ERR_ISDIR = -5,
     STORAGE_ERR_NOSPC = -6,
     STORAGE_ERR_BADFD = -7,
-    STORAGE_ERR_NOTEMPTY = -8
+    STORAGE_ERR_NOTEMPTY = -8,
+    STORAGE_ERR_IO = -9
 };
 
 void storage_init(void);
+int storage_attach_block_device(const struct block_device *device);
+int storage_sync(void);
 int storage_create_entry(const char* path, char type, const char* content);
 int storage_find_entry(const char* path);
 int storage_remove_entry(const char* path);

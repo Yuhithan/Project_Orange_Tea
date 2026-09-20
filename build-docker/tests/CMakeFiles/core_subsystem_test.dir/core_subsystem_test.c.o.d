@@ -21,4 +21,4 @@ tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
  /root/env/include/process.h /root/env/include/storage.h \
- /root/env/include/syscall.h
+ /root/env/include/block_device.h /root/env/include/syscall.h

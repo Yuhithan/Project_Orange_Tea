@@ -531,6 +531,45 @@ ortos_storage/fast:
 .PHONY : ortos_storage/fast
 
 #=============================================================================
+# Target rules for targets named ora_format_test
+
+# Build rule for target.
+ora_format_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ora_format_test
+.PHONY : ora_format_test
+
+# fast build rule for target.
+ora_format_test/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_format_test.dir/build.make tests/CMakeFiles/ora_format_test.dir/build
+.PHONY : ora_format_test/fast
+
+#=============================================================================
+# Target rules for targets named ora_pack
+
+# Build rule for target.
+ora_pack: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ora_pack
+.PHONY : ora_pack
+
+# fast build rule for target.
+ora_pack/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_pack.dir/build.make tests/CMakeFiles/ora_pack.dir/build
+.PHONY : ora_pack/fast
+
+#=============================================================================
+# Target rules for targets named ora_example
+
+# Build rule for target.
+ora_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ora_example
+.PHONY : ora_example
+
+# fast build rule for target.
+ora_example/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_example.dir/build.make tests/CMakeFiles/ora_example.dir/build
+.PHONY : ora_example/fast
+
+#=============================================================================
 # Target rules for targets named storage_path_test
 
 # Build rule for target.
@@ -606,9 +645,12 @@ help:
 	@echo "... NightlySubmit"
 	@echo "... NightlyTest"
 	@echo "... NightlyUpdate"
+	@echo "... ora_example"
 	@echo "... orangetea_iso"
 	@echo "... ortos_kernel"
 	@echo "... core_subsystem_test"
+	@echo "... ora_format_test"
+	@echo "... ora_pack"
 	@echo "... ortos_storage"
 	@echo "... storage_path_test"
 	@echo "... terminal_input_buffer_test"

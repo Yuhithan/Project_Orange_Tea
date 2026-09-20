@@ -43,6 +43,7 @@ set(OLD_GLOB
   "/root/env/src/drivers/ethernet/network.c"
   "/root/env/src/drivers/keyboard/keyboard.c"
   "/root/env/src/drivers/mouse/cursor.c"
+  "/root/env/src/drivers/storage/ata.c"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")
@@ -64,6 +65,7 @@ file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/root/env/src/kernel/*.c")
 set(OLD_GLOB
   "/root/env/src/kernel/core/boot_mode.c"
   "/root/env/src/kernel/core/print.c"
+  "/root/env/src/kernel/exec/ora.c"
   "/root/env/src/kernel/main.c"
   "/root/env/src/kernel/memory/memory.c"
   "/root/env/src/kernel/process/process.c"

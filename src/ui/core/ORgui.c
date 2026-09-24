@@ -147,6 +147,12 @@ void ORgui_handle_event(const OREvent *event)
         active_window->on_event(active_window, event);
 }
 
+int ORgui_event_requires_redraw(const OREvent *event)
+{
+    if (event == 0) return 0;
+    return event->type != OR_EVENT_MOUSE_MOVE || drag_window != 0;
+}
+
 void ORgui_draw(void)
 {
     for (int i = 0; i < window_count; i++) draw_window(&windows[z_order[i]]);

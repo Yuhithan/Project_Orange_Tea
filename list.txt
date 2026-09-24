@@ -12,17 +12,18 @@ Done:
 - Core: File system (partial)
 - User Interface: Graphical desktop
 - User Interface: Windows
-- User Interface: Taskbar/panel
+
 - User Interface: keyboard
 - User Interface: Mouse
+- User Interface: Login/lock screen
+- User Interface: Terminal
 
 Not done:
+- User Interface: Taskbar/panel(partial)
 - User Interface: File manager
 - User Interface: Settings
-- User Interface: Notifications
-- User Interface: Login/lock screen
+- User Interface: Notifications (notify name message)
 - User Interface: Clipboard
-- User Interface: Terminal
 - Networking: Ethernet (partial)
 - Networking: Wi-Fi
 - Networking: TCP/IP

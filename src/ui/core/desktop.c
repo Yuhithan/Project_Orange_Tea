@@ -60,6 +60,7 @@ void desktop_run(void)
         int key;
         OREvent event;
         int redraw = 0;
+        int cursor_update = 0;
         if (!mouse_irq_reported && mouse_irq_count() != 0) {
             imp_text("PS/2 mouse IRQ12 count: ");
             imp_uint64_dec(mouse_irq_count());
@@ -68,7 +69,8 @@ void desktop_run(void)
         }
         while (mouse_try_get_event(&event)) {
             ORgui_handle_event(&event);
-            redraw = 1;
+            if (ORgui_event_requires_redraw(&event)) redraw = 1;
+            else cursor_update = 1;
         }
         while (keyboard_try_getchar(&key)) {
             if (key == 27 || key == 'q' || key == 'Q') {
@@ -81,6 +83,9 @@ void desktop_run(void)
         }
         if (redraw) {
             desktop_draw();
+        } else if (cursor_update) {
+            mouse_draw_cursor();
+            fb_flush();
         } else {
             timer_sleep(DESKTOP_FRAME_TIME_MS);
         }

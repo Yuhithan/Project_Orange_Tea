@@ -56,6 +56,7 @@ ORWindow *ORgui_active_window(void);
 int ORgui_window_count(void);
 ORWindow *ORgui_window_at(int index);
 void ORgui_handle_event(const OREvent *event);
+int ORgui_event_requires_redraw(const OREvent *event);
 void ORgui_draw(void);
 void ORgui_draw_panel(int x, int y, int width, int height, uint32_t color);
 void ORgui_draw_button(int x, int y, int width, int height, const char *label, int pressed);

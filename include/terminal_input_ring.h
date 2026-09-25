@@ -12,7 +12,7 @@
  * of the interrupt flag around the push/pop operations.
  */
 typedef struct terminal_input_ring {
-    char *buffer;
+    int *buffer;
     size_t capacity;
     size_t head;
     size_t tail;
@@ -20,7 +20,7 @@ typedef struct terminal_input_ring {
 } terminal_input_ring_t;
 
 static inline void terminal_input_ring_init(terminal_input_ring_t *ring,
-                                           char *buffer,
+                                           int *buffer,
                                            size_t capacity)
 {
     if (ring == NULL) {
@@ -47,7 +47,7 @@ static inline size_t terminal_input_ring_size(const terminal_input_ring_t *ring)
     return ring->count;
 }
 
-static inline int terminal_input_ring_push(terminal_input_ring_t *ring, char value)
+static inline int terminal_input_ring_push(terminal_input_ring_t *ring, int value)
 {
     if (ring == NULL || ring->buffer == NULL) {
         return 0;
@@ -66,7 +66,7 @@ static inline int terminal_input_ring_push(terminal_input_ring_t *ring, char val
     return 1;
 }
 
-static inline int terminal_input_ring_pop(terminal_input_ring_t *ring, char *out)
+static inline int terminal_input_ring_pop(terminal_input_ring_t *ring, int *out)
 {
     if (ring == NULL || ring->buffer == NULL || ring->count == 0) {
         return 0;
@@ -83,7 +83,7 @@ static inline int terminal_input_ring_pop(terminal_input_ring_t *ring, char *out
 
 static inline int terminal_input_ring_pop_value(terminal_input_ring_t *ring)
 {
-    char value = 0;
+    int value = 0;
     if (!terminal_input_ring_pop(ring, &value)) {
         return -1;
     }

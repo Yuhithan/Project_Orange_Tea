@@ -68,8 +68,9 @@ void ORgui_destroy_window(ORWindow *window)
 void ORgui_set_active(ORWindow *window)
 {
     if (window == 0 || !window->visible) return;
-    for (int i = 0; i < window_count; i++) windows[i].active = 0;
     int index = (int)(window - windows);
+    if (index < 0 || index >= window_count || &windows[index] != window) return;
+    for (int i = 0; i < window_count; i++) windows[i].active = 0;
     int position = 0;
     while (position < window_count && z_order[position] != index) position++;
     if (position < window_count) {

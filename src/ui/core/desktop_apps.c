@@ -4,6 +4,7 @@
 #include "process.h"
 #include "storage.h"
 #include "timer.h"
+#include "terminal.h"
 
 #define TASK_LABEL_SIZE 24
 #define TASK_COMMAND_SIZE 32
@@ -180,6 +181,8 @@ static ORWindow *launch_task(const DesktopTask *task)
     } else if (text_equal(task->command, "browser")) {
         window = ORgui_create_window(width / 2 - 330, height / 2 - 220, 660, 440, "browser");
         if (window) browser_window_open(window);
+    } else if (text_equal(task->command, "terminal")) {
+        window = terminal_open();
     } else {
         window = ORgui_create_window(width / 2 - 220, height / 2 - 110, 440, 220, task->label);
         if (window) window->on_draw = generic_draw;

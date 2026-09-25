@@ -47,7 +47,8 @@ static void terminal_put_char(char character)
     if (character == '\n') { terminal_new_line(); return; }
     if (terminal_line_count == 0) terminal_new_line();
     int length = 0;
-    while (terminal_lines[terminal_line_count - 1][length] != '\0') length++;
+        while (length < TERMINAL_LINE_SIZE - 1 &&
+            terminal_lines[terminal_line_count - 1][length] != '\0') length++;
     if (character == '\b')
     {
         if (length > 0) terminal_lines[terminal_line_count - 1][length - 1] = '\0';
@@ -106,8 +107,8 @@ static void terminal_draw(ORWindow *window)
     {
         char visible[TERMINAL_LINE_SIZE];
         int column = 0;
-        while (terminal_lines[line][column] != '\0' && column < columns &&
-               column < TERMINAL_LINE_SIZE - 1)
+         while (column < columns && column < TERMINAL_LINE_SIZE - 1 &&
+             terminal_lines[line][column] != '\0')
         {
             visible[column] = terminal_lines[line][column];
             column++;
@@ -163,13 +164,19 @@ static void terminal_event(ORWindow *window, const OREvent *event)
 }
 void terminal_init(void)
 {
+    terminal_open();
+    imp_set_backend(&terminal_backend);
+    shell_init();
+}
+
+ORWindow *terminal_open(void)
+{
     terminal_window = ORgui_create_window(40, 48, 640, 400, "ORTOS TERMINAL");
-    if (terminal_window == 0) return;
+    if (terminal_window == 0) return 0;
     terminal_window->on_draw = terminal_draw;
     terminal_window->on_event = terminal_event;
     terminal_input_length = 0;
     terminal_input[0] = '\0';
     terminal_clear();
-    imp_set_backend(&terminal_backend);
-    shell_init();
+    return terminal_window;
 }

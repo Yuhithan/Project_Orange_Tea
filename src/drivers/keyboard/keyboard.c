@@ -8,7 +8,7 @@
 #define KBD_STATUS_PORT 0x64
 #define KBD_RING_SIZE 128
 
-static char kb_buf[KBD_RING_SIZE];
+static int kb_buf[KBD_RING_SIZE];
 static terminal_input_ring_t keyboard_ring;
 static volatile int kb_enabled = 0;
 static volatile int extended_scancode = 0;
@@ -17,7 +17,7 @@ static void keyboard_ring_init(void)
 {
     static int initialized = 0;
     if (!initialized) {
-        terminal_input_ring_init(&keyboard_ring, kb_buf, sizeof(kb_buf));
+		terminal_input_ring_init(&keyboard_ring, kb_buf, KBD_RING_SIZE);
         initialized = 1;
     }
 }
@@ -29,6 +29,7 @@ static const char base_map[128] = {
 	[0x0C] = '-', [0x0D] = '=',
 	[0x10] = 'q', [0x11] = 'w', [0x12] = 'e', [0x13] = 'r', [0x14] = 't',
 	[0x15] = 'y', [0x16] = 'u', [0x17] = 'i', [0x18] = 'o', [0x19] = 'p',
+	[0x0F] = '\t',
 	[0x1A] = '[', [0x1B] = ']', [0x1C] = '\n',
 	[0x1E] = 'a', [0x1F] = 's', [0x20] = 'd', [0x21] = 'f', [0x22] = 'g',
 	[0x23] = 'h', [0x24] = 'j', [0x25] = 'k', [0x26] = 'l', [0x27] = ';', [0x28] = '\'', [0x29] = '`',
@@ -45,6 +46,7 @@ static const char shift_map[128] = {
 	[0x0C] = '_', [0x0D] = '+',
 	[0x10] = 'Q', [0x11] = 'W', [0x12] = 'E', [0x13] = 'R', [0x14] = 'T',
 	[0x15] = 'Y', [0x16] = 'U', [0x17] = 'I', [0x18] = 'O', [0x19] = 'P',
+	[0x0F] = '\t',
 	[0x1A] = '{', [0x1B] = '}', [0x1C] = '\n',
 	[0x1E] = 'A', [0x1F] = 'S', [0x20] = 'D', [0x21] = 'F', [0x22] = 'G',
 	[0x23] = 'H', [0x24] = 'J', [0x25] = 'K', [0x26] = 'L', [0x27] = ':', [0x28] = '"', [0x29] = '~',
@@ -55,6 +57,8 @@ static const char shift_map[128] = {
 };
 
 static volatile int shift_state = 0;
+static volatile int ctrl_state = 0;
+static volatile int alt_state = 0;
 static volatile int caps_lock = 0;
 static const char* active_layout = "en-us";
 
@@ -65,6 +69,7 @@ static const char fr_base_map[128] = {
 	[0x0C] = '-', [0x0D] = '=',
 	[0x10] = 'a', [0x11] = 'z', [0x12] = 'e', [0x13] = 'r', [0x14] = 't',
 	[0x15] = 'y', [0x16] = 'u', [0x17] = 'i', [0x18] = 'o', [0x19] = 'p',
+	[0x0F] = '\t',
 	[0x1A] = '^', [0x1B] = '$', [0x1C] = '\n',
 	[0x1E] = 'q', [0x1F] = 's', [0x20] = 'd', [0x21] = 'f', [0x22] = 'g',
 	[0x23] = 'h', [0x24] = 'j', [0x25] = 'k', [0x26] = 'l', [0x27] = 'm', [0x28] = '*', [0x29] = '`',
@@ -81,6 +86,7 @@ static const char fr_shift_map[128] = {
 	[0x0C] = '_', [0x0D] = '+',
 	[0x10] = 'A', [0x11] = 'Z', [0x12] = 'E', [0x13] = 'R', [0x14] = 'T',
 	[0x15] = 'Y', [0x16] = 'U', [0x17] = 'I', [0x18] = 'O', [0x19] = 'P',
+	[0x0F] = '\t',
 	[0x1A] = 0x22, [0x1B] = 0x7C, [0x1C] = '\n',
 	[0x1E] = 'Q', [0x1F] = 'S', [0x20] = 'D', [0x21] = 'F', [0x22] = 'G',
 	[0x23] = 'H', [0x24] = 'J', [0x25] = 'K', [0x26] = 'L', [0x27] = 'M', [0x28] = 0x7E, [0x29] = 0x7E,
@@ -122,7 +128,7 @@ static inline char scancode_to_ascii(uint8_t sc) {
 	return c;
 }
 
-static void kb_push(char c) {
+static void kb_push(int c) {
     keyboard_ring_init();
     /*
      * Keep the interrupt path tiny: simply enqueue the scancode-derived byte if
@@ -160,8 +166,13 @@ static void keyboard_poll(void) {
 	if (extended_scancode) {
 		extended_scancode = 0;
 		if (!released) {
-			if (code == 0x48) kb_push(KEY_SCROLL_UP);
-			else if (code == 0x50) kb_push(KEY_SCROLL_DOWN);
+			if (code == 0x48) kb_push(KEY_ARROW_UP);
+			else if (code == 0x50) kb_push(KEY_ARROW_DOWN);
+			else if (code == 0x4B) kb_push(KEY_ARROW_LEFT);
+			else if (code == 0x4D) kb_push(KEY_ARROW_RIGHT);
+			else if (code == 0x47) kb_push(KEY_HOME);
+			else if (code == 0x4F) kb_push(KEY_END);
+			else if (code == 0x53) kb_push(KEY_DELETE);
 			else if (code == 0x49) kb_push(KEY_PAGE_UP);
 			else if (code == 0x51) kb_push(KEY_PAGE_DOWN);
 		}
@@ -172,13 +183,36 @@ static void keyboard_poll(void) {
         shift_state = released ? 0 : 1;
         return;
     }
+	if (code == 0x1D) {
+		ctrl_state = released ? 0 : 1;
+		return;
+	}
+	if (code == 0x38) {
+		alt_state = released ? 0 : 1;
+		return;
+	}
     if (code == 0x3A && !released) {
         caps_lock = !caps_lock;
         return;
     }
+	if (!released && code >= 0x3B && code <= 0x44) {
+		kb_push(KEY_F1 + code - 0x3B);
+		return;
+	}
+	if (!released && code == 0x57) {
+		kb_push(KEY_F11);
+		return;
+	}
+	if (!released && code == 0x58) {
+		kb_push(KEY_F12);
+		return;
+	}
     if (!released) {
         char c = scancode_to_ascii(code);
-        if (c) kb_push(c);
+		if (c) {
+			if (ctrl_state && c >= 'a' && c <= 'z') c = (char)(c - 'a' + 1);
+			kb_push(c);
+		}
     }
 }
 
@@ -217,11 +251,11 @@ int keyboard_try_getchar(int *out) {
     __asm__ volatile ("pushfq; popq %0; cli" : "=r"(flags) : : "memory");
     available = !terminal_input_ring_empty(&keyboard_ring);
     if (available) {
-        char value = 0;
+		int value = 0;
         if (!terminal_input_ring_pop(&keyboard_ring, &value)) {
             available = 0;
         } else if (out != NULL) {
-            *out = (unsigned char)value;
+			*out = value;
         }
     }
     __asm__ volatile ("pushq %0; popfq" : : "r"(flags) : "memory");

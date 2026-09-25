@@ -673,7 +673,7 @@ static void browser_render_document(BrowserWindowState *state, ORWindow *window)
                 ORgui_draw_text(page_left, line_y, child->text, OR_COLOR_FIRE_RED);
                 line_y += 16;
             }
-            if (child->href[0] != '\0')
+            if (child->href[0] != '\0' && state->link_count < BROWSER_MAX_LINKS)
             {
                 browser_copy(state->links[state->link_count].href, child->href, sizeof(state->links[state->link_count].href));
                 state->links[state->link_count].y = line_y - 16;
@@ -681,7 +681,7 @@ static void browser_render_document(BrowserWindowState *state, ORWindow *window)
                 state->link_count++;
             }
         }
-        else if (browser_equals(child->tag, "a") && child->href[0] != '\0')
+        else if (browser_equals(child->tag, "a") && child->href[0] != '\0' && state->link_count < BROWSER_MAX_LINKS)
         {
             ORgui_draw_text(page_left, line_y, child->text, OR_COLOR_FIRE_RED);
             browser_copy(state->links[state->link_count].href, child->href, sizeof(state->links[state->link_count].href));

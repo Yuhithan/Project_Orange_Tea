@@ -5,9 +5,9 @@
 
 int main(void)
 {
-    char storage[8];
+    int storage[8];
     terminal_input_ring_t ring;
-    terminal_input_ring_init(&ring, storage, sizeof(storage));
+    terminal_input_ring_init(&ring, storage, sizeof(storage) / sizeof(storage[0]));
 
     assert(terminal_input_ring_empty(&ring));
     assert(terminal_input_ring_size(&ring) == 0);
@@ -22,7 +22,7 @@ int main(void)
 
     for (int i = 0; i < 7; ++i)
     {
-        char value = 0;
+        int value = 0;
         assert(terminal_input_ring_pop(&ring, &value));
         assert(value == (char)('a' + i));
     }
@@ -39,13 +39,13 @@ int main(void)
 
     for (int i = 0; i < 8; ++i)
     {
-        char value = 0;
+        int value = 0;
         assert(terminal_input_ring_pop(&ring, &value));
         assert(value == (char)('A' + i));
     }
 
     assert(terminal_input_ring_empty(&ring));
-    assert(terminal_input_ring_pop(&ring, &(char){0}) == 0);
+    assert(terminal_input_ring_pop(&ring, &(int){0}) == 0);
 
     return 0;
 }

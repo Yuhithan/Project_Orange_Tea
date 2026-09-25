@@ -137,6 +137,14 @@ static void shell_print_int(int value)
     }
 }
 
+static void shell_print_uint64(uint64_t value)
+{
+    char digits[24];
+    int count = 0;
+    do { digits[count++] = (char)('0' + value % 10); value /= 10; } while (value && count < 24);
+    while (count > 0) imp_char(digits[--count]);
+}
+
 static void shell_tick_clock(void)
 {
     shell_clock_second++;
@@ -298,6 +306,17 @@ static void shell_print_help(void)
     imp_text("  rm          - supprime un fichier\n");
     imp_text("  cp          - copie un fichier\n");
     imp_text("  mv          - déplace ou renomme un fichier\n");
+    imp_text("  write       - écrit un fichier\n");
+    imp_text("  append      - ajoute à un fichier\n");
+    imp_text("  rmdir       - supprime un dossier vide\n");
+    imp_text("  disks       - liste les périphériques détectés\n");
+    imp_text("  diskinfo    - affiche les informations du disque\n");
+    imp_text("  df          - affiche l'espace du volume\n");
+    imp_text("  mount       - monte le volume détecté\n");
+    imp_text("  umount      - démonte le volume\n");
+    imp_text("  format      - formate le volume avec confirmation\n");
+    imp_text("  fsck        - vérifie l'intégrité du volume\n");
+    imp_text("  sync        - synchronise les écritures\n");
     imp_text("  tasks       - liste les tâches\n");
     imp_text("  kill        - termine une tâche\n");
     imp_text("  ps          - liste les processus\n");
@@ -577,6 +596,47 @@ static void shell_execute_command(void)
             imp_char('\n');
         }
     }
+    else if (shell_streq(cmd, "disks") || shell_streq(cmd, "diskinfo"))
+    {
+        struct storage_device_info info;
+        if (storage_get_device_info(&info) != STORAGE_OK) imp_text("No storage device detected\n");
+        else
+        {
+            imp_text("Device: "); imp_text(info.name); imp_text(" Type: "); imp_text(info.type);
+            imp_text(" Sectors: "); shell_print_uint64(info.sectors); imp_text(" Sector size: "); shell_print_uint64(info.sector_size);
+            imp_text(" Status: "); imp_text(info.mounted ? "mounted\n" : "unmounted\n");
+        }
+    }
+    else if (shell_streq(cmd, "df"))
+    {
+        struct storage_stats stats;
+        if (storage_get_stats(&stats) != STORAGE_OK) imp_text("df: no mounted filesystem\n");
+        else { imp_text("Filesystem  Total  Used  Free  Block\n"); imp_text("storage     "); shell_print_uint64(stats.total_sectors); imp_char(' '); shell_print_uint64(stats.used_sectors); imp_char(' '); shell_print_uint64(stats.free_sectors); imp_char(' '); shell_print_uint64(stats.sector_size); imp_char('\n'); }
+    }
+    else if (shell_streq(cmd, "mount"))
+    {
+        if (storage_mount() == STORAGE_OK) imp_text("Filesystem mounted\n"); else imp_text("mount: no valid filesystem\n");
+    }
+    else if (shell_streq(cmd, "umount"))
+    {
+        if (storage_unmount() == STORAGE_OK) imp_text("Filesystem unmounted\n"); else imp_text("umount: flush failed\n");
+    }
+    else if (shell_streq(cmd, "sync"))
+    {
+        if (storage_sync() == STORAGE_OK) imp_text("Storage synchronized\n"); else imp_text("sync: storage I/O error\n");
+    }
+    else if (shell_starts_with(cmd, "format"))
+    {
+        const char *argument = shell_skip_spaces(cmd + 6);
+        if (!shell_streq(argument, "yes")) imp_text("format: confirmation required, use 'format yes'\n");
+        else if (storage_format() == STORAGE_OK) imp_text("Filesystem formatted and mounted\n");
+        else imp_text("format: device unavailable or too small\n");
+    }
+    else if (shell_starts_with(cmd, "fsck"))
+    {
+        int errors = 0; int result = storage_fsck(shell_streq(shell_skip_spaces(cmd + 4), "repair"), &errors);
+        if (result == STORAGE_OK) imp_text("fsck: clean\n"); else { imp_text("fsck: errors detected: "); shell_print_int(errors); imp_char('\n'); }
+    }
     else if (shell_starts_with(cmd, "cd"))
     {
         const char* argument = shell_skip_spaces(cmd + 2);
@@ -639,8 +699,8 @@ static void shell_execute_command(void)
             }
             else
             {
-                storage_create_entry(resolved, 'f', "");
-                imp_text("File created\n");
+                if (storage_create_entry(resolved, 'f', "")) imp_text("File created\n");
+                else imp_text("touch: create failed\n");
             }
         }
         else
@@ -661,8 +721,8 @@ static void shell_execute_command(void)
             }
             else
             {
-                storage_create_entry(resolved, 'd', "");
-                imp_text("Directory created\n");
+                if (storage_create_entry(resolved, 'd', "")) imp_text("Directory created\n");
+                else imp_text("mkdir: create failed\n");
             }
         }
         else
@@ -765,6 +825,28 @@ static void shell_execute_command(void)
                 imp_text("No such entry\n");
             }
         }
+    }
+    else if (shell_starts_with(cmd, "write") || shell_starts_with(cmd, "append"))
+    {
+        int append = cmd[0] == 'a';
+        const char *cursor = shell_skip_spaces(cmd + (append ? 6 : 5));
+        char path[MAX_CMD]; char data[MAX_CMD];
+        cursor = shell_read_token(cursor, path, sizeof(path));
+        cursor = shell_skip_spaces(cursor);
+        shell_copy_string(data, cursor, sizeof(data));
+        int length = shell_strlen(data);
+        if (length >= 2 && data[0] == '"' && data[length - 1] == '"') { data[length - 1] = '\0'; cursor = data + 1; }
+        else cursor = data;
+        char resolved[MAX_CMD]; shell_resolve_path(path, resolved, sizeof(resolved));
+        int result = path[0] && cursor[0] ? storage_write_file(resolved, cursor, shell_strlen(cursor), append) : STORAGE_ERR_INVAL;
+        if (result < 0) imp_text("write: operation failed\n"); else imp_text("File written\n");
+    }
+    else if (shell_starts_with(cmd, "rmdir"))
+    {
+        const char *argument = shell_skip_spaces(cmd + 5); char resolved[MAX_CMD];
+        shell_resolve_path(argument, resolved, sizeof(resolved));
+        if (argument[0] == '\0' || storage_remove_entry(resolved) == 0) imp_text("rmdir: directory is missing or not empty\n");
+        else imp_text("Directory removed\n");
     }
     else if (shell_streq(cmd, "tasks"))
     {

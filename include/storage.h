@@ -1,9 +1,12 @@
 #pragma once
 
 #include <stddef.h>
+#include <stdint.h>
 #include "block_device.h"
 
 #define STORAGE_MAX_PATH 64
+#define STORAGE_MAX_ENTRIES 64
+#define STORAGE_MAX_FILE_BLOCKS 8
 
 enum {
     STORAGE_OK = 0,
@@ -15,11 +18,40 @@ enum {
     STORAGE_ERR_NOSPC = -6,
     STORAGE_ERR_BADFD = -7,
     STORAGE_ERR_NOTEMPTY = -8,
-    STORAGE_ERR_IO = -9
+    STORAGE_ERR_IO = -9,
+    STORAGE_ERR_NOTMOUNTED = -10,
+    STORAGE_ERR_CORRUPT = -11
+};
+
+struct storage_device_info {
+    const char *name;
+    const char *type;
+    uint64_t sectors;
+    uint32_t sector_size;
+    int present;
+    int mounted;
+};
+
+struct storage_stats {
+    uint64_t total_sectors;
+    uint64_t used_sectors;
+    uint64_t free_sectors;
+    uint32_t sector_size;
+    uint32_t file_count;
+    uint32_t directory_count;
 };
 
 void storage_init(void);
 int storage_attach_block_device(const struct block_device *device);
+int storage_read_blocks(const struct block_device *device, uint64_t block, void *buffer, size_t count);
+int storage_write_blocks(const struct block_device *device, uint64_t block, const void *buffer, size_t count);
+int storage_mount(void);
+int storage_unmount(void);
+int storage_format(void);
+int storage_is_mounted(void);
+int storage_get_device_info(struct storage_device_info *info);
+int storage_get_stats(struct storage_stats *stats);
+int storage_fsck(int repair, int *errors);
 int storage_sync(void);
 int storage_create_entry(const char* path, char type, const char* content);
 int storage_find_entry(const char* path);
@@ -37,3 +69,7 @@ int storage_read(int fd, void* buffer, size_t length);
 int storage_write(int fd, const void* buffer, size_t length);
 int storage_seek(int fd, size_t offset);
 int storage_mkdir(const char* path);
+int storage_write_file(const char *path, const void *buffer, size_t length, int append);
+int storage_read_file(const char *path, void *buffer, size_t capacity, size_t *length);
+int storage_rename(const char *source, const char *destination);
+int storage_copy(const char *source, const char *destination);

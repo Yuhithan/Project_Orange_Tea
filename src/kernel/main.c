@@ -61,8 +61,10 @@ void kmain(uint64_t multiboot_magic,
     memory_init();
     process_init();
 
-    if (ata_primary_master_init() == 0)
-        storage_attach_block_device(ata_primary_master_device());
+    if (ata_primary_master_init() == 0 && storage_attach_block_device(ata_primary_master_device()) == STORAGE_OK)
+        imp_text("Storage: ATA disk0 detected\n");
+    else
+        imp_text("Storage: no supported disk detected\n");
     storage_init();
 
 

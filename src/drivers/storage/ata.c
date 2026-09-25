@@ -88,6 +88,8 @@ int ata_primary_master_init(void)
     for (unsigned int i = 0; i < 256; i++) identify_data[i] = io_inw(ATA_DATA);
     primary_master.context = 0;
     primary_master.sector_count = ((uint64_t)identify_data[61] << 16) | identify_data[60];
+    primary_master.name = "disk0";
+    primary_master.type = "ATA/IDE";
     primary_master.read_sector = ata_read_sector;
     primary_master.write_sector = ata_write_sector;
     ata_ready = primary_master.sector_count != 0;

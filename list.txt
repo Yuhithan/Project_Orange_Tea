@@ -57,6 +57,27 @@
 * System logs — Not done
 * Crash reporting — Not done
 
+## Storage
+
+* Disk/drive detection — Not done
+* Disk partitioning — Not done
+* Storage device driver — Partial
+* Disk I/O — Partial
+* File system — Partial
+* File creation/deletion — Done
+* File read/write — Done
+* Directory/folder management — Done
+* File manager storage access — Done
+* Disk formatting — Not done
+* Mount/unmount — Not done
+* Multiple drives — Not done
+* Storage information/free space — Not done
+* File system integrity checking — Not done
+* Disk caching — Not done
+* Storage error handling — Not done
+* Disk encryption — Not done
+* Backup/restore — Not done
+
 ## Advanced
 
 * USB support — Not done

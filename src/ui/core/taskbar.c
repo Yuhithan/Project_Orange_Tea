@@ -3,6 +3,7 @@
 #include "framebuffer.h"
 #include "ORgui.h"
 #include "timer.h"
+#include "desktop_apps.h"
 
 static void draw_number(int x, int y, uint64_t value)
 {
@@ -61,32 +62,18 @@ void taskbar_draw(void)
         0
     );
 
-    /*
-     * NOTEPAD ONLY
-     */
-
-    fb_fill_rect(
-        74,
-        height - 23,
-        100,
-        18,
-        OR_COLOR_WINDOW
-    );
-
-    fb_draw_rect(
-        74,
-        height - 23,
-        100,
-        18,
-        OR_COLOR_BORDER
-    );
-
-    fb_draw_string(
-        82,
-        height - 17,
-        "Notepad",
-        OR_COLOR_TEXT
-    );
+    int x = desktop_apps_draw_taskbar(74, height - 23, width);
+    for (int index = 0; index < ORGUI_MAX_WINDOWS; index++) {
+        ORWindow *window = ORgui_window_at(index);
+        if (!window || !window->visible) continue;
+        fb_fill_rect(x, height - 23, 110, 18,
+                     window->active ? OR_COLOR_TITLEBAR : OR_COLOR_WINDOW);
+        fb_draw_rect(x, height - 23, 110, 18, OR_COLOR_BORDER);
+        fb_draw_string(x + 8, height - 17, window->title,
+                       window->active ? OR_COLOR_TEXT : OR_COLOR_FIRE_RED);
+        x += 114;
+        if (x > width - 120) break;
+    }
 
     /* Ticks */
     fb_draw_string(

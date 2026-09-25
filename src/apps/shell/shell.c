@@ -5,6 +5,7 @@
 #include "network.h"
 #include "boot_mode.h"
 #include "desktop.h"
+#include "desktop_apps.h"
 
 #define MAX_CMD 128
 #define MAX_HISTORY 16
@@ -314,6 +315,7 @@ static void shell_print_help(void)
     imp_text("  ping        - test réseau (ping <host> [eth|wifi])\n");
     imp_text("  wifi        - wifi connect/disconnect/status\n");
     imp_text("  gui         - ouvre l'environnement graphique ORgui\n");
+    imp_text("  notify      - affiche une notification graphique\n");
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
     imp_text("  opsec       - Special command");
 }
@@ -1116,6 +1118,34 @@ static void shell_execute_command(void)
         else
         {
             imp_char('\n');
+        }
+    }
+    else if (shell_starts_with(cmd, "notify"))
+    {
+        const char *cursor = shell_skip_spaces(cmd + 6);
+        char name[MAX_CMD];
+        char message[MAX_CMD];
+        int quoted = *cursor == '"';
+        if (quoted) cursor++;
+        int name_length = 0;
+        while (*cursor && ((quoted && *cursor != '"') || (!quoted && !shell_is_space(*cursor))) && name_length < MAX_CMD - 1)
+            name[name_length++] = *cursor++;
+        name[name_length] = '\0';
+        if (quoted && *cursor == '"') cursor++;
+        cursor = shell_skip_spaces(cursor);
+        quoted = *cursor == '"';
+        if (quoted) cursor++;
+        int message_length = 0;
+        while (*cursor && ((quoted && *cursor != '"') || (!quoted && !shell_is_space(*cursor))) && message_length < MAX_CMD - 1)
+            message[message_length++] = *cursor++;
+        message[message_length] = '\0';
+        if (quoted && *cursor == '"') cursor++;
+        cursor = shell_skip_spaces(cursor);
+        if (name[0] == '\0' || message[0] == '\0' || *cursor != '\0')
+            imp_text("Usage: notify \"name\" \"message\"\n");
+        else {
+            desktop_notify(name, message);
+            imp_text("Notification sent\n");
         }
     }
     else if (shell_streq(cmd, "desktop") || shell_streq(cmd, "gui"))

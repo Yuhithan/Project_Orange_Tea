@@ -5,6 +5,7 @@
 #include "keyboard.h"
 #include "cursor.h"
 #include "taskbar.h"
+#include "desktop_apps.h"
 #include "imp.h"
 #include "timer.h"
 
@@ -22,6 +23,7 @@ void desktop_init(uint64_t multiboot_info_addr)
     mouse_init();
     mouse_irq_reported = 0;
     terminal_init();
+    desktop_apps_init();
     ORWindow *window = ORgui_active_window();
     if (window) {
         window->x = (fb_width() - window->width) / 2;
@@ -37,8 +39,9 @@ void desktop_draw(void)
     fb_clear(OR_COLOR_BACKGROUND);
     fb_fill_rect(0, 0, fb_width(), 34, OR_COLOR_PANEL);
     fb_draw_line(0, 33, fb_width() - 1, 33, OR_COLOR_FIRE_RED);
-    ORgui_draw_text(14, 14, "ORTOS DESKTOP - ALPHA-3.2.0", OR_COLOR_FIRE_YELLOW);
+    ORgui_draw_text(14, 14, "ORTOS DESKTOP - ALPHA-3.2.1", OR_COLOR_FIRE_YELLOW);
     ORgui_draw_text(190, 14, "WILDFIRE", OR_COLOR_FIRE_ORANGE);
+    desktop_apps_draw();
     ORgui_draw();
     taskbar_draw();
     cursor_begin_frame();
@@ -68,7 +71,7 @@ void desktop_run(void)
             mouse_irq_reported = 1;
         }
         while (mouse_try_get_event(&event)) {
-            ORgui_handle_event(&event);
+            if (!desktop_apps_handle_event(&event)) ORgui_handle_event(&event);
             if (ORgui_event_requires_redraw(&event)) redraw = 1;
             else cursor_update = 1;
         }

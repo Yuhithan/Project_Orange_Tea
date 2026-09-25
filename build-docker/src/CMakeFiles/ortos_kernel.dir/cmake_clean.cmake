@@ -12,6 +12,7 @@ file(REMOVE_RECURSE
   "ortos-objects/cursor_cee9b83307365341dea3fd6203eb1221.o"
   "ortos-objects/cursor_resource_f0a38a484c9df82ae237beadaa96bc55.o"
   "ortos-objects/desktop_45db98bc6508c4420481cf5982974823.o"
+  "ortos-objects/desktop_apps_7809dd250e1be93c1a755afda765ff70.o"
   "ortos-objects/framebuffer_719cbce6279bc463ae41d822a57e6dd8.o"
   "ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o"
   "ortos-objects/keyboard_c61c887baa3a65f59c312df80553a306.o"

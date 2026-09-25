@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/network_stack_test.dir/network_stack_test.c.o CMakeFiles/network_stack_test.dir/__/src/net/config/network_stack.c.o -o network_stack_test 

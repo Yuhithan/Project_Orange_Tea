@@ -608,6 +608,32 @@ core_subsystem_test/fast:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/core_subsystem_test.dir/build.make tests/CMakeFiles/core_subsystem_test.dir/build
 .PHONY : core_subsystem_test/fast
 
+#=============================================================================
+# Target rules for targets named network_stack_test
+
+# Build rule for target.
+network_stack_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 network_stack_test
+.PHONY : network_stack_test
+
+# fast build rule for target.
+network_stack_test/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/network_stack_test.dir/build.make tests/CMakeFiles/network_stack_test.dir/build
+.PHONY : network_stack_test/fast
+
+#=============================================================================
+# Target rules for targets named browser_test
+
+# Build rule for target.
+browser_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 browser_test
+.PHONY : browser_test
+
+# fast build rule for target.
+browser_test/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/build
+.PHONY : browser_test/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -648,7 +674,9 @@ help:
 	@echo "... ora_example"
 	@echo "... orangetea_iso"
 	@echo "... ortos_kernel"
+	@echo "... browser_test"
 	@echo "... core_subsystem_test"
+	@echo "... network_stack_test"
 	@echo "... ora_format_test"
 	@echo "... ora_pack"
 	@echo "... ortos_storage"

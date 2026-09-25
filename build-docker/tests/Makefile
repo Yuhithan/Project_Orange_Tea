@@ -225,6 +225,82 @@ core_subsystem_test/fast:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/core_subsystem_test.dir/build.make tests/CMakeFiles/core_subsystem_test.dir/build
 .PHONY : core_subsystem_test/fast
 
+# Convenience name for target.
+tests/CMakeFiles/network_stack_test.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/network_stack_test.dir/rule
+.PHONY : tests/CMakeFiles/network_stack_test.dir/rule
+
+# Convenience name for target.
+network_stack_test: tests/CMakeFiles/network_stack_test.dir/rule
+.PHONY : network_stack_test
+
+# fast build rule for target.
+network_stack_test/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/network_stack_test.dir/build.make tests/CMakeFiles/network_stack_test.dir/build
+.PHONY : network_stack_test/fast
+
+# Convenience name for target.
+tests/CMakeFiles/browser_test.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/browser_test.dir/rule
+.PHONY : tests/CMakeFiles/browser_test.dir/rule
+
+# Convenience name for target.
+browser_test: tests/CMakeFiles/browser_test.dir/rule
+.PHONY : browser_test
+
+# fast build rule for target.
+browser_test/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/build
+.PHONY : browser_test/fast
+
+__/src/apps/browser.o: __/src/apps/browser.c.o
+.PHONY : __/src/apps/browser.o
+
+# target to build an object file
+__/src/apps/browser.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/apps/browser.c.o
+.PHONY : __/src/apps/browser.c.o
+
+__/src/apps/browser.i: __/src/apps/browser.c.i
+.PHONY : __/src/apps/browser.i
+
+# target to preprocess a source file
+__/src/apps/browser.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/apps/browser.c.i
+.PHONY : __/src/apps/browser.c.i
+
+__/src/apps/browser.s: __/src/apps/browser.c.s
+.PHONY : __/src/apps/browser.s
+
+# target to generate assembly for a file
+__/src/apps/browser.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/apps/browser.c.s
+.PHONY : __/src/apps/browser.c.s
+
+__/src/drivers/display/framebuffer.o: __/src/drivers/display/framebuffer.c.o
+.PHONY : __/src/drivers/display/framebuffer.o
+
+# target to build an object file
+__/src/drivers/display/framebuffer.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/drivers/display/framebuffer.c.o
+.PHONY : __/src/drivers/display/framebuffer.c.o
+
+__/src/drivers/display/framebuffer.i: __/src/drivers/display/framebuffer.c.i
+.PHONY : __/src/drivers/display/framebuffer.i
+
+# target to preprocess a source file
+__/src/drivers/display/framebuffer.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/drivers/display/framebuffer.c.i
+.PHONY : __/src/drivers/display/framebuffer.c.i
+
+__/src/drivers/display/framebuffer.s: __/src/drivers/display/framebuffer.c.s
+.PHONY : __/src/drivers/display/framebuffer.s
+
+# target to generate assembly for a file
+__/src/drivers/display/framebuffer.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/drivers/display/framebuffer.c.s
+.PHONY : __/src/drivers/display/framebuffer.c.s
+
 __/src/fs/storage/storage.o: __/src/fs/storage/storage.c.o
 .PHONY : __/src/fs/storage/storage.o
 
@@ -345,6 +421,54 @@ __/src/kernel/syscall/syscall.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/core_subsystem_test.dir/build.make tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/syscall/syscall.c.s
 .PHONY : __/src/kernel/syscall/syscall.c.s
 
+__/src/net/config/network_stack.o: __/src/net/config/network_stack.c.o
+.PHONY : __/src/net/config/network_stack.o
+
+# target to build an object file
+__/src/net/config/network_stack.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/network_stack_test.dir/build.make tests/CMakeFiles/network_stack_test.dir/__/src/net/config/network_stack.c.o
+.PHONY : __/src/net/config/network_stack.c.o
+
+__/src/net/config/network_stack.i: __/src/net/config/network_stack.c.i
+.PHONY : __/src/net/config/network_stack.i
+
+# target to preprocess a source file
+__/src/net/config/network_stack.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/network_stack_test.dir/build.make tests/CMakeFiles/network_stack_test.dir/__/src/net/config/network_stack.c.i
+.PHONY : __/src/net/config/network_stack.c.i
+
+__/src/net/config/network_stack.s: __/src/net/config/network_stack.c.s
+.PHONY : __/src/net/config/network_stack.s
+
+# target to generate assembly for a file
+__/src/net/config/network_stack.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/network_stack_test.dir/build.make tests/CMakeFiles/network_stack_test.dir/__/src/net/config/network_stack.c.s
+.PHONY : __/src/net/config/network_stack.c.s
+
+__/src/ui/core/ORgui.o: __/src/ui/core/ORgui.c.o
+.PHONY : __/src/ui/core/ORgui.o
+
+# target to build an object file
+__/src/ui/core/ORgui.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o
+.PHONY : __/src/ui/core/ORgui.c.o
+
+__/src/ui/core/ORgui.i: __/src/ui/core/ORgui.c.i
+.PHONY : __/src/ui/core/ORgui.i
+
+# target to preprocess a source file
+__/src/ui/core/ORgui.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.i
+.PHONY : __/src/ui/core/ORgui.c.i
+
+__/src/ui/core/ORgui.s: __/src/ui/core/ORgui.c.s
+.PHONY : __/src/ui/core/ORgui.s
+
+# target to generate assembly for a file
+__/src/ui/core/ORgui.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.s
+.PHONY : __/src/ui/core/ORgui.c.s
+
 __/tools/ora_pack.o: __/tools/ora_pack.c.o
 .PHONY : __/tools/ora_pack.o
 
@@ -369,6 +493,30 @@ __/tools/ora_pack.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_pack.dir/build.make tests/CMakeFiles/ora_pack.dir/__/tools/ora_pack.c.s
 .PHONY : __/tools/ora_pack.c.s
 
+browser_test.o: browser_test.c.o
+.PHONY : browser_test.o
+
+# target to build an object file
+browser_test.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/browser_test.c.o
+.PHONY : browser_test.c.o
+
+browser_test.i: browser_test.c.i
+.PHONY : browser_test.i
+
+# target to preprocess a source file
+browser_test.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/browser_test.c.i
+.PHONY : browser_test.c.i
+
+browser_test.s: browser_test.c.s
+.PHONY : browser_test.s
+
+# target to generate assembly for a file
+browser_test.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/browser_test.c.s
+.PHONY : browser_test.c.s
+
 core_subsystem_test.o: core_subsystem_test.c.o
 .PHONY : core_subsystem_test.o
 
@@ -392,6 +540,30 @@ core_subsystem_test.s: core_subsystem_test.c.s
 core_subsystem_test.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/core_subsystem_test.dir/build.make tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.s
 .PHONY : core_subsystem_test.c.s
+
+network_stack_test.o: network_stack_test.c.o
+.PHONY : network_stack_test.o
+
+# target to build an object file
+network_stack_test.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/network_stack_test.dir/build.make tests/CMakeFiles/network_stack_test.dir/network_stack_test.c.o
+.PHONY : network_stack_test.c.o
+
+network_stack_test.i: network_stack_test.c.i
+.PHONY : network_stack_test.i
+
+# target to preprocess a source file
+network_stack_test.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/network_stack_test.dir/build.make tests/CMakeFiles/network_stack_test.dir/network_stack_test.c.i
+.PHONY : network_stack_test.c.i
+
+network_stack_test.s: network_stack_test.c.s
+.PHONY : network_stack_test.s
+
+# target to generate assembly for a file
+network_stack_test.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/network_stack_test.dir/build.make tests/CMakeFiles/network_stack_test.dir/network_stack_test.c.s
+.PHONY : network_stack_test.c.s
 
 ora_format_test.o: ora_format_test.c.o
 .PHONY : ora_format_test.o
@@ -475,12 +647,20 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test"
 	@echo "... ora_example"
+	@echo "... browser_test"
 	@echo "... core_subsystem_test"
+	@echo "... network_stack_test"
 	@echo "... ora_format_test"
 	@echo "... ora_pack"
 	@echo "... ortos_storage"
 	@echo "... storage_path_test"
 	@echo "... terminal_input_buffer_test"
+	@echo "... __/src/apps/browser.o"
+	@echo "... __/src/apps/browser.i"
+	@echo "... __/src/apps/browser.s"
+	@echo "... __/src/drivers/display/framebuffer.o"
+	@echo "... __/src/drivers/display/framebuffer.i"
+	@echo "... __/src/drivers/display/framebuffer.s"
 	@echo "... __/src/fs/storage/storage.o"
 	@echo "... __/src/fs/storage/storage.i"
 	@echo "... __/src/fs/storage/storage.s"
@@ -496,12 +676,24 @@ help:
 	@echo "... __/src/kernel/syscall/syscall.o"
 	@echo "... __/src/kernel/syscall/syscall.i"
 	@echo "... __/src/kernel/syscall/syscall.s"
+	@echo "... __/src/net/config/network_stack.o"
+	@echo "... __/src/net/config/network_stack.i"
+	@echo "... __/src/net/config/network_stack.s"
+	@echo "... __/src/ui/core/ORgui.o"
+	@echo "... __/src/ui/core/ORgui.i"
+	@echo "... __/src/ui/core/ORgui.s"
 	@echo "... __/tools/ora_pack.o"
 	@echo "... __/tools/ora_pack.i"
 	@echo "... __/tools/ora_pack.s"
+	@echo "... browser_test.o"
+	@echo "... browser_test.i"
+	@echo "... browser_test.s"
 	@echo "... core_subsystem_test.o"
 	@echo "... core_subsystem_test.i"
 	@echo "... core_subsystem_test.s"
+	@echo "... network_stack_test.o"
+	@echo "... network_stack_test.i"
+	@echo "... network_stack_test.s"
 	@echo "... ora_format_test.o"
 	@echo "... ora_format_test.i"
 	@echo "... ora_format_test.s"

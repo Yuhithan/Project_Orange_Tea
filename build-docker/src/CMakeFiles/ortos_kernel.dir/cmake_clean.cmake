@@ -9,6 +9,7 @@ file(REMOVE_RECURSE
   "ortos-objects/boot_main.o"
   "ortos-objects/boot_main64.o"
   "ortos-objects/boot_mode_38aa3d1d423d5c12cc8a83a74a259133.o"
+  "ortos-objects/browser_709c4ff12615dd2d0bc18037d4de671b.o"
   "ortos-objects/cursor_cee9b83307365341dea3fd6203eb1221.o"
   "ortos-objects/cursor_resource_f0a38a484c9df82ae237beadaa96bc55.o"
   "ortos-objects/desktop_45db98bc6508c4420481cf5982974823.o"

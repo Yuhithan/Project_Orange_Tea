@@ -123,11 +123,14 @@ static void ensure_default_tasks(void)
     ensure_directory("/C:/user/admin/desktop");
     ensure_task("/C:/menu/OExplorer.task", "name=OExplorer\ncommand=OExplorer\ncategory=System");
     ensure_task("/C:/menu/setting.task", "name=setting\ncommand=setting\ncategory=System");
+    ensure_task("/C:/menu/browser.task", "name=browser\ncommand=browser\ncategory=Internet");
     ensure_task("/C:/menu/terminal.task", "name=Terminal\ncommand=terminal\ncategory=Utilities");
     ensure_task("/C:/menu/taskbar/OExplorer.task", "name=OExplorer\ncommand=OExplorer");
     ensure_task("/C:/menu/taskbar/setting.task", "name=setting\ncommand=setting");
+    ensure_task("/C:/menu/taskbar/browser.task", "name=browser\ncommand=browser");
     ensure_task("/C:/user/admin/desktop/OExplorer.task", "name=OExplorer\ncommand=OExplorer");
     ensure_task("/C:/user/admin/desktop/setting.task", "name=setting\ncommand=setting");
+    ensure_task("/C:/user/admin/desktop/browser.task", "name=browser\ncommand=browser");
 }
 
 static void explorer_draw(ORWindow *window)
@@ -174,6 +177,9 @@ static ORWindow *launch_task(const DesktopTask *task)
     } else if (text_equal(task->command, "setting")) {
         window = ORgui_create_window(width / 2 - 210, height / 2 - 145, 420, 290, "setting");
         if (window) window->on_draw = settings_draw;
+    } else if (text_equal(task->command, "browser")) {
+        window = ORgui_create_window(width / 2 - 330, height / 2 - 220, 660, 440, "browser");
+        if (window) browser_window_open(window);
     } else {
         window = ORgui_create_window(width / 2 - 220, height / 2 - 110, 440, 220, task->label);
         if (window) window->on_draw = generic_draw;

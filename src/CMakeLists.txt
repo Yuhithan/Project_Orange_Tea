@@ -17,6 +17,7 @@ file(GLOB_RECURSE ORTOS_KERNEL_C_SOURCES CONFIGURE_DEPENDS
     "${ORTOS_SOURCE_DIR}/net/*.c"
     "${ORTOS_SOURCE_DIR}/ui/*.c"
     "${ORTOS_SOURCE_DIR}/apps/*.c"
+    "${ORTOS_SOURCE_DIR}/apps/**/*.c"
     "${ORTOS_SOURCE_DIR}/security/*.c"
     "${ORTOS_SOURCE_DIR}/lib/*.c"
     "${ORTOS_SOURCE_DIR}/test/*.c"

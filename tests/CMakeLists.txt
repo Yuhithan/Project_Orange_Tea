@@ -46,9 +46,21 @@ add_executable(core_subsystem_test
     "${ORTOS_SOURCE_DIR}/kernel/syscall/syscall.c")
 target_link_libraries(core_subsystem_test PRIVATE ortos_storage)
 
+add_executable(network_stack_test network_stack_test.c
+    "${ORTOS_SOURCE_DIR}/net/config/network_stack.c")
+target_include_directories(network_stack_test PRIVATE "${ORTOS_INCLUDE_DIR}" "${ORTOS_SOURCE_DIR}")
+
+add_executable(browser_test browser_test.c
+    "${ORTOS_SOURCE_DIR}/apps/browser.c"
+    "${ORTOS_SOURCE_DIR}/drivers/display/framebuffer.c"
+    "${ORTOS_SOURCE_DIR}/ui/core/ORgui.c")
+target_include_directories(browser_test PRIVATE "${ORTOS_INCLUDE_DIR}" "${ORTOS_SOURCE_DIR}")
+
 if(BUILD_TESTING)
     add_test(NAME storage_path_test COMMAND storage_path_test)
     add_test(NAME ora_format_test COMMAND ora_format_test)
     add_test(NAME terminal_input_buffer_test COMMAND terminal_input_buffer_test)
     add_test(NAME core_subsystem_test COMMAND core_subsystem_test)
+    add_test(NAME network_stack_test COMMAND network_stack_test)
+    add_test(NAME browser_test COMMAND browser_test)
 endif()

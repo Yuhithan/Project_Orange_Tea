@@ -89,4 +89,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "tests/CMakeFiles/storage_path_test.dir/DependInfo.cmake"
   "tests/CMakeFiles/terminal_input_buffer_test.dir/DependInfo.cmake"
   "tests/CMakeFiles/core_subsystem_test.dir/DependInfo.cmake"
+  "tests/CMakeFiles/network_stack_test.dir/DependInfo.cmake"
+  "tests/CMakeFiles/browser_test.dir/DependInfo.cmake"
   )

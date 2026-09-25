@@ -1,63 +1,75 @@
-OS Features
+# OS Features
 
-Done:
-- Core: Bootloader
-- Core: Kernel
-- Core: Command-line shell
-- Core: Memory management (partial)
-- Core: Process and thread management (partial)
-- Core: Interrupt handling (partial)
-- Core: System calls
-- Core: Device drivers
-- Core: File system (partial)
-- User Interface: Graphical desktop
-- User Interface: Windows
-- User Interface: keyboard
-- User Interface: Mouse
-- User Interface: Login/lock screen
-- User Interface: Terminal
-- User Interface: Taskbar/panel(partial)
-- User Interface: File manager
-- User Interface: Settings
-- User Interface: Notifications (notify name message)
+## Core
 
-Not done:
+* Bootloader — Done
+* Kernel — Done
+* Command-line shell — Done
+* Memory management — Partial
+* Process and thread management — Partial
+* Interrupt handling — Partial
+* System calls — Done
+* Device drivers — Done
+* File system — Partial
 
-- User Interface: Clipboard
-- Networking: Ethernet (partial)
-- Networking: Wi-Fi
-- Networking: TCP/IP
-- Networking: DNS
-- Networking: Network settings
-- Networking: Sockets/API
-- Networking: Firewall
-- Security: User accounts
-- Security: Permissions
-- Security: Process isolation
-- Security: File permissions
-- Security: Secure boot
-- Security: Application sandboxing
-- Security: Password/PIN authentication
-- Security: Security updates
-- Applications: Application/executable format
-- Applications: Package manager
-- Applications: App store/repository
-- Applications: Shared libraries
-- Applications: Application APIs/SDK
-- Applications: Configuration system
-- Applications: System logs
-- Applications: Crash reporting
-- Advanced: USB support
-- Advanced: Bluetooth
-- Advanced: Audio
-- Advanced: GPU acceleration
-- Advanced: Multicore CPU support
-- Advanced: Power management
-- Advanced: Sleep/hibernate
-- Advanced: Printing
-- Advanced: Camera/microphone support
-- Advanced: Virtualization
-- Advanced: Containers
-- Advanced: Disk encryption
-- Advanced: System recovery
-- Advanced: Accessibility features
+## User Interface
+
+* Graphical desktop — Done
+* Windows — Done
+* Keyboard — Done
+* Mouse — Done
+* Login/lock screen — Done
+* Terminal — Done
+* Taskbar/panel — Partial
+* File manager — Done
+* Settings — Done
+* Notifications — Done
+
+## Networking
+
+* Ethernet — Partial
+* Wi-Fi — Not done
+* TCP/IP — Not done
+* DNS — Not done
+* Network settings — Not done
+* Sockets/API — Not done
+* Firewall — Not done
+
+## Security
+
+* User accounts — Not done
+* Permissions — Not done
+* Process isolation — Not done
+* File permissions — Not done
+* Secure boot — Not done
+* Application sandboxing — Not done
+* Password/PIN authentication — Not done
+* Security updates — Not done
+
+## Applications
+
+* Application/executable format — Not done
+* Package manager — Not done
+* App store/repository — Not done
+* Shared libraries — Not done
+* Application APIs/SDK — Not done
+* Configuration system — Not done
+* System logs — Not done
+* Crash reporting — Not done
+
+## Advanced
+
+* USB support — Not done
+* Bluetooth — Not done
+* Audio — Not done
+* GPU acceleration — Not done
+* Multicore CPU support — Not done
+* Power management — Not done
+* Sleep/hibernate — Not done
+* Printing — Not done
+* Camera/microphone support — Not done
+* Virtualization — Not done
+* Containers — Not done
+* Disk encryption — Not done
+* System recovery — Not done
+* Accessibility features — Not done

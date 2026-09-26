@@ -35,6 +35,7 @@ file(REMOVE_RECURSE
   "ortos-objects/terminal_51c03f6979a5dafe70ce730f81b4c0ac.o"
   "ortos-objects/test_ead34ac061ae5465937a217b4cf5f6b4.o"
   "ortos-objects/timer_8ff4d01e17f3d990fb64f0074bccb894.o"
+  "ortos-objects/ui_animation_101737d9ea1ca92b4c29fbc5b18adbae.o"
   "ortos-objects/vfs_6924b83311ed39ec12ee88cae2070208.o"
 )
 

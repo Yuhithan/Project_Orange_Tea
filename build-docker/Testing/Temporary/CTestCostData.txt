@@ -1,4 +1,10 @@
-storage_path_test 1 0.00121766
-terminal_input_buffer_test 1 0.000994181
-core_subsystem_test 1 0.00133939
+storage_path_test 3 0.00123046
+terminal_input_buffer_test 3 0.00059325
+core_subsystem_test 3 0.000879016
+storage_persistence_test 2 0.00143217
+ora_format_test 2 0.00144986
+updater_test 2 0.00150674
+network_stack_test 2 0.00134075
+ethernet_test 2 0.000616981
+browser_test 2 0.000841348
 ---

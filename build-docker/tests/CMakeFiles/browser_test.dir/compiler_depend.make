@@ -29,6 +29,27 @@ tests/CMakeFiles/browser_test.dir/__/src/apps/browser.c.o: /root/env/src/apps/br
   /root/env/include/net/stack.h \
   /root/env/include/browser.h
 
+tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o: /root/env/src/arch/x86/timer/timer.c \
+  /usr/include/stdc-predef.h \
+  /root/env/include/timer.h \
+  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h \
+  /usr/include/stdint.h \
+  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/features.h \
+  /usr/include/features-time64.h \
+  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/bits/timesize.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+  /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+  /usr/include/x86_64-linux-gnu/bits/time64.h \
+  /usr/include/x86_64-linux-gnu/bits/wchar.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h
+
 tests/CMakeFiles/browser_test.dir/__/src/drivers/display/framebuffer.c.o: /root/env/src/drivers/display/framebuffer.c \
   /usr/include/stdc-predef.h \
   /root/env/include/framebuffer.h \
@@ -70,7 +91,31 @@ tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o: /root/env/src/ui/cor
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
-  /root/env/include/framebuffer.h
+  /root/env/include/framebuffer.h \
+  /root/env/include/timer.h \
+  /root/env/include/ui_animation.h
+
+tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o: /root/env/src/ui/core/ui_animation.c \
+  /usr/include/stdc-predef.h \
+  /root/env/include/ui_animation.h \
+  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h \
+  /usr/include/stdint.h \
+  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/features.h \
+  /usr/include/features-time64.h \
+  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/bits/timesize.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+  /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+  /usr/include/x86_64-linux-gnu/bits/time64.h \
+  /usr/include/x86_64-linux-gnu/bits/wchar.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+  /root/env/include/timer.h
 
 tests/CMakeFiles/browser_test.dir/browser_test.c.o: /root/env/tests/browser_test.c \
   /usr/include/stdc-predef.h \
@@ -100,6 +145,12 @@ tests/CMakeFiles/browser_test.dir/browser_test.c.o: /root/env/tests/browser_test
 
 /root/env/tests/browser_test.c:
 
+/root/env/include/ui_animation.h:
+
+/root/env/src/ui/core/ORgui.c:
+
+/root/env/src/drivers/display/framebuffer.c:
+
 /usr/include/x86_64-linux-gnu/bits/long-double.h:
 
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
@@ -127,6 +178,8 @@ tests/CMakeFiles/browser_test.dir/browser_test.c.o: /root/env/tests/browser_test
 /root/env/include/ORgui.h:
 
 /usr/include/stdc-predef.h:
+
+/root/env/src/ui/core/ui_animation.c:
 
 /root/env/include/desktop_apps.h:
 
@@ -158,6 +211,6 @@ tests/CMakeFiles/browser_test.dir/browser_test.c.o: /root/env/tests/browser_test
 
 /root/env/include/framebuffer.h:
 
-/root/env/src/drivers/display/framebuffer.c:
+/root/env/src/arch/x86/timer/timer.c:
 
-/root/env/src/ui/core/ORgui.c:
+/root/env/include/timer.h:

@@ -4,6 +4,7 @@
 #include "ORgui.h"
 #include "timer.h"
 #include "desktop_apps.h"
+#include "ui_animation.h"
 
 static void draw_number(int x, int y, uint64_t value)
 {
@@ -67,8 +68,14 @@ void taskbar_draw(void)
         ORWindow *window = ORgui_window_at(index);
         if (!window || !window->visible) continue;
         fb_fill_rect(x, height - 23, 110, 18,
-                     window->active ? OR_COLOR_TITLEBAR : OR_COLOR_WINDOW);
-        fb_draw_rect(x, height - 23, 110, 18, OR_COLOR_BORDER);
+                     window->active ? OR_COLOR_TITLEBAR :
+                     (ORgui_pointer_x() >= x && ORgui_pointer_x() < x + 110 &&
+                      ORgui_pointer_y() >= height - 28 ?
+                      ui_animation_mix_color(OR_COLOR_WINDOW, OR_COLOR_FIRE_YELLOW, 180) :
+                      OR_COLOR_WINDOW));
+        fb_draw_rect(x, height - 23, 110, 18,
+                     ORgui_pointer_x() >= x && ORgui_pointer_x() < x + 110 &&
+                     ORgui_pointer_y() >= height - 28 ? OR_COLOR_FIRE_ORANGE : OR_COLOR_BORDER);
         fb_draw_string(x + 8, height - 17, window->title,
                        window->active ? OR_COLOR_TEXT : OR_COLOR_FIRE_RED);
         x += 114;

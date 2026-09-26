@@ -347,6 +347,30 @@ __/src/apps/browser.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/apps/browser.c.s
 .PHONY : __/src/apps/browser.c.s
 
+__/src/arch/x86/timer/timer.o: __/src/arch/x86/timer/timer.c.o
+.PHONY : __/src/arch/x86/timer/timer.o
+
+# target to build an object file
+__/src/arch/x86/timer/timer.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o
+.PHONY : __/src/arch/x86/timer/timer.c.o
+
+__/src/arch/x86/timer/timer.i: __/src/arch/x86/timer/timer.c.i
+.PHONY : __/src/arch/x86/timer/timer.i
+
+# target to preprocess a source file
+__/src/arch/x86/timer/timer.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.i
+.PHONY : __/src/arch/x86/timer/timer.c.i
+
+__/src/arch/x86/timer/timer.s: __/src/arch/x86/timer/timer.c.s
+.PHONY : __/src/arch/x86/timer/timer.s
+
+# target to generate assembly for a file
+__/src/arch/x86/timer/timer.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.s
+.PHONY : __/src/arch/x86/timer/timer.c.s
+
 __/src/drivers/display/framebuffer.o: __/src/drivers/display/framebuffer.c.o
 .PHONY : __/src/drivers/display/framebuffer.o
 
@@ -586,6 +610,30 @@ __/src/ui/core/ORgui.s: __/src/ui/core/ORgui.c.s
 __/src/ui/core/ORgui.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.s
 .PHONY : __/src/ui/core/ORgui.c.s
+
+__/src/ui/core/ui_animation.o: __/src/ui/core/ui_animation.c.o
+.PHONY : __/src/ui/core/ui_animation.o
+
+# target to build an object file
+__/src/ui/core/ui_animation.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o
+.PHONY : __/src/ui/core/ui_animation.c.o
+
+__/src/ui/core/ui_animation.i: __/src/ui/core/ui_animation.c.i
+.PHONY : __/src/ui/core/ui_animation.i
+
+# target to preprocess a source file
+__/src/ui/core/ui_animation.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.i
+.PHONY : __/src/ui/core/ui_animation.c.i
+
+__/src/ui/core/ui_animation.s: __/src/ui/core/ui_animation.c.s
+.PHONY : __/src/ui/core/ui_animation.s
+
+# target to generate assembly for a file
+__/src/ui/core/ui_animation.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.s
+.PHONY : __/src/ui/core/ui_animation.c.s
 
 __/tools/ora_pack.o: __/tools/ora_pack.c.o
 .PHONY : __/tools/ora_pack.o
@@ -901,6 +949,9 @@ help:
 	@echo "... __/src/apps/browser.o"
 	@echo "... __/src/apps/browser.i"
 	@echo "... __/src/apps/browser.s"
+	@echo "... __/src/arch/x86/timer/timer.o"
+	@echo "... __/src/arch/x86/timer/timer.i"
+	@echo "... __/src/arch/x86/timer/timer.s"
 	@echo "... __/src/drivers/display/framebuffer.o"
 	@echo "... __/src/drivers/display/framebuffer.i"
 	@echo "... __/src/drivers/display/framebuffer.s"
@@ -931,6 +982,9 @@ help:
 	@echo "... __/src/ui/core/ORgui.o"
 	@echo "... __/src/ui/core/ORgui.i"
 	@echo "... __/src/ui/core/ORgui.s"
+	@echo "... __/src/ui/core/ui_animation.o"
+	@echo "... __/src/ui/core/ui_animation.i"
+	@echo "... __/src/ui/core/ui_animation.s"
 	@echo "... __/tools/ora_pack.o"
 	@echo "... __/tools/ora_pack.i"
 	@echo "... __/tools/ora_pack.s"

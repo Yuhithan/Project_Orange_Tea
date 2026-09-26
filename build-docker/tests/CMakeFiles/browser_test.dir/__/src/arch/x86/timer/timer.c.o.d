@@ -1,6 +1,6 @@
-tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o: \
- /root/env/src/ui/core/ORgui.c /usr/include/stdc-predef.h \
- /root/env/include/ORgui.h \
+tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o: \
+ /root/env/src/arch/x86/timer/timer.c /usr/include/stdc-predef.h \
+ /root/env/include/timer.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
@@ -15,6 +15,4 @@ tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o: \
  /usr/include/x86_64-linux-gnu/bits/time64.h \
  /usr/include/x86_64-linux-gnu/bits/wchar.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
- /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
- /root/env/include/framebuffer.h /root/env/include/timer.h \
- /root/env/include/ui_animation.h
+ /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h

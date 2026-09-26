@@ -125,12 +125,42 @@ tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.s"
 	cd /root/env/build-docker/tests && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/ui/core/ORgui.c -o CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.s
 
+tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o: tests/CMakeFiles/browser_test.dir/flags.make
+tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o: /root/env/src/ui/core/ui_animation.c
+tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o: tests/CMakeFiles/browser_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o"
+	cd /root/env/build-docker/tests && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o -MF CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o.d -o CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o -c /root/env/src/ui/core/ui_animation.c
+
+tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.i"
+	cd /root/env/build-docker/tests && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/env/src/ui/core/ui_animation.c > CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.i
+
+tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.s"
+	cd /root/env/build-docker/tests && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/ui/core/ui_animation.c -o CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.s
+
+tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o: tests/CMakeFiles/browser_test.dir/flags.make
+tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o: /root/env/src/arch/x86/timer/timer.c
+tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o: tests/CMakeFiles/browser_test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o"
+	cd /root/env/build-docker/tests && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o -MF CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o.d -o CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o -c /root/env/src/arch/x86/timer/timer.c
+
+tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.i"
+	cd /root/env/build-docker/tests && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/env/src/arch/x86/timer/timer.c > CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.i
+
+tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.s"
+	cd /root/env/build-docker/tests && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/arch/x86/timer/timer.c -o CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.s
+
 # Object files for target browser_test
 browser_test_OBJECTS = \
 "CMakeFiles/browser_test.dir/browser_test.c.o" \
 "CMakeFiles/browser_test.dir/__/src/apps/browser.c.o" \
 "CMakeFiles/browser_test.dir/__/src/drivers/display/framebuffer.c.o" \
-"CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o"
+"CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o" \
+"CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o" \
+"CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o"
 
 # External object files for target browser_test
 browser_test_EXTERNAL_OBJECTS =
@@ -139,9 +169,11 @@ tests/browser_test: tests/CMakeFiles/browser_test.dir/browser_test.c.o
 tests/browser_test: tests/CMakeFiles/browser_test.dir/__/src/apps/browser.c.o
 tests/browser_test: tests/CMakeFiles/browser_test.dir/__/src/drivers/display/framebuffer.c.o
 tests/browser_test: tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o
+tests/browser_test: tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o
+tests/browser_test: tests/CMakeFiles/browser_test.dir/__/src/arch/x86/timer/timer.c.o
 tests/browser_test: tests/CMakeFiles/browser_test.dir/build.make
 tests/browser_test: tests/CMakeFiles/browser_test.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking C executable browser_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking C executable browser_test"
 	cd /root/env/build-docker/tests && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/browser_test.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

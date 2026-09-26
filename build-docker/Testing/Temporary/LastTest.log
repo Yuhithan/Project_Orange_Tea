@@ -1,10 +1,10 @@
-Start testing: Sep 14 05:49 UTC
+Start testing: Sep 26 08:41 UTC
 ----------------------------------------------------------
-1/3 Testing: storage_path_test
-1/3 Test: storage_path_test
+1/9 Testing: storage_path_test
+1/9 Test: storage_path_test
 Command: "/root/env/build-docker/tests/storage_path_test"
 Directory: /root/env/build-docker/tests
-"storage_path_test" start time: Sep 14 05:49 UTC
+"storage_path_test" start time: Sep 26 08:41 UTC
 Output:
 ----------------------------------------------------------
 storage path test passed
@@ -12,38 +12,129 @@ storage path test passed
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"storage_path_test" end time: Sep 14 05:49 UTC
+"storage_path_test" end time: Sep 26 08:41 UTC
 "storage_path_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-2/3 Testing: terminal_input_buffer_test
-2/3 Test: terminal_input_buffer_test
-Command: "/root/env/build-docker/tests/terminal_input_buffer_test"
+2/9 Testing: storage_persistence_test
+2/9 Test: storage_persistence_test
+Command: "/root/env/build-docker/tests/storage_persistence_test"
 Directory: /root/env/build-docker/tests
-"terminal_input_buffer_test" start time: Sep 14 05:49 UTC
+"storage_persistence_test" start time: Sep 26 08:41 UTC
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"terminal_input_buffer_test" end time: Sep 14 05:49 UTC
+"storage_persistence_test" end time: Sep 26 08:41 UTC
+"storage_persistence_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/9 Testing: ora_format_test
+3/9 Test: ora_format_test
+Command: "/root/env/build-docker/tests/ora_format_test"
+Directory: /root/env/build-docker/tests
+"ora_format_test" start time: Sep 26 08:41 UTC
+Output:
+----------------------------------------------------------
+ora format test passed
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"ora_format_test" end time: Sep 26 08:41 UTC
+"ora_format_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/9 Testing: updater_test
+4/9 Test: updater_test
+Command: "/root/env/build-docker/tests/updater_test"
+Directory: /root/env/build-docker/tests
+"updater_test" start time: Sep 26 08:41 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"updater_test" end time: Sep 26 08:41 UTC
+"updater_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/9 Testing: terminal_input_buffer_test
+5/9 Test: terminal_input_buffer_test
+Command: "/root/env/build-docker/tests/terminal_input_buffer_test"
+Directory: /root/env/build-docker/tests
+"terminal_input_buffer_test" start time: Sep 26 08:41 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"terminal_input_buffer_test" end time: Sep 26 08:41 UTC
 "terminal_input_buffer_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-3/3 Testing: core_subsystem_test
-3/3 Test: core_subsystem_test
+6/9 Testing: core_subsystem_test
+6/9 Test: core_subsystem_test
 Command: "/root/env/build-docker/tests/core_subsystem_test"
 Directory: /root/env/build-docker/tests
-"core_subsystem_test" start time: Sep 14 05:49 UTC
+"core_subsystem_test" start time: Sep 26 08:41 UTC
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"core_subsystem_test" end time: Sep 14 05:49 UTC
+"core_subsystem_test" end time: Sep 26 08:41 UTC
 "core_subsystem_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Sep 14 05:49 UTC
+7/9 Testing: network_stack_test
+7/9 Test: network_stack_test
+Command: "/root/env/build-docker/tests/network_stack_test"
+Directory: /root/env/build-docker/tests
+"network_stack_test" start time: Sep 26 08:41 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"network_stack_test" end time: Sep 26 08:41 UTC
+"network_stack_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+8/9 Testing: ethernet_test
+8/9 Test: ethernet_test
+Command: "/root/env/build-docker/tests/ethernet_test"
+Directory: /root/env/build-docker/tests
+"ethernet_test" start time: Sep 26 08:41 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"ethernet_test" end time: Sep 26 08:41 UTC
+"ethernet_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+9/9 Testing: browser_test
+9/9 Test: browser_test
+Command: "/root/env/build-docker/tests/browser_test"
+Directory: /root/env/build-docker/tests
+"browser_test" start time: Sep 26 08:41 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"browser_test" end time: Sep 26 08:41 UTC
+"browser_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 26 08:41 UTC

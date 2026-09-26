@@ -162,6 +162,7 @@ set(OLD_GLOB
   "/root/env/src/ui/core/desktop_apps.c"
   "/root/env/src/ui/core/login.c"
   "/root/env/src/ui/core/taskbar.c"
+  "/root/env/src/ui/core/ui_animation.c"
   "/root/env/src/ui/terminal/terminal.c"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")

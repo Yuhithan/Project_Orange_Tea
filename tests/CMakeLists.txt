@@ -72,7 +72,9 @@ target_include_directories(ethernet_test PRIVATE "${ORTOS_INCLUDE_DIR}")
 add_executable(browser_test browser_test.c
     "${ORTOS_SOURCE_DIR}/apps/browser.c"
     "${ORTOS_SOURCE_DIR}/drivers/display/framebuffer.c"
-    "${ORTOS_SOURCE_DIR}/ui/core/ORgui.c")
+    "${ORTOS_SOURCE_DIR}/ui/core/ORgui.c"
+    "${ORTOS_SOURCE_DIR}/ui/core/ui_animation.c"
+    "${ORTOS_SOURCE_DIR}/arch/x86/timer/timer.c")
 target_include_directories(browser_test PRIVATE "${ORTOS_INCLUDE_DIR}" "${ORTOS_SOURCE_DIR}")
 
 if(BUILD_TESTING)

@@ -8,6 +8,14 @@
 #define STORAGE_MAX_ENTRIES 64
 #define STORAGE_MAX_FILE_BLOCKS 8
 
+#ifndef STORAGE_CAPACITY_SECTORS
+#define STORAGE_CAPACITY_SECTORS 0
+#endif
+
+#define STORAGE_ATTR_READONLY (1u << 0)
+#define STORAGE_ATTR_SYSTEM (1u << 1)
+#define STORAGE_ATTR_HIDDEN (1u << 2)
+
 #define STORAGE_SELFTEST_DEVICE (1u << 0)
 #define STORAGE_SELFTEST_INFO (1u << 1)
 #define STORAGE_SELFTEST_BLOCK_IO (1u << 2)
@@ -58,9 +66,16 @@ struct storage_entry_info {
     char type;
     size_t size;
     uint32_t blocks_used;
+    uint32_t file_id;
+    uint64_t created_at;
+    uint64_t modified_at;
+    uint32_t attributes;
 };
 
+typedef uint64_t (*storage_clock_fn)(void);
+
 void storage_init(void);
+void storage_set_clock(storage_clock_fn clock);
 int storage_attach_block_device(const struct block_device *device);
 int storage_read_blocks(const struct block_device *device, uint64_t block, void *buffer, size_t count);
 int storage_write_blocks(const struct block_device *device, uint64_t block, const void *buffer, size_t count);

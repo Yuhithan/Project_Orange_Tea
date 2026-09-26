@@ -8,6 +8,7 @@
 #define STORAGE_CACHE_SLOTS 4
 #define STORAGE_CONTENT_CAPACITY 256u
 #define STORAGE_SELFTEST_SECTORS 72u
+#define STORAGE_METADATA_OFFSET 400u
 
 struct storage_entry {
     char path[STORAGE_MAX_PATH];
@@ -16,6 +17,10 @@ struct storage_entry {
     size_t size;
     uint32_t blocks[STORAGE_MAX_FILE_BLOCKS];
     char content[STORAGE_CONTENT_CAPACITY];
+    uint32_t file_id;
+    uint64_t created_at;
+    uint64_t modified_at;
+    uint32_t attributes;
 };
 struct storage_fd { int entry; size_t offset; int used; };
 struct cache_sector { uint64_t sector; unsigned char data[BLOCK_SECTOR_SIZE]; int valid; int dirty; };
@@ -27,6 +32,9 @@ static unsigned int cache_next_slot;
 static const struct block_device *storage_device;
 static uint64_t bitmap_sectors;
 static uint64_t data_start;
+static uint32_t next_file_id = 1;
+static uint64_t last_timestamp;
+static storage_clock_fn storage_clock;
 static int entry_count;
 static int mounted;
 static int create(const char *path, char type, const char *content);
@@ -38,6 +46,8 @@ struct storage_saved_state {
     const struct block_device *device;
     uint64_t bitmap_sectors;
     uint64_t data_start;
+    uint32_t next_file_id;
+    uint64_t last_timestamp;
     unsigned int cache_next_slot;
     int entry_count;
     int mounted;
@@ -56,6 +66,21 @@ static uint32_t get32(const unsigned char *p) { return (uint32_t)p[0] | ((uint32
 static uint64_t get64(const unsigned char *p) { uint64_t value = 0; for (int i = 7; i >= 0; i--) value = (value << 8) | p[i]; return value; }
 static void put32(unsigned char *p, uint32_t value) { for (int i = 0; i < 4; i++) { p[i] = (unsigned char)value; value >>= 8; } }
 static void put64(unsigned char *p, uint64_t value) { for (int i = 0; i < 8; i++) { p[i] = (unsigned char)value; value >>= 8; } }
+static uint64_t timestamp_now(void)
+{
+    uint64_t timestamp = storage_clock ? storage_clock() : 0;
+    if (timestamp <= last_timestamp) timestamp = last_timestamp + 1;
+    last_timestamp = timestamp;
+    return timestamp;
+}
+static uint64_t storage_sector_limit(void)
+{
+    uint64_t limit = storage_device ? storage_device->sector_count : 0;
+#if STORAGE_CAPACITY_SECTORS > 0
+    if (limit > STORAGE_CAPACITY_SECTORS) limit = STORAGE_CAPACITY_SECTORS;
+#endif
+    return limit;
+}
 static int selftest_read_sector(void *context, uint64_t sector, void *buffer)
 {
     unsigned char *disk = context;
@@ -179,7 +204,7 @@ static int sector_used(uint64_t sector)
 static int allocate_sector(uint32_t *result)
 {
     if (!storage_device) return STORAGE_ERR_NOSPC;
-    for (uint64_t sector = data_start; sector < storage_device->sector_count; sector++) if (!sector_used(sector)) {
+    for (uint64_t sector = data_start; sector < storage_sector_limit(); sector++) if (!sector_used(sector)) {
         if (bitmap_bit(sector, 1) != STORAGE_OK) return STORAGE_ERR_IO;
         *result = (uint32_t)sector;
         return STORAGE_OK;
@@ -203,6 +228,10 @@ static int write_inode(int index)
     for (int i = 0; i < STORAGE_MAX_FILE_BLOCKS; i++) put32(block + 16 + i * 4, entry->blocks[i]);
     copy(block + 64, entry->path, sizeof(entry->path)); copy(block + 128, entry->name, sizeof(entry->name));
     if (entry->type == 'f') copy(block + 144, entry->content, sizeof(entry->content));
+    put32(block + STORAGE_METADATA_OFFSET, entry->file_id);
+    put64(block + STORAGE_METADATA_OFFSET + 4, entry->created_at);
+    put64(block + STORAGE_METADATA_OFFSET + 12, entry->modified_at);
+    put32(block + STORAGE_METADATA_OFFSET + 20, entry->attributes);
     return disk_write((uint64_t)index + 1, block);
 }
 static int read_inode(int index)
@@ -218,6 +247,11 @@ static int read_inode(int index)
         copy(entry->content, block + 144, sizeof(entry->content));
         if (entry->blocks[0]) { unsigned char data[BLOCK_SECTOR_SIZE]; if (disk_read(entry->blocks[0], data) != STORAGE_OK) return STORAGE_ERR_IO; copy(entry->content, data, sizeof(entry->content)); }
     } else entry->content[0] = 0;
+    entry->file_id = get32(block + STORAGE_METADATA_OFFSET);
+    if (!entry->file_id) entry->file_id = (uint32_t)index + 1;
+    entry->created_at = get64(block + STORAGE_METADATA_OFFSET + 4);
+    entry->modified_at = get64(block + STORAGE_METADATA_OFFSET + 12);
+    entry->attributes = get32(block + STORAGE_METADATA_OFFSET + 20);
     entry->content[sizeof(entry->content) - 1] = 0;
     return STORAGE_OK;
 }
@@ -226,6 +260,7 @@ static int write_super(void)
     unsigned char block[BLOCK_SECTOR_SIZE]; zero(block, sizeof(block));
     put32(block, STORAGE_MAGIC); put32(block + 4, STORAGE_VERSION); put32(block + 8, (uint32_t)entry_count);
     put64(block + 16, storage_device->sector_count); put64(block + 24, bitmap_sectors); put64(block + 32, data_start);
+    put32(block + 40, next_file_id); put64(block + 48, last_timestamp);
     return disk_write(0, block);
 }
 
@@ -254,6 +289,7 @@ int storage_format(void)
     data_start = STORAGE_BITMAP_START + bitmap_sectors;
     if (data_start >= storage_device->sector_count) return STORAGE_ERR_NOSPC;
     zero(cache, sizeof(cache)); cache_next_slot = 0; entry_count = 0; mounted = 1;
+    next_file_id = 1; last_timestamp = 0;
     if (write_super() != STORAGE_OK) return STORAGE_ERR_IO;
     zero(block, sizeof(block));
     for (uint64_t i = 0; i < bitmap_sectors; i++) if (disk_write(STORAGE_BITMAP_START + i, block) != STORAGE_OK) return STORAGE_ERR_IO;
@@ -268,8 +304,16 @@ int storage_mount(void)
     if (disk_read(0, block) != STORAGE_OK) return STORAGE_ERR_IO;
     if (get32(block) != STORAGE_MAGIC || get32(block + 4) != STORAGE_VERSION || get64(block + 16) != storage_device->sector_count) return STORAGE_ERR_NOENT;
     entry_count = (int)get32(block + 8); bitmap_sectors = get64(block + 24); data_start = get64(block + 32);
+    next_file_id = get32(block + 40); last_timestamp = get64(block + 48);
     if (entry_count < 0 || entry_count > STORAGE_MAX_ENTRIES || data_start >= storage_device->sector_count || bitmap_sectors == 0) return STORAGE_ERR_CORRUPT;
-    for (int i = 0; i < entry_count; i++) if (read_inode(i) != STORAGE_OK) { mounted = 0; return STORAGE_ERR_CORRUPT; }
+    uint32_t highest_file_id = 0;
+    for (int i = 0; i < entry_count; i++) {
+        if (read_inode(i) != STORAGE_OK) { mounted = 0; return STORAGE_ERR_CORRUPT; }
+        if (entries[i].file_id > highest_file_id) highest_file_id = entries[i].file_id;
+        if (entries[i].modified_at > last_timestamp) last_timestamp = entries[i].modified_at;
+    }
+    if (next_file_id <= highest_file_id) next_file_id = highest_file_id + 1;
+    if (!next_file_id) next_file_id = highest_file_id + 1;
     mounted = 1; return STORAGE_OK;
 }
 int storage_unmount(void) { int result = storage_sync(); if (result == STORAGE_OK) mounted = 0; return result; }
@@ -279,6 +323,7 @@ void storage_init(void) { for (int i = 0; i < 16; i++) fds[i].used = 0; if (stor
     else mounted = 1;
 #endif
 }
+void storage_set_clock(storage_clock_fn clock) { storage_clock = clock; }
 int storage_sync(void)
 {
     if (!storage_device) return mounted ? STORAGE_OK : STORAGE_ERR_NOENT;
@@ -296,7 +341,11 @@ static int create(const char *path, char type, const char *content)
     if (entry_count == STORAGE_MAX_ENTRIES || !parent_directory(normalized)) return STORAGE_ERR_NOTDIR;
     struct storage_entry *entry = &entries[entry_count]; zero(entry, sizeof(*entry)); text_copy(entry->path, normalized, sizeof(entry->path));
     const char *name = normalized; for (const char *p = normalized; *p; p++) if (*p == '/') name = p + 1;
-    text_copy(entry->name, name, sizeof(entry->name)); entry->type = type; entry_count++;
+    text_copy(entry->name, name, sizeof(entry->name)); entry->type = type;
+    entry->file_id = next_file_id++;
+    if (!next_file_id) next_file_id = 1;
+    entry->created_at = entry->modified_at = timestamp_now();
+    entry_count++;
     if (type == 'f' && content) { text_copy(entry->content, content, sizeof(entry->content)); while (entry->content[entry->size]) entry->size++; }
     return storage_sync();
 }
@@ -338,6 +387,7 @@ int storage_get_entry_info(const char *path, struct storage_entry_info *info)
     if (normalize(path, normalized) != STORAGE_OK) return STORAGE_ERR_INVAL;
     if (equal(normalized, "/")) {
         info->name = "/"; info->path = "/"; info->type = 'd'; info->size = 0; info->blocks_used = 0;
+        info->file_id = 0; info->created_at = 0; info->modified_at = 0; info->attributes = STORAGE_ATTR_SYSTEM;
         return STORAGE_OK;
     }
     index = find(normalized);
@@ -348,6 +398,10 @@ int storage_get_entry_info(const char *path, struct storage_entry_info *info)
     info->type = entries[index].type;
     info->size = entries[index].size;
     info->blocks_used = blocks;
+    info->file_id = entries[index].file_id;
+    info->created_at = entries[index].created_at;
+    info->modified_at = entries[index].modified_at;
+    info->attributes = entries[index].attributes;
     return STORAGE_OK;
 }
 int storage_get_entry_count(void) { return entry_count; }
@@ -424,6 +478,7 @@ int storage_write_file(const char *path, const void *buffer, size_t length, int 
     size_t offset = append ? entries[index].size : 0;
     if (offset >= sizeof(entries[index].content) || length >= sizeof(entries[index].content) - offset) return STORAGE_ERR_NOSPC;
     copy(entries[index].content + offset, buffer, length); entries[index].size = offset + length; entries[index].content[entries[index].size] = 0;
+    entries[index].modified_at = timestamp_now();
     return storage_sync() == STORAGE_OK ? (int)length : STORAGE_ERR_IO;
 }
 int storage_read_file(const char *path, void *buffer, size_t capacity, size_t *length)
@@ -507,7 +562,7 @@ int storage_write(int fd, const void *buffer, size_t length) { if (!mounted) ret
 int storage_seek(int fd, size_t offset) { if (!mounted) return STORAGE_ERR_NOTMOUNTED; if (fd < 0 || fd >= 16 || !fds[fd].used || offset >= sizeof(entries[0].content)) return STORAGE_ERR_BADFD; fds[fd].offset = offset; return STORAGE_OK; }
 
 int storage_get_device_info(struct storage_device_info *info) { if (!info || !storage_device) return STORAGE_ERR_NOENT; info->name = storage_device->name ? storage_device->name : "disk0"; info->type = storage_device->type ? storage_device->type : "ATA"; info->sectors = storage_device->sector_count; info->sector_size = BLOCK_SECTOR_SIZE; info->present = 1; info->mounted = mounted; return STORAGE_OK; }
-int storage_get_stats(struct storage_stats *stats) { if (!stats || !mounted) return STORAGE_ERR_NOTMOUNTED; stats->total_sectors = storage_device ? storage_device->sector_count : 0; stats->used_sectors = storage_device ? data_start : 0; stats->sector_size = BLOCK_SECTOR_SIZE; stats->file_count = 0; stats->directory_count = 0; for (int i = 0; i < entry_count; i++) { if (entries[i].type == 'f') { stats->file_count++; if (entries[i].blocks[0]) stats->used_sectors++; } else stats->directory_count++; } stats->free_sectors = stats->total_sectors > stats->used_sectors ? stats->total_sectors - stats->used_sectors : 0; return STORAGE_OK; }
+int storage_get_stats(struct storage_stats *stats) { if (!stats || !mounted) return STORAGE_ERR_NOTMOUNTED; stats->total_sectors = storage_sector_limit(); stats->used_sectors = storage_device ? data_start : 0; stats->sector_size = BLOCK_SECTOR_SIZE; stats->file_count = 0; stats->directory_count = 0; for (int i = 0; i < entry_count; i++) { if (entries[i].type == 'f') { stats->file_count++; for (int j = 0; j < STORAGE_MAX_FILE_BLOCKS; j++) if (entries[i].blocks[j]) stats->used_sectors++; } else stats->directory_count++; } stats->free_sectors = stats->total_sectors > stats->used_sectors ? stats->total_sectors - stats->used_sectors : 0; return STORAGE_OK; }
 static int count_allocated_data_sectors(uint64_t *count)
 {
     unsigned char block[BLOCK_SECTOR_SIZE];
@@ -618,6 +673,8 @@ unsigned int storage_self_test(void)
     selftest_saved_state.device = storage_device;
     selftest_saved_state.bitmap_sectors = bitmap_sectors;
     selftest_saved_state.data_start = data_start;
+    selftest_saved_state.next_file_id = next_file_id;
+    selftest_saved_state.last_timestamp = last_timestamp;
     selftest_saved_state.cache_next_slot = cache_next_slot;
     selftest_saved_state.entry_count = entry_count;
     selftest_saved_state.mounted = mounted;
@@ -702,6 +759,8 @@ unsigned int storage_self_test(void)
     storage_device = selftest_saved_state.device;
     bitmap_sectors = selftest_saved_state.bitmap_sectors;
     data_start = selftest_saved_state.data_start;
+    next_file_id = selftest_saved_state.next_file_id;
+    last_timestamp = selftest_saved_state.last_timestamp;
     cache_next_slot = selftest_saved_state.cache_next_slot;
     entry_count = selftest_saved_state.entry_count;
     mounted = selftest_saved_state.mounted;

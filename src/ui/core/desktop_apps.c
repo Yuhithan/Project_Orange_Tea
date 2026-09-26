@@ -132,13 +132,18 @@ static int collect_tasks(const char *prefix, DesktopTask *tasks)
 
 static void explorer_draw(ORWindow *window)
 {
-    ORgui_draw_text(window->x + 10, window->y + 32, "Location: /", OR_COLOR_FIRE_RED);
+    ORgui_draw_text(window->x + 10, window->y + 32, "Location: C:/", OR_COLOR_FIRE_RED);
     int row = window->y + 52;
     for (int index = 0; index < vfs_entry_count() && row < window->y + window->height - 12; index++) {
         struct storage_entry_info info;
         if (vfs_readdir(index, &info) != STORAGE_OK) continue;
         const char *path = info.path;
-        if (path[0] == '/' && path[1] && path[2] == '\0') {
+        if (text_starts(path, "/C:/")) {
+            const char *child = path + 4;
+            int direct_child = 1;
+            for (const char *cursor = child; *cursor; cursor++)
+                if (*cursor == '/') direct_child = 0;
+            if (!direct_child) continue;
             ORgui_draw_text(window->x + 14, row,
                             info.type == 'd' ? "[DIR]" : "[FILE]",
                             OR_COLOR_FIRE_ORANGE);

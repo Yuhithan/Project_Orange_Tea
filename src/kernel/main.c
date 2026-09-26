@@ -74,6 +74,7 @@ void kmain(uint64_t multiboot_magic,
      */
     irq_init();
     timer_init(1000);
+    storage_set_clock(timer_get_ticks);
 
 
     /*

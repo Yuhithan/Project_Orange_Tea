@@ -6,7 +6,15 @@ static const char *const desktop_directories[] = {
     "/C:",
     "/C:/System",
     "/C:/System/Config",
+    "/C:/System/Logs",
+    "/C:/System/Drivers",
     "/C:/Users",
+    "/C:/Users/Guest",
+    "/C:/Users/Guest/Desktop",
+    "/C:/Users/Guest/Documents",
+    "/C:/Users/Guest/Downloads",
+    "/C:/Users/Guest/Pictures",
+    "/C:/Users/Guest/AppData",
     "/C:/Users/admin",
     "/C:/Users/admin/Desktop",
     "/C:/Users/admin/Documents",
@@ -20,6 +28,7 @@ static const char *const desktop_directories[] = {
     "/C:/ProgramData/ORTos/Taskbar",
     "/C:/ProgramData/ORTos/Settings",
     "/C:/Temp",
+    "/C:/Recovery",
     "/C:/Logs",
     "/C:/Backups",
 };
@@ -37,9 +46,9 @@ static const struct desktop_task_seed desktop_tasks[] = {
     { "/C:/ProgramData/ORTos/Taskbar/OExplorer.task", "name=OExplorer\ncommand=OExplorer" },
     { "/C:/ProgramData/ORTos/Taskbar/setting.task", "name=setting\ncommand=setting" },
     { "/C:/ProgramData/ORTos/Taskbar/browser.task", "name=browser\ncommand=browser" },
-    { "/C:/Users/admin/Desktop/OExplorer.task", "name=OExplorer\ncommand=OExplorer" },
-    { "/C:/Users/admin/Desktop/setting.task", "name=setting\ncommand=setting" },
-    { "/C:/Users/admin/Desktop/browser.task", "name=browser\ncommand=browser" }
+    { "/C:/Users/Guest/Desktop/OExplorer.task", "name=OExplorer\ncommand=OExplorer" },
+    { "/C:/Users/Guest/Desktop/setting.task", "name=setting\ncommand=setting" },
+    { "/C:/Users/Guest/Desktop/browser.task", "name=browser\ncommand=browser" }
 };
 
 static int ensure_directory(const char *path)
@@ -117,7 +126,8 @@ int desktop_storage_init(void)
     } migrations[] = {
         { "/C:/menu/", "/C:/ProgramData/ORTos/Menu/" },
         { "/C:/menu/taskbar/", "/C:/ProgramData/ORTos/Taskbar/" },
-        { "/C:/user/admin/desktop/", "/C:/Users/admin/Desktop/" }
+        { "/C:/user/admin/desktop/", "/C:/Users/admin/Desktop/" },
+        { "/C:/Users/admin/Desktop/", "/C:/Users/Guest/Desktop/" }
     };
 
     for (size_t index = 0; index < sizeof(desktop_directories) / sizeof(desktop_directories[0]); index++) {

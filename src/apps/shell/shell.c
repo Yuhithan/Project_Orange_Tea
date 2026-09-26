@@ -17,7 +17,7 @@ static char history[MAX_HISTORY][MAX_CMD];
 static int history_count = 0;
 static char aliases[MAX_ALIASES][MAX_CMD];
 static int alias_count = 0;
-static char current_dir[STORAGE_MAX_PATH] = "/";
+static char current_dir[STORAGE_MAX_PATH] = "/C:/Users/Guest";
 static int shell_last_storage_status = STORAGE_OK;
 static char current_layout[16] = "en-us";
 static int shell_seed = 1337;
@@ -43,6 +43,18 @@ static int shell_streq(const char* a, const char* b)
     }
 
     return *a == *b;
+}
+
+static int shell_streq_case_insensitive(const char *left, const char *right)
+{
+    while (*left && *right) {
+        char a = *left++;
+        char b = *right++;
+        if (a >= 'A' && a <= 'Z') a = (char)(a - 'A' + 'a');
+        if (b >= 'A' && b <= 'Z') b = (char)(b - 'A' + 'a');
+        if (a != b) return 0;
+    }
+    return *left == *right;
 }
 
 static int shell_starts_with(const char* text, const char* prefix)
@@ -378,17 +390,57 @@ static int shell_resolve_path(const char* path, char* out, int max_len)
     return vfs_resolve_path(current_dir, path, out, (size_t)max_len) == STORAGE_OK;
 }
 
+static void shell_print_drive_path(void)
+{
+    if (shell_streq(current_dir, "/C:")) {
+        imp_text("C:/");
+    } else if (shell_starts_with(current_dir, "/C:/")) {
+        imp_text("C:");
+        imp_text(current_dir + 3);
+    } else {
+        imp_text(current_dir);
+    }
+}
+
+static int shell_path_is_protected(const char *path)
+{
+    static const char *const protected_trees[] = {
+        "/C:/System", "/C:/Program Files", "/C:/ProgramData",
+        "/C:/Recovery", "/C:/menu", "/C:/user"
+    };
+    static const char *const protected_directories[] = {
+        "/", "/C:", "/C:/Users", "/C:/Users/Guest", "/C:/Users/admin"
+    };
+    for (size_t index = 0; index < sizeof(protected_trees) / sizeof(protected_trees[0]); index++) {
+        size_t length = 0;
+        while (protected_trees[index][length]) length++;
+        if (shell_starts_with(path, protected_trees[index]) &&
+            (path[length] == '\0' || path[length] == '/')) return 1;
+    }
+    for (size_t index = 0; index < sizeof(protected_directories) / sizeof(protected_directories[0]); index++)
+        if (shell_streq(path, protected_directories[index])) return 1;
+    return 0;
+}
+
+static int shell_path_contains(const char *parent, const char *path)
+{
+    size_t length = 0;
+    while (parent[length]) length++;
+    return shell_starts_with(path, parent) &&
+        (path[length] == '\0' || (path[length] == '/' && length > 0));
+}
+
 static void shell_print_storage_error(int error)
 {
     switch (error) {
-    case STORAGE_ERR_NOENT: imp_text("Error: file or directory not found\n"); break;
-    case STORAGE_ERR_EXIST: imp_text("Error: file or directory already exists\n"); break;
-    case STORAGE_ERR_NOTDIR: imp_text("Error: parent is not a directory\n"); break;
-    case STORAGE_ERR_ISDIR: imp_text("Error: is a directory\n"); break;
-    case STORAGE_ERR_NOTEMPTY: imp_text("Error: directory is not empty\n"); break;
-    case STORAGE_ERR_NOSPC: imp_text("Error: storage full\n"); break;
-    case STORAGE_ERR_INVAL: imp_text("Error: invalid path\n"); break;
-    case STORAGE_ERR_NOTMOUNTED: imp_text("Error: filesystem is not mounted\n"); break;
+    case STORAGE_ERR_NOENT: imp_text("FILE NOT FOUND\n"); break;
+    case STORAGE_ERR_EXIST: imp_text("ALREADY EXISTS\n"); break;
+    case STORAGE_ERR_NOTDIR: imp_text("PATH NOT FOUND: parent is not a directory\n"); break;
+    case STORAGE_ERR_ISDIR: imp_text("IS A DIRECTORY\n"); break;
+    case STORAGE_ERR_NOTEMPTY: imp_text("DIRECTORY NOT EMPTY\n"); break;
+    case STORAGE_ERR_NOSPC: imp_text("INSUFFICIENT STORAGE\n"); break;
+    case STORAGE_ERR_INVAL: imp_text("INVALID PATH OR DRIVE\n"); break;
+    case STORAGE_ERR_NOTMOUNTED: imp_text("FILESYSTEM NOT MOUNTED\n"); break;
     default: imp_text("Error: filesystem error\n"); break;
     }
 }
@@ -709,14 +761,14 @@ static void shell_test_filesystem(void)
 
 static void shell_print_current_directory(void)
 {
-    imp_text(current_dir);
+    shell_print_drive_path();
     imp_char('\n');
 }
 
 static void shell_print_prompt(void)
 {
     imp_text("ORT$");
-    imp_text(current_dir);
+    shell_print_drive_path();
     imp_char('>');
 }
 
@@ -744,6 +796,9 @@ static void shell_execute_command(void)
     {
         shell_execute_text(expanded);
     }
+
+    for (int index = 0; cmd[index] && !shell_is_space(cmd[index]); index++)
+        if (cmd[index] >= 'A' && cmd[index] <= 'Z') cmd[index] = (char)(cmd[index] - 'A' + 'a');
 
     shell_add_history(cmd);
     shell_tick_clock();
@@ -871,10 +926,12 @@ static void shell_execute_command(void)
     {
         imp_text("IRQ: keyboard interrupt enabled\n");
     }
-    else if (shell_streq(cmd, "ls") || shell_starts_with(cmd, "ls "))
+    else if (shell_streq(cmd, "ls") || shell_starts_with(cmd, "ls ") ||
+             shell_streq(cmd, "dir") || shell_starts_with(cmd, "dir "))
     {
         char argument[STORAGE_MAX_PATH], directory[STORAGE_MAX_PATH];
-        const char *cursor = shell_read_word(shell_skip_spaces(cmd + 2), argument, sizeof(argument));
+        const char *arguments = cmd[0] == 'd' ? cmd + 3 : cmd + 2;
+        const char *cursor = shell_read_word(shell_skip_spaces(arguments), argument, sizeof(argument));
         if (*shell_skip_spaces(cursor)) { imp_text("Usage: ls [directory]\n"); }
         else {
             const char *path = argument[0] ? argument : current_dir;
@@ -905,22 +962,52 @@ static void shell_execute_command(void)
             }
         }
     }
-    else if (shell_streq(cmd, "disks") || shell_streq(cmd, "diskinfo") || shell_streq(cmd, "disk list") || shell_streq(cmd, "disk info"))
+    else if (shell_streq(cmd, "disks") || shell_streq(cmd, "diskinfo") ||
+             shell_starts_with(cmd, "diskinfo ") || shell_streq(cmd, "disk list") ||
+             shell_streq(cmd, "disk info") || shell_starts_with(cmd, "disk info "))
     {
+        int wants_info = shell_starts_with(cmd, "diskinfo") || shell_starts_with(cmd, "disk info");
+        const char *arguments = shell_starts_with(cmd, "diskinfo") ? cmd + 8 : cmd + 9;
+        char drive[16] = {0};
+        const char *cursor = arguments;
+        if (wants_info) cursor = shell_read_word(arguments, drive, sizeof(drive));
         struct storage_device_info info;
-        if (vfs_get_device_info(&info) != STORAGE_OK) imp_text("No storage device detected\n");
-        else
-        {
-            imp_text("Device: "); imp_text(info.name); imp_text(" Type: "); imp_text(info.type);
-            imp_text(" Sectors: "); shell_print_uint64(info.sectors); imp_text(" Sector size: "); shell_print_uint64(info.sector_size);
-            imp_text(" Status: "); imp_text(info.mounted ? "mounted\n" : "unmounted\n");
+        struct storage_stats stats;
+        if (drive[0] && (!shell_streq_case_insensitive(drive, "C:") || *shell_skip_spaces(cursor))) {
+            imp_text("INVALID DRIVE\n");
+        } else {
+            if (vfs_get_stats(&stats) == STORAGE_OK) {
+                imp_text("C:/ ORFS virtual drive: ");
+                shell_print_uint64(stats.total_sectors * stats.sector_size);
+                imp_text(" bytes total, ");
+                shell_print_uint64(stats.used_sectors * stats.sector_size);
+                imp_text(" bytes used, ");
+                shell_print_uint64(stats.free_sectors * stats.sector_size);
+                imp_text(" bytes free\n");
+            } else {
+                imp_text("C:/ virtual drive is not mounted\n");
+            }
+            if (wants_info) {
+                if (vfs_get_device_info(&info) != STORAGE_OK) imp_text("No backing device detected\n");
+                else {
+                    imp_text("Device: "); imp_text(info.name); imp_text(" Type: "); imp_text(info.type);
+                    imp_text(" Sectors: "); shell_print_uint64(info.sectors); imp_text(" Sector size: "); shell_print_uint64(info.sector_size);
+                    imp_text(" Status: "); imp_text(info.mounted ? "mounted\n" : "unmounted\n");
+                }
+            }
         }
     }
-    else if (shell_streq(cmd, "df"))
+    else if (shell_streq(cmd, "df") || shell_streq(cmd, "storage"))
     {
         struct storage_stats stats;
-        if (vfs_get_stats(&stats) != STORAGE_OK) imp_text("df: no mounted filesystem\n");
-        else { imp_text("Filesystem    Total sectors    Used    Free    Mount\n"); imp_text("ORFS          "); shell_print_uint64(stats.total_sectors); imp_text("             "); shell_print_uint64(stats.used_sectors); imp_text("     "); shell_print_uint64(stats.free_sectors); imp_text("     /\n"); }
+        if (vfs_get_stats(&stats) != STORAGE_OK) imp_text("C:/ no mounted filesystem\n");
+        else {
+            imp_text("C:/ Total: "); shell_print_uint64(stats.total_sectors * stats.sector_size);
+            imp_text(" bytes, Used: "); shell_print_uint64(stats.used_sectors * stats.sector_size);
+            imp_text(" bytes, Free: "); shell_print_uint64(stats.free_sectors * stats.sector_size);
+            imp_text(" bytes\nFiles: "); shell_print_uint64(stats.file_count);
+            imp_text(" Directories: "); shell_print_uint64(stats.directory_count); imp_char('\n');
+        }
     }
     else if (shell_streq(cmd, "mount"))
     {
@@ -954,7 +1041,7 @@ static void shell_execute_command(void)
     else if (shell_starts_with(cmd, "format"))
     {
         const char *argument = shell_skip_spaces(cmd + 6);
-        if (!shell_streq(argument, "yes")) imp_text("format: confirmation required, use 'format yes'\n");
+        if (!shell_streq_case_insensitive(argument, "yes")) imp_text("format: confirmation required, use 'format yes'\n");
         else if ((shell_last_storage_status = vfs_format()) == STORAGE_OK) imp_text("Filesystem formatted and mounted\n");
         else shell_print_storage_error(shell_last_storage_status);
     }
@@ -977,11 +1064,12 @@ static void shell_execute_command(void)
         else { shell_set_current_dir(resolved); shell_print_current_directory(); }
     }
     else if (shell_streq(cmd, "pwd")) shell_print_current_directory();
-    else if (shell_starts_with(cmd, "cat "))
+    else if (shell_starts_with(cmd, "cat ") || shell_starts_with(cmd, "type "))
     {
         char argument[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH], buffer[64];
-        const char *cursor = shell_read_word(shell_skip_spaces(cmd + 3), argument, sizeof(argument));
-        if (!argument[0] || *shell_skip_spaces(cursor)) { imp_text("Usage: cat <file>\n"); }
+        const char *arguments = cmd[0] == 't' ? cmd + 5 : cmd + 4;
+        const char *cursor = shell_read_word(shell_skip_spaces(arguments), argument, sizeof(argument));
+        if (!argument[0] || *shell_skip_spaces(cursor)) { imp_text("Usage: type <file>\n"); }
         else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
         else {
             int fd = vfs_open(resolved, 0);
@@ -1121,7 +1209,7 @@ static void shell_execute_command(void)
     {
         imp_text("PID 1 shell\nPID 2 idle\n");
     }
-    else if (shell_streq(cmd, "test filesystem") || shell_streq(cmd, "test storage"))
+    else if (shell_streq_case_insensitive(cmd, "test filesystem") || shell_streq_case_insensitive(cmd, "test storage"))
     {
         shell_test_filesystem();
     }
@@ -1602,6 +1690,8 @@ void shell_execute_line(const char *line)
 void shell_init()
 {
     vfs_init();
+    int storage_result = desktop_storage_init();
+    if (storage_result != STORAGE_OK) shell_print_storage_error(storage_result);
 
     imp_text("ORT Shell\n");
     imp_text("Type 'help' for a list of commands.\n");

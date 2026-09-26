@@ -55,6 +55,7 @@ foreach(source IN LISTS ORTOS_KERNEL_C_SOURCES)
         COMMAND "${ORTOS_C_COMPILER}" -c "${source}" -o "${object}"
             -I${ORTOS_INCLUDE_DIR} -ffreestanding -fno-pie -fno-stack-protector
             -mno-red-zone -Wall -Wextra
+            -DSTORAGE_CAPACITY_SECTORS=${ORTOS_VIRTUAL_DISK_SECTORS}
         DEPENDS "${source}"
         VERBATIM
     )

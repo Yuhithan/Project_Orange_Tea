@@ -2,6 +2,8 @@ add_library(ortos_storage STATIC
     "${ORTOS_SOURCE_DIR}/fs/storage/storage.c"
     "${ORTOS_SOURCE_DIR}/fs/vfs/vfs.c")
 target_include_directories(ortos_storage PUBLIC "${ORTOS_INCLUDE_DIR}")
+target_compile_definitions(ortos_storage PUBLIC
+    STORAGE_CAPACITY_SECTORS=${ORTOS_VIRTUAL_DISK_SECTORS})
 
 add_executable(ora_format_test
     ora_format_test.c

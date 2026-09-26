@@ -232,6 +232,9 @@ ORTOS_C_COMPILER:FILEPATH=/usr/local/bin/x86_64-elf-gcc
 //Path to a program.
 ORTOS_LINKER:FILEPATH=/usr/local/bin/x86_64-elf-ld
 
+//Maximum C:/ capacity in sectors (0 uses the full block device)
+ORTOS_VIRTUAL_DISK_SECTORS:STRING=0
+
 //Value Computed by CMake
 ORTos_BINARY_DIR:STATIC=/root/env/build-docker
 

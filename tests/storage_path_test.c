@@ -17,6 +17,15 @@ int main(void)
     assert(strcmp(resolved, "/folder/file.txt") == 0);
     assert(vfs_resolve_path("/", "../../../root.txt", resolved, sizeof(resolved)) == STORAGE_OK);
     assert(strcmp(resolved, "/root.txt") == 0);
+    assert(vfs_resolve_path("C:/Users/Guest", "C:/System/Config/config.json", resolved, sizeof(resolved)) == STORAGE_OK);
+    assert(strcmp(resolved, "/C:/System/Config/config.json") == 0);
+    assert(vfs_resolve_path("C:/Users/Guest", "../Documents/file.txt", resolved, sizeof(resolved)) == STORAGE_OK);
+    assert(strcmp(resolved, "/C:/Users/Documents/file.txt") == 0);
+    assert(vfs_resolve_path("C:/Users/Guest", "C:\\Users\\Guest\\Desktop\\note.txt", resolved, sizeof(resolved)) == STORAGE_OK);
+    assert(strcmp(resolved, "/C:/Users/Guest/Desktop/note.txt") == 0);
+    assert(vfs_resolve_path("C:/Users/Guest", "../../../../Recovery", resolved, sizeof(resolved)) == STORAGE_OK);
+    assert(strcmp(resolved, "/C:/Recovery") == 0);
+    assert(vfs_resolve_path("C:/Users/Guest", "D:/Users/file.txt", resolved, sizeof(resolved)) == STORAGE_ERR_INVAL);
 
     storage_init();
 

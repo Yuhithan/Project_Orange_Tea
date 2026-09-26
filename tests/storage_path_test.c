@@ -1,9 +1,23 @@
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include "storage.h"
+#include "vfs.h"
 
 int main(void)
 {
+    char resolved[STORAGE_MAX_PATH];
+    assert(vfs_resolve_path("/home/user", "file.txt", resolved, sizeof(resolved)) == STORAGE_OK);
+    assert(strcmp(resolved, "/home/user/file.txt") == 0);
+    assert(vfs_resolve_path("/home/user", "./folder//file.txt/", resolved, sizeof(resolved)) == STORAGE_OK);
+    assert(strcmp(resolved, "/home/user/folder/file.txt") == 0);
+    assert(vfs_resolve_path("/home/user", "../file.txt", resolved, sizeof(resolved)) == STORAGE_OK);
+    assert(strcmp(resolved, "/home/file.txt") == 0);
+    assert(vfs_resolve_path("/home/user", "/folder/file.txt", resolved, sizeof(resolved)) == STORAGE_OK);
+    assert(strcmp(resolved, "/folder/file.txt") == 0);
+    assert(vfs_resolve_path("/", "../../../root.txt", resolved, sizeof(resolved)) == STORAGE_OK);
+    assert(strcmp(resolved, "/root.txt") == 0);
+
     storage_init();
 
     int created = storage_create_entry("/docs/guide", 'f', "hello");

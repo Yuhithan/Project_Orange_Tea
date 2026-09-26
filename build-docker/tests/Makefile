@@ -395,6 +395,30 @@ __/src/fs/storage/storage.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_storage.dir/build.make tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.s
 .PHONY : __/src/fs/storage/storage.c.s
 
+__/src/fs/vfs/vfs.o: __/src/fs/vfs/vfs.c.o
+.PHONY : __/src/fs/vfs/vfs.o
+
+# target to build an object file
+__/src/fs/vfs/vfs.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_storage.dir/build.make tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o
+.PHONY : __/src/fs/vfs/vfs.c.o
+
+__/src/fs/vfs/vfs.i: __/src/fs/vfs/vfs.c.i
+.PHONY : __/src/fs/vfs/vfs.i
+
+# target to preprocess a source file
+__/src/fs/vfs/vfs.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_storage.dir/build.make tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.i
+.PHONY : __/src/fs/vfs/vfs.c.i
+
+__/src/fs/vfs/vfs.s: __/src/fs/vfs/vfs.c.s
+.PHONY : __/src/fs/vfs/vfs.s
+
+# target to generate assembly for a file
+__/src/fs/vfs/vfs.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_storage.dir/build.make tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.s
+.PHONY : __/src/fs/vfs/vfs.c.s
+
 __/src/kernel/exec/ora.o: __/src/kernel/exec/ora.c.o
 .PHONY : __/src/kernel/exec/ora.o
 
@@ -883,6 +907,9 @@ help:
 	@echo "... __/src/fs/storage/storage.o"
 	@echo "... __/src/fs/storage/storage.i"
 	@echo "... __/src/fs/storage/storage.s"
+	@echo "... __/src/fs/vfs/vfs.o"
+	@echo "... __/src/fs/vfs/vfs.i"
+	@echo "... __/src/fs/vfs/vfs.s"
 	@echo "... __/src/kernel/exec/ora.o"
 	@echo "... __/src/kernel/exec/ora.i"
 	@echo "... __/src/kernel/exec/ora.s"

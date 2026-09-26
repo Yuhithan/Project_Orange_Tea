@@ -83,17 +83,33 @@ tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.s"
 	cd /root/env/build-docker/tests && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/fs/storage/storage.c -o CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.s
 
+tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o: tests/CMakeFiles/ortos_storage.dir/flags.make
+tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o: /root/env/src/fs/vfs/vfs.c
+tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o: tests/CMakeFiles/ortos_storage.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o"
+	cd /root/env/build-docker/tests && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o -MF CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o.d -o CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o -c /root/env/src/fs/vfs/vfs.c
+
+tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.i"
+	cd /root/env/build-docker/tests && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /root/env/src/fs/vfs/vfs.c > CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.i
+
+tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.s"
+	cd /root/env/build-docker/tests && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /root/env/src/fs/vfs/vfs.c -o CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.s
+
 # Object files for target ortos_storage
 ortos_storage_OBJECTS = \
-"CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o"
+"CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o" \
+"CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o"
 
 # External object files for target ortos_storage
 ortos_storage_EXTERNAL_OBJECTS =
 
 tests/libortos_storage.a: tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o
+tests/libortos_storage.a: tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o
 tests/libortos_storage.a: tests/CMakeFiles/ortos_storage.dir/build.make
 tests/libortos_storage.a: tests/CMakeFiles/ortos_storage.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C static library libortos_storage.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C static library libortos_storage.a"
 	cd /root/env/build-docker/tests && $(CMAKE_COMMAND) -P CMakeFiles/ortos_storage.dir/cmake_clean_target.cmake
 	cd /root/env/build-docker/tests && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/ortos_storage.dir/link.txt --verbose=$(VERBOSE)
 

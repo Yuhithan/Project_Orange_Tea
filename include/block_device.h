@@ -11,4 +11,5 @@ struct block_device {
     const char *type;
     int (*read_sector)(void *context, uint64_t sector, void *buffer);
     int (*write_sector)(void *context, uint64_t sector, const void *buffer);
+    int (*flush)(void *context);
 };

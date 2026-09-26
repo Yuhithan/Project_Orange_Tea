@@ -155,6 +155,20 @@ orangetea_iso/fast:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/orangetea_iso.dir/build.make src/CMakeFiles/orangetea_iso.dir/build
 .PHONY : orangetea_iso/fast
 
+# Convenience name for target.
+src/CMakeFiles/run_os.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/run_os.dir/rule
+.PHONY : src/CMakeFiles/run_os.dir/rule
+
+# Convenience name for target.
+run_os: src/CMakeFiles/run_os.dir/rule
+.PHONY : run_os
+
+# fast build rule for target.
+run_os/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/run_os.dir/build.make src/CMakeFiles/run_os.dir/build
+.PHONY : run_os/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -166,6 +180,7 @@ help:
 	@echo "... test"
 	@echo "... orangetea_iso"
 	@echo "... ortos_kernel"
+	@echo "... run_os"
 .PHONY : help
 
 

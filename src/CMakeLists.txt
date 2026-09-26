@@ -111,6 +111,11 @@ if(ORTOS_ASSEMBLER AND ORTOS_BOOT_OBJECTS)
                 "${ORTOS_SOURCE_DIR}/sysroot/cursor/cursor_arrow.cur"
             VERBATIM)
         add_custom_target(orangetea_iso ALL DEPENDS "${ORTOS_ISO}")
+        add_custom_target(run_os
+            COMMAND sh "${CMAKE_CURRENT_SOURCE_DIR}/../tools/run_os.sh"
+            DEPENDS orangetea_iso
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
+            USES_TERMINAL)
     else()
         message(WARNING "grub-mkrescue was not found; only the kernel target is available.")
     endif()

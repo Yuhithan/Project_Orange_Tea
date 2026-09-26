@@ -64,6 +64,7 @@ tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/syscall/syscall.c.o: /roo
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+  /root/env/include/vfs.h \
   /root/env/include/storage.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
   /root/env/include/block_device.h \
@@ -103,6 +104,10 @@ tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.o: /root/env/test
 
 /usr/include/strings.h:
 
+/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
+
+/usr/include/assert.h:
+
 /root/env/src/kernel/process/process.c:
 
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
@@ -133,10 +138,6 @@ tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.o: /root/env/test
 
 /usr/include/x86_64-linux-gnu/bits/typesizes.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
-
-/usr/include/assert.h:
-
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
 
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
@@ -148,6 +149,8 @@ tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.o: /root/env/test
 /root/env/src/kernel/syscall/syscall.c:
 
 /root/env/include/syscall.h:
+
+/root/env/include/vfs.h:
 
 /usr/include/string.h:
 

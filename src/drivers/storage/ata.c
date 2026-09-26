@@ -13,6 +13,7 @@
 #define ATA_CMD_IDENTIFY 0xec
 #define ATA_CMD_READ 0x20
 #define ATA_CMD_WRITE 0x30
+#define ATA_CMD_FLUSH_CACHE 0xe7
 #define ATA_STATUS_BUSY 0x80
 #define ATA_STATUS_READY 0x40
 #define ATA_STATUS_ERROR 0x01
@@ -72,6 +73,15 @@ static int ata_write_sector(void *context, uint64_t sector, const void *buffer)
     return ata_wait(0);
 }
 
+static int ata_flush(void *context)
+{
+    (void)context;
+    if (!ata_ready) return -1;
+    ata_select(0);
+    io_outb(ATA_COMMAND, ATA_CMD_FLUSH_CACHE);
+    return ata_wait(0);
+}
+
 int ata_primary_master_init(void)
 {
     uint8_t status;
@@ -92,6 +102,7 @@ int ata_primary_master_init(void)
     primary_master.type = "ATA/IDE";
     primary_master.read_sector = ata_read_sector;
     primary_master.write_sector = ata_write_sector;
+    primary_master.flush = ata_flush;
     ata_ready = primary_master.sector_count != 0;
     return ata_ready ? 0 : -1;
 }

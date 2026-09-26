@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/root/env/src/fs/storage/storage.c" "tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o" "gcc" "tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o.d"
+  "/root/env/src/fs/vfs/vfs.c" "tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o" "gcc" "tests/CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o.d"
   )
 
 # Targets to which this target links.

@@ -2,6 +2,7 @@
 #include "keyboard.h"
 #include "imp.h"
 #include "storage.h"
+#include "vfs.h"
 #include "network.h"
 #include "boot_mode.h"
 #include "desktop.h"
@@ -17,6 +18,7 @@ static int history_count = 0;
 static char aliases[MAX_ALIASES][MAX_CMD];
 static int alias_count = 0;
 static char current_dir[STORAGE_MAX_PATH] = "/";
+static int shell_last_storage_status = STORAGE_OK;
 static char current_layout[16] = "en-us";
 static int shell_seed = 1337;
 static int shell_uptime_seconds = 0;
@@ -340,7 +342,8 @@ static void shell_print_help(void)
     imp_text("  kill        - termine une tâche\n");
     imp_text("  ps          - liste les processus\n");
     imp_text("  test        - lance les tests du noyau\n");
-    imp_text("  test filesystem - teste le système de fichiers monté\n");
+    imp_text("  test filesystem - teste les commandes sur le système de fichiers monté\n");
+    imp_text("  test storage - alias de test filesystem\n");
     imp_text("  panic       - déclenche un kernel panic\n");
     imp_text("  beep        - bip du PC Speaker\n");
     imp_text("  cls         - alias de clear\n");
@@ -372,40 +375,7 @@ static void shell_set_current_dir(const char* path)
 
 static int shell_resolve_path(const char* path, char* out, int max_len)
 {
-    char combined[MAX_CMD + STORAGE_MAX_PATH];
-    size_t input_length = 0, current_length = 0;
-    int marks[32], components = 0, length = 1;
-    if (!path || !out || max_len < 2 || !*path) return 0;
-    while (path[input_length] && input_length < MAX_CMD - 1) input_length++;
-    if (path[input_length]) return 0;
-    if (path[0] == '/') shell_copy_string(combined, path, sizeof(combined));
-    else {
-        while (current_dir[current_length] && current_length < STORAGE_MAX_PATH) current_length++;
-        if (current_length + input_length + 2 >= sizeof(combined)) return 0;
-        shell_copy_string(combined, current_dir, sizeof(combined));
-        if (current_length > 1) combined[current_length++] = '/';
-        shell_copy_string(combined + current_length, path, (int)(sizeof(combined) - current_length));
-    }
-    out[0] = '/'; out[1] = 0;
-    for (size_t position = 0; combined[position];) {
-        while (combined[position] == '/') position++;
-        if (!combined[position]) break;
-        size_t first = position;
-        while (combined[position] && combined[position] != '/') position++;
-        size_t count = position - first;
-        if (count == 1 && combined[first] == '.') continue;
-        if (count == 2 && combined[first] == '.' && combined[first + 1] == '.') {
-            if (components) { length = marks[--components]; out[length] = 0; }
-            continue;
-        }
-        if (count >= 16 || components >= 32 || length + (length > 1) + count >= STORAGE_MAX_PATH ||
-            length + (length > 1) + count >= (size_t)max_len) return 0;
-        marks[components++] = length;
-        if (length > 1) out[length++] = '/';
-        for (size_t offset = 0; offset < count; offset++) out[length++] = combined[first + offset];
-        out[length] = 0;
-    }
-    return 1;
+    return vfs_resolve_path(current_dir, path, out, (size_t)max_len) == STORAGE_OK;
 }
 
 static void shell_print_storage_error(int error)
@@ -437,7 +407,7 @@ static int shell_join_target(const char *source, const char *target, char *out, 
     while (target[target_length]) target_length++;
     const char *name = shell_basename(source);
     while (name[name_length]) name_length++;
-    if (storage_get_entry_info(target, &info) != STORAGE_OK || info.type != 'd') {
+    if (vfs_stat(target, &info) != STORAGE_OK || info.type != 'd') {
         shell_copy_string(out, target, max_len);
         return 1;
     }
@@ -476,7 +446,8 @@ static void shell_create_command(const char *arguments)
         }
         char resolved[STORAGE_MAX_PATH];
         if (!shell_resolve_path(path, resolved, sizeof(resolved))) { imp_text("Error: invalid path\n"); return; }
-        int result = storage_create_file(resolved, content, content_length);
+        int result = vfs_create(resolved, content, content_length);
+        shell_last_storage_status = result;
         if (result == STORAGE_OK) { imp_text("File created: "); imp_text(resolved); imp_char('\n'); }
         else shell_print_storage_error(result);
         return;
@@ -486,7 +457,8 @@ static void shell_create_command(const char *arguments)
         if (!path[0] || *shell_skip_spaces(cursor)) { imp_text("Usage: create folder <path>\n"); return; }
         char resolved[STORAGE_MAX_PATH];
         if (!shell_resolve_path(path, resolved, sizeof(resolved))) { imp_text("Error: invalid path\n"); return; }
-        int result = storage_mkdir(resolved);
+        int result = vfs_mkdir(resolved);
+        shell_last_storage_status = result;
         if (result == STORAGE_OK) { imp_text("Directory created: "); imp_text(resolved); imp_char('\n'); }
         else shell_print_storage_error(result);
         return;
@@ -504,7 +476,8 @@ static void shell_mkdir_command(const char *arguments)
     if (!path[0] || *shell_skip_spaces(cursor)) { imp_text("Usage: mkdir [-p] <directory>\n"); return; }
     if (!shell_resolve_path(path, resolved, sizeof(resolved))) { imp_text("Error: invalid path\n"); return; }
     if (!recursive) {
-        int result = storage_mkdir(resolved);
+        int result = vfs_mkdir(resolved);
+        shell_last_storage_status = result;
         if (result == STORAGE_OK) imp_text("Directory created\n"); else shell_print_storage_error(result);
         return;
     }
@@ -514,12 +487,13 @@ static void shell_mkdir_command(const char *arguments)
         size_t length = i;
         for (size_t j = 0; j < length; j++) component[j] = resolved[j];
         component[length] = 0;
-        if (storage_find_entry(component) >= 0) {
-            struct storage_entry_info info;
-            if (storage_get_entry_info(component, &info) != STORAGE_OK || info.type != 'd') { imp_text("Error: path component is not a directory\n"); return; }
+        struct storage_entry_info existing;
+        if (vfs_stat(component, &existing) == STORAGE_OK) {
+            if (existing.type != 'd') { imp_text("Error: path component is not a directory\n"); return; }
             continue;
         }
-        int result = storage_mkdir(component);
+        int result = vfs_mkdir(component);
+        shell_last_storage_status = result;
         if (result != STORAGE_OK) { shell_print_storage_error(result); return; }
     }
     if (resolved[1] == 0) { imp_text("Error: invalid path\n"); return; }
@@ -543,7 +517,17 @@ static void shell_textedit(const char *path)
 {
     char current[256], replacement[256], line[128];
     size_t current_length = 0, replacement_length = 0;
-    int result = storage_read_file(path, current, sizeof(current), &current_length);
+    int result = vfs_stat(path, &(struct storage_entry_info){0});
+    if (result == STORAGE_OK) {
+        int fd = vfs_open(path, 0);
+        if (fd < 0) result = fd;
+        else {
+            int count = vfs_read(fd, current, sizeof(current));
+            vfs_close(fd);
+            if (count < 0) result = count;
+            else { current_length = (size_t)count; result = STORAGE_OK; }
+        }
+    }
     if (result < 0) { shell_print_storage_error(result); return; }
     imp_text("Current contents:\n");
     for (size_t i = 0; i < current_length; i++) imp_char(current[i]);
@@ -559,7 +543,9 @@ static void shell_textedit(const char *path)
         for (size_t i = 0; i < line_length; i++) replacement[replacement_length++] = line[i];
         replacement[replacement_length++] = '\n';
     }
-    result = storage_write_file(path, replacement, replacement_length, 0);
+    result = vfs_write_file(path, replacement, replacement_length, 0);
+    shell_last_storage_status = result < 0 ? result : STORAGE_OK;
+    if (result >= 0) result = STORAGE_OK;
     if (result < 0) shell_print_storage_error(result); else imp_text("File saved\n");
 }
 
@@ -573,18 +559,54 @@ static int shell_confirm_delete(void)
     return confirmed;
 }
 
-static void shell_test_report(const char *name, int passed)
+static const char *shell_storage_error_name(int error)
 {
-    imp_text(passed ? "[PASS] " : "[FAIL] ");
+    switch (error) {
+    case STORAGE_OK: return "success";
+    case STORAGE_ERR_INVAL: return "invalid argument/path";
+    case STORAGE_ERR_NOENT: return "not found";
+    case STORAGE_ERR_EXIST: return "already exists";
+    case STORAGE_ERR_NOTDIR: return "not a directory";
+    case STORAGE_ERR_ISDIR: return "is a directory";
+    case STORAGE_ERR_NOSPC: return "storage full";
+    case STORAGE_ERR_NOTEMPTY: return "directory not empty";
+    case STORAGE_ERR_IO: return "storage I/O error";
+    case STORAGE_ERR_NOTMOUNTED: return "filesystem not mounted";
+    case STORAGE_ERR_CORRUPT: return "filesystem corrupted";
+    default: return "unexpected result";
+    }
+}
+
+static void shell_test_report(const char *name, int actual, int expected, const char *path)
+{
+    imp_text("[TEST] ");
     imp_text(name);
+    imp_char('\n');
+    if (actual == expected) {
+        imp_text("[PASS] ");
+        imp_text(name);
+        imp_char('\n');
+        return;
+    }
+    imp_text("[FAIL] ");
+    imp_text(name);
+    imp_char('\n');
+    imp_text("error: ");
+    imp_text(shell_storage_error_name(actual));
+    imp_text("\npath: ");
+    imp_text(path ? path : "(none)");
+    imp_text("\nerrno: ");
+    shell_print_int(actual);
     imp_char('\n');
 }
 
 static int shell_directory_has_child(const char *directory, const char *child_name)
 {
     size_t directory_length = (size_t)shell_strlen(directory);
-    for (int i = 0; i < storage_get_entry_count(); i++) {
-        const char *path = storage_get_entry_path(i);
+    for (int i = 0; i < vfs_entry_count(); i++) {
+        struct storage_entry_info info;
+        if (vfs_readdir(i, &info) != STORAGE_OK) continue;
+        const char *path = info.path;
         const char *child = 0;
         if (directory_length == 1) child = path[0] == '/' ? path + 1 : 0;
         else if (shell_starts_with(path, directory) && path[directory_length] == '/') child = path + directory_length + 1;
@@ -596,56 +618,93 @@ static int shell_directory_has_child(const char *directory, const char *child_na
     return 0;
 }
 
+static int shell_test_read_file(const char *path, char *buffer, size_t capacity)
+{
+    int fd = vfs_open(path, 0);
+    if (fd < 0) return fd;
+    int count = vfs_read(fd, buffer, capacity);
+    vfs_close(fd);
+    return count;
+}
+
 static void shell_test_filesystem(void)
 {
     static const char root[] = "/.ortos-fs-test";
-    static const char nested[] = "/.ortos-fs-test/sub";
-    static const char original[] = "/.ortos-fs-test/sub/original.txt";
-    static const char renamed[] = "/.ortos-fs-test/sub/renamed.txt";
-    static const char copied[] = "/.ortos-fs-test/sub/copied.txt";
-    char content[32] = {0}, saved_directory[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH];
-    size_t length = 0;
+    static const char nested[] = "/.ortos-fs-test/subdir";
+    static const char file[] = "/.ortos-fs-test/test.txt";
+    static const char copy[] = "/.ortos-fs-test/copy.txt";
+    static const char moved[] = "/.ortos-fs-test/moved.txt";
+    char content[32] = {0}, saved_directory[STORAGE_MAX_PATH];
     struct storage_stats stats_before, stats_after;
-    int result;
-    if (storage_find_entry(root) >= 0) { shell_test_report("dedicated test directory is unused", 0); return; }
-    shell_test_report("dedicated test directory is unused", 1);
-
-    result = storage_mkdir(root);
-    shell_test_report("create directory", result == STORAGE_OK);
-    if (result != STORAGE_OK) return;
-    result = storage_mkdir(nested);
-    shell_test_report("create nested directory", result == STORAGE_OK);
-    result = storage_create_file(original, 0, 0);
-    shell_test_report("create file", result == STORAGE_OK);
-    int write_result = result == STORAGE_OK ? storage_write_file(original, "old", 3, 0) : result;
-    shell_test_report("write file", write_result == 3);
-    int read_result = storage_read_file(original, content, sizeof(content), &length);
-    shell_test_report("read file", read_result == 3 && length == 3 && content[0] == 'o' && content[2] == 'd');
-    int modify_result = storage_write_file(original, "new", 3, 0);
-    content[0] = 0; length = 0;
-    read_result = storage_read_file(original, content, sizeof(content), &length);
-    shell_test_report("modify file", modify_result == 3 && read_result == 3 && content[0] == 'n' && content[2] == 'w');
-    shell_test_report("list directory", shell_directory_has_child(nested, "original.txt"));
-
+    struct storage_entry_info existing;
     shell_copy_string(saved_directory, current_dir, sizeof(saved_directory));
-    shell_set_current_dir(nested);
-    int relative_ok = shell_resolve_path("../sub/original.txt", resolved, sizeof(resolved)) && shell_streq(resolved, original);
-    int absolute_ok = shell_resolve_path(original, resolved, sizeof(resolved)) && shell_streq(resolved, original);
-    shell_set_current_dir(saved_directory);
-    shell_test_report("relative and absolute paths", relative_ok && absolute_ok);
-    shell_test_report("rename file", storage_rename(original, renamed) == STORAGE_OK);
-    shell_test_report("copy file", storage_copy(renamed, copied) == STORAGE_OK);
-    shell_test_report("rmdir rejects non-empty directory", storage_rmdir(nested) == STORAGE_ERR_NOTEMPTY);
-    result = storage_mkdir("/.ortos-fs-test/empty");
-    shell_test_report("rmdir empty directory", result == STORAGE_OK && storage_rmdir("/.ortos-fs-test/empty") == STORAGE_OK);
-    int stats_ok = storage_get_stats(&stats_before) == STORAGE_OK;
-    shell_test_report("filesystem free-space reporting", stats_ok);
-    shell_test_report("storage sync", storage_sync() == STORAGE_OK);
-    int tree_removed = storage_remove_tree(root) == STORAGE_OK && storage_find_entry(root) < 0;
-    shell_test_report("recursive directory deletion and cleanup", tree_removed);
-    int space_restored = storage_get_stats(&stats_after) == STORAGE_OK &&
-        (!stats_ok || stats_after.free_sectors >= stats_before.free_sectors);
-    shell_test_report("free space after cleanup", space_restored);
+    int result = vfs_stat(root, &existing);
+    shell_test_report("dedicated path is unused", result, STORAGE_ERR_NOENT, root);
+    if (result != STORAGE_ERR_NOENT) return;
+
+    shell_execute_line("mkdir /.ortos-fs-test");
+    result = shell_last_storage_status;
+    shell_test_report("mkdir", result, STORAGE_OK, root);
+    if (result != STORAGE_OK || vfs_stat(root, &existing) != STORAGE_OK) return;
+
+    shell_execute_line("mkdir /.ortos-fs-test/subdir");
+    shell_test_report("nested mkdir", shell_last_storage_status, STORAGE_OK, nested);
+    shell_execute_line("create file \"hello\" > /.ortos-fs-test/test.txt");
+    shell_test_report("create file", shell_last_storage_status, STORAGE_OK, file);
+    shell_execute_line("cat /.ortos-fs-test/test.txt");
+    int count = shell_test_read_file(file, content, sizeof(content));
+    shell_test_report("cat/read contents", count == 5 && content[0] == 'h' && content[4] == 'o' ? STORAGE_OK : (count < 0 ? count : STORAGE_ERR_CORRUPT), STORAGE_OK, file);
+
+    shell_execute_line("write /.ortos-fs-test/test.txt \"persistent test\"");
+    shell_test_report("write file", shell_last_storage_status, 15, file);
+    shell_execute_line("cat /.ortos-fs-test/test.txt");
+    count = shell_test_read_file(file, content, sizeof(content));
+    shell_test_report("read modified contents", count == 15 && content[0] == 'p' && content[14] == 't' ? STORAGE_OK : (count < 0 ? count : STORAGE_ERR_CORRUPT), STORAGE_OK, file);
+
+    shell_execute_line("cp /.ortos-fs-test/test.txt /.ortos-fs-test/copy.txt");
+    shell_test_report("cp", shell_last_storage_status, STORAGE_OK, copy);
+    shell_execute_line("mv /.ortos-fs-test/copy.txt /.ortos-fs-test/moved.txt");
+    shell_test_report("mv", shell_last_storage_status, STORAGE_OK, moved);
+    shell_execute_line("stat /.ortos-fs-test/moved.txt");
+    struct storage_entry_info file_info;
+    result = vfs_stat(moved, &file_info);
+    shell_test_report("stat", result == STORAGE_OK && file_info.type == 'f' && file_info.size == 15 ? STORAGE_OK : (result < 0 ? result : STORAGE_ERR_CORRUPT), STORAGE_OK, moved);
+
+    shell_execute_line("cd /.ortos-fs-test/subdir");
+    shell_test_report("cd", shell_streq(current_dir, nested) ? STORAGE_OK : STORAGE_ERR_CORRUPT, STORAGE_OK, nested);
+    shell_execute_line("pwd");
+    shell_test_report("pwd", shell_streq(current_dir, nested) ? STORAGE_OK : STORAGE_ERR_CORRUPT, STORAGE_OK, nested);
+    shell_execute_line("create file \"relative\" > ./relative.txt");
+    shell_test_report("relative path create", shell_last_storage_status, STORAGE_OK, "/.ortos-fs-test/subdir/relative.txt");
+    shell_execute_line("ls");
+    shell_test_report("ls", shell_directory_has_child(nested, "relative.txt") ? STORAGE_OK : STORAGE_ERR_NOENT, STORAGE_OK, nested);
+    shell_execute_line("cd /");
+    shell_test_report("cd root", shell_streq(current_dir, "/") ? STORAGE_OK : STORAGE_ERR_CORRUPT, STORAGE_OK, "/");
+    shell_execute_line("mkdir /.ortos-fs-test/empty");
+    shell_execute_line("rmdir /.ortos-fs-test/empty");
+    shell_test_report("empty rmdir", shell_last_storage_status, STORAGE_OK, "/.ortos-fs-test/empty");
+    shell_execute_line("rmdir /.ortos-fs-test/subdir");
+    shell_test_report("non-empty rmdir rejected", shell_last_storage_status, STORAGE_ERR_NOTEMPTY, nested);
+    shell_execute_line("rm /.ortos-fs-test/subdir/relative.txt");
+    shell_test_report("rm", shell_last_storage_status, STORAGE_OK, "/.ortos-fs-test/subdir/relative.txt");
+    shell_execute_line("rmdir /.ortos-fs-test/subdir");
+    shell_test_report("rmdir after emptying", shell_last_storage_status, STORAGE_OK, nested);
+    shell_execute_line("rmdir /.ortos-fs-test");
+    shell_test_report("non-empty parent rmdir rejected", shell_last_storage_status, STORAGE_ERR_NOTEMPTY, root);
+
+    shell_execute_line("du /.ortos-fs-test");
+    shell_execute_line("df");
+    int stats_result = vfs_get_stats(&stats_before);
+    shell_test_report("free-space reporting", stats_result, STORAGE_OK, root);
+    shell_execute_line("sync");
+    shell_test_report("sync", shell_last_storage_status, STORAGE_OK, root);
+    shell_execute_line("del -f /.ortos-fs-test");
+    result = shell_last_storage_status;
+    if (result == STORAGE_OK) result = vfs_stat(root, &existing) == STORAGE_ERR_NOENT ? STORAGE_OK : STORAGE_ERR_CORRUPT;
+    shell_test_report("recursive deletion", result, STORAGE_OK, root);
+    stats_result = vfs_get_stats(&stats_after);
+    shell_test_report("space after cleanup", stats_result == STORAGE_OK && stats_after.free_sectors >= stats_before.free_sectors ? STORAGE_OK : (stats_result < 0 ? stats_result : STORAGE_ERR_CORRUPT), STORAGE_OK, root);
+    if (!shell_starts_with(saved_directory, root)) shell_set_current_dir(saved_directory);
 }
 
 static void shell_print_current_directory(void)
@@ -821,14 +880,16 @@ static void shell_execute_command(void)
             const char *path = argument[0] ? argument : current_dir;
             struct storage_entry_info dir_info;
             if (!shell_resolve_path(path, directory, sizeof(directory))) imp_text("Error: invalid path\n");
-            else if (storage_get_entry_info(directory, &dir_info) != STORAGE_OK) imp_text("Error: directory not found\n");
+            else if (vfs_stat(directory, &dir_info) != STORAGE_OK) imp_text("Error: directory not found\n");
             else if (dir_info.type != 'd') imp_text("Error: not a directory\n");
             else {
                 imp_text("NAME                    TYPE       SIZE\n");
                 size_t base_length = 0;
                 while (directory[base_length]) base_length++;
-                for (int i = 0; i < storage_get_entry_count(); i++) {
-                    const char *entry_path = storage_get_entry_path(i);
+                for (int i = 0; i < vfs_entry_count(); i++) {
+                    struct storage_entry_info item;
+                    if (vfs_readdir(i, &item) != STORAGE_OK) continue;
+                    const char *entry_path = item.path;
                     const char *child = 0;
                     if (base_length == 1) {
                         if (entry_path[0] == '/' && entry_path[1]) child = entry_path + 1;
@@ -837,8 +898,6 @@ static void shell_execute_command(void)
                     int direct = 1;
                     for (const char *p = child; *p; p++) if (*p == '/') { direct = 0; break; }
                     if (!direct) continue;
-                    struct storage_entry_info item;
-                    if (storage_get_entry_info(entry_path, &item) != STORAGE_OK) continue;
                     imp_text(item.name); imp_text("  ");
                     imp_text(item.type == 'd' ? "DIR        -\n" : "FILE       ");
                     if (item.type == 'f') { shell_print_uint64(item.size); imp_text(" B\n"); }
@@ -849,7 +908,7 @@ static void shell_execute_command(void)
     else if (shell_streq(cmd, "disks") || shell_streq(cmd, "diskinfo") || shell_streq(cmd, "disk list") || shell_streq(cmd, "disk info"))
     {
         struct storage_device_info info;
-        if (storage_get_device_info(&info) != STORAGE_OK) imp_text("No storage device detected\n");
+        if (vfs_get_device_info(&info) != STORAGE_OK) imp_text("No storage device detected\n");
         else
         {
             imp_text("Device: "); imp_text(info.name); imp_text(" Type: "); imp_text(info.type);
@@ -860,22 +919,25 @@ static void shell_execute_command(void)
     else if (shell_streq(cmd, "df"))
     {
         struct storage_stats stats;
-        if (storage_get_stats(&stats) != STORAGE_OK) imp_text("df: no mounted filesystem\n");
+        if (vfs_get_stats(&stats) != STORAGE_OK) imp_text("df: no mounted filesystem\n");
         else { imp_text("Filesystem    Total sectors    Used    Free    Mount\n"); imp_text("ORFS          "); shell_print_uint64(stats.total_sectors); imp_text("             "); shell_print_uint64(stats.used_sectors); imp_text("     "); shell_print_uint64(stats.free_sectors); imp_text("     /\n"); }
     }
     else if (shell_streq(cmd, "mount"))
     {
-        if (storage_mount() == STORAGE_OK) imp_text("Filesystem mounted\n"); else imp_text("mount: no valid filesystem\n");
+        shell_last_storage_status = vfs_mount();
+        if (shell_last_storage_status == STORAGE_OK) imp_text("Filesystem mounted\n"); else shell_print_storage_error(shell_last_storage_status);
     }
     else if (shell_streq(cmd, "umount") || shell_streq(cmd, "unmount"))
     {
-        if (storage_unmount() == STORAGE_OK) imp_text("Filesystem unmounted\n"); else imp_text("umount: flush failed\n");
+        shell_last_storage_status = vfs_unmount();
+        if (shell_last_storage_status == STORAGE_OK) imp_text("Filesystem unmounted\n"); else shell_print_storage_error(shell_last_storage_status);
     }
     else if (shell_streq(cmd, "sync"))
     {
-        if (storage_sync() == STORAGE_OK) imp_text("Storage synchronized\n"); else imp_text("sync: storage I/O error\n");
+        shell_last_storage_status = vfs_sync();
+        if (shell_last_storage_status == STORAGE_OK) imp_text("Storage synchronized\n"); else shell_print_storage_error(shell_last_storage_status);
     }
-    else if (shell_streq(cmd, "storage-test") || shell_streq(cmd, "storage-test --safe") || shell_streq(cmd, "test storage"))
+    else if (shell_streq(cmd, "storage-test") || shell_streq(cmd, "storage-test --safe"))
     {
         unsigned int result = storage_self_test();
         imp_text((result & STORAGE_SELFTEST_DEVICE) ? "[PASS] Disk detection (RAM device)\n" : "[FAIL] Disk detection (RAM device)\n");
@@ -893,13 +955,14 @@ static void shell_execute_command(void)
     {
         const char *argument = shell_skip_spaces(cmd + 6);
         if (!shell_streq(argument, "yes")) imp_text("format: confirmation required, use 'format yes'\n");
-        else if (storage_format() == STORAGE_OK) imp_text("Filesystem formatted and mounted\n");
-        else imp_text("format: device unavailable or too small\n");
+        else if ((shell_last_storage_status = vfs_format()) == STORAGE_OK) imp_text("Filesystem formatted and mounted\n");
+        else shell_print_storage_error(shell_last_storage_status);
     }
     else if (shell_starts_with(cmd, "fsck"))
     {
         const char *argument = shell_skip_spaces(cmd + 4);
-        int errors = 0; int result = storage_fsck(shell_streq(argument, "repair") || shell_streq(argument, "--repair"), &errors);
+        int errors = 0; int result = vfs_fsck(shell_streq(argument, "repair") || shell_streq(argument, "--repair"), &errors);
+        shell_last_storage_status = result;
         if (result == STORAGE_OK) imp_text("fsck: clean\n"); else { imp_text("fsck: errors detected: "); shell_print_int(errors); imp_char('\n'); }
     }
     else if (shell_streq(cmd, "cd") || shell_starts_with(cmd, "cd "))
@@ -909,7 +972,7 @@ static void shell_execute_command(void)
         struct storage_entry_info info;
         if (!argument[0] || *shell_skip_spaces(cursor)) { imp_text("Usage: cd <directory>\n"); }
         else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
-        else if (storage_get_entry_info(resolved, &info) != STORAGE_OK) imp_text("Error: directory not found\n");
+        else if (vfs_stat(resolved, &info) != STORAGE_OK) imp_text("Error: directory not found\n");
         else if (info.type != 'd') imp_text("Error: not a directory\n");
         else { shell_set_current_dir(resolved); shell_print_current_directory(); }
     }
@@ -921,13 +984,13 @@ static void shell_execute_command(void)
         if (!argument[0] || *shell_skip_spaces(cursor)) { imp_text("Usage: cat <file>\n"); }
         else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
         else {
-            int fd = storage_open(resolved, 0);
+            int fd = vfs_open(resolved, 0);
             if (fd < 0) shell_print_storage_error(fd);
             else {
                 int count;
-                while ((count = storage_read(fd, buffer, sizeof(buffer))) > 0)
+                while ((count = vfs_read(fd, buffer, sizeof(buffer))) > 0)
                     for (int i = 0; i < count; i++) imp_char(buffer[i]);
-                storage_close(fd);
+                vfs_close(fd);
                 if (count < 0) shell_print_storage_error(count);
             }
         }
@@ -948,7 +1011,7 @@ static void shell_execute_command(void)
         const char *cursor = shell_read_word(shell_skip_spaces(cmd + 5), argument, sizeof(argument));
         if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: touch <file>\n");
         else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
-        else { int result = storage_create_file(resolved, 0, 0); if (result == STORAGE_OK) imp_text("File created\n"); else shell_print_storage_error(result); }
+        else { int result = vfs_create(resolved, 0, 0); shell_last_storage_status = result; if (result == STORAGE_OK) imp_text("File created\n"); else shell_print_storage_error(result); }
     }
     else if (shell_streq(cmd, "mkdir") || shell_starts_with(cmd, "mkdir ")) shell_mkdir_command(shell_skip_spaces(cmd + 5));
     else if (shell_streq(cmd, "rm") || shell_starts_with(cmd, "rm "))
@@ -957,7 +1020,7 @@ static void shell_execute_command(void)
         const char *cursor = shell_read_word(shell_skip_spaces(cmd + 2), argument, sizeof(argument));
         if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: rm <file>\n");
         else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
-        else { int result = storage_unlink(resolved); if (result == STORAGE_OK) imp_text("File removed\n"); else shell_print_storage_error(result); }
+        else { int result = vfs_unlink(resolved); shell_last_storage_status = result; if (result == STORAGE_OK) imp_text("File removed\n"); else shell_print_storage_error(result); }
     }
     else if (shell_starts_with(cmd, "del "))
     {
@@ -970,7 +1033,7 @@ static void shell_execute_command(void)
         else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
         else if (shell_streq(resolved, "/") || shell_streq(resolved, "/C:") || shell_streq(resolved, "/C:/user") || shell_streq(resolved, "/C:/menu") || shell_streq(current_dir, resolved) || shell_starts_with(current_dir, resolved)) imp_text("Error: refusing to delete a protected directory\n");
         else if (!force && !shell_confirm_delete()) imp_text("Delete cancelled\n");
-        else { int result = storage_remove_tree(resolved); if (result == STORAGE_OK) imp_text("Directory tree removed\n"); else shell_print_storage_error(result); }
+        else { int result = vfs_remove_tree(resolved); shell_last_storage_status = result; if (result == STORAGE_OK) imp_text("Directory tree removed\n"); else shell_print_storage_error(result); }
     }
     else if (shell_starts_with(cmd, "cp ") || shell_starts_with(cmd, "mv "))
     {
@@ -984,7 +1047,8 @@ static void shell_execute_command(void)
         else if (!shell_resolve_path(source, source_path, sizeof(source_path)) || !shell_resolve_path(destination, destination_path, sizeof(destination_path))) imp_text("Error: invalid path\n");
         else if (!shell_join_target(source_path, destination_path, target_path, sizeof(target_path))) imp_text("Error: invalid destination path\n");
         else {
-            int result = move ? storage_rename(source_path, target_path) : storage_copy(source_path, target_path);
+            int result = move ? vfs_rename(source_path, target_path) : vfs_copy(source_path, target_path);
+            shell_last_storage_status = result;
             if (result == STORAGE_OK) imp_text(move ? "Moved\n" : "Copied\n"); else shell_print_storage_error(result);
         }
     }
@@ -1001,7 +1065,7 @@ static void shell_execute_command(void)
         else cursor = data;
         if (!path[0] || !cursor[0]) imp_text("Usage: write|append <file> <text>\n");
         else if (!shell_resolve_path(path, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
-        else { int result = storage_write_file(resolved, cursor, (size_t)shell_strlen(cursor), append); if (result < 0) shell_print_storage_error(result); else imp_text("File written\n"); }
+        else { int result = vfs_write_file(resolved, cursor, (size_t)shell_strlen(cursor), append); shell_last_storage_status = result; if (result < 0) shell_print_storage_error(result); else imp_text("File written\n"); }
     }
     else if (shell_streq(cmd, "rmdir") || shell_starts_with(cmd, "rmdir "))
     {
@@ -1009,7 +1073,7 @@ static void shell_execute_command(void)
         const char *cursor = shell_read_word(shell_skip_spaces(cmd + 5), argument, sizeof(argument));
         if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: rmdir <empty-directory>\n");
         else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
-        else { int result = storage_rmdir(resolved); if (result == STORAGE_OK) imp_text("Directory removed\n"); else shell_print_storage_error(result); }
+        else { int result = vfs_rmdir(resolved); shell_last_storage_status = result; if (result == STORAGE_OK) imp_text("Directory removed\n"); else shell_print_storage_error(result); }
     }
     else if (shell_starts_with(cmd, "stat "))
     {
@@ -1018,7 +1082,7 @@ static void shell_execute_command(void)
         struct storage_entry_info info;
         if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: stat <path>\n");
         else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
-        else if (storage_get_entry_info(resolved, &info) != STORAGE_OK) imp_text("Error: path not found\n");
+        else if (vfs_stat(resolved, &info) != STORAGE_OK) imp_text("Error: path not found\n");
         else { imp_text("Path: "); imp_text(info.path); imp_text("\nType: "); imp_text(info.type == 'd' ? "directory\n" : "file\n"); imp_text("Size: "); shell_print_uint64(info.size); imp_text(" bytes\nBlocks: "); shell_print_uint64(info.blocks_used); imp_char('\n'); }
     }
     else if (shell_starts_with(cmd, "du "))
@@ -1028,15 +1092,14 @@ static void shell_execute_command(void)
         struct storage_entry_info info;
         if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: du <path>\n");
         else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
-        else if (storage_get_entry_info(resolved, &info) != STORAGE_OK) imp_text("Error: path not found\n");
+        else if (vfs_stat(resolved, &info) != STORAGE_OK) imp_text("Error: path not found\n");
         else {
             uint64_t bytes = info.size;
-            if (info.type == 'd') for (int i = 0; i < storage_get_entry_count(); i++) {
-                const char *entry_path = storage_get_entry_path(i);
+            if (info.type == 'd') for (int i = 0; i < vfs_entry_count(); i++) {
                 struct storage_entry_info item;
-                if (shell_starts_with(entry_path, resolved) && entry_path[0] &&
-                    ((resolved[0] == '/' && resolved[1] == 0 && entry_path[1]) || entry_path[shell_strlen(resolved)] == '/') &&
-                    storage_get_entry_info(entry_path, &item) == STORAGE_OK && item.type == 'f') bytes += item.size;
+                if (vfs_readdir(i, &item) == STORAGE_OK && shell_starts_with(item.path, resolved) && item.path[0] &&
+                    ((resolved[0] == '/' && resolved[1] == 0 && item.path[1]) || item.path[shell_strlen(resolved)] == '/') &&
+                    item.type == 'f') bytes += item.size;
             }
             shell_print_uint64(bytes); imp_text(" bytes\t"); imp_text(resolved); imp_char('\n');
         }
@@ -1053,7 +1116,7 @@ static void shell_execute_command(void)
     {
         imp_text("PID 1 shell\nPID 2 idle\n");
     }
-    else if (shell_streq(cmd, "test filesystem"))
+    else if (shell_streq(cmd, "test filesystem") || shell_streq(cmd, "test storage"))
     {
         shell_test_filesystem();
     }
@@ -1526,13 +1589,14 @@ void shell_execute_line(const char *line)
         return;
     }
 
+    shell_last_storage_status = STORAGE_OK;
     shell_execute_text(line);
     shell_execute_command();
 }
 
 void shell_init()
 {
-    storage_init();
+    vfs_init();
 
     imp_text("ORT Shell\n");
     imp_text("Type 'help' for a list of commands.\n");

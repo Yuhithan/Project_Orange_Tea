@@ -279,7 +279,14 @@ void storage_init(void) { for (int i = 0; i < 16; i++) fds[i].used = 0; if (stor
     else mounted = 1;
 #endif
 }
-int storage_sync(void) { if (!storage_device) return mounted ? STORAGE_OK : STORAGE_ERR_NOENT; if (mounted && write_super() != STORAGE_OK) return STORAGE_ERR_IO; for (int i = 0; i < entry_count; i++) if (write_inode(i) != STORAGE_OK) return STORAGE_ERR_IO; return STORAGE_OK; }
+int storage_sync(void)
+{
+    if (!storage_device) return mounted ? STORAGE_OK : STORAGE_ERR_NOENT;
+    if (mounted && write_super() != STORAGE_OK) return STORAGE_ERR_IO;
+    for (int i = 0; i < entry_count; i++) if (write_inode(i) != STORAGE_OK) return STORAGE_ERR_IO;
+    if (storage_device->flush && storage_device->flush(storage_device->context) != 0) return STORAGE_ERR_IO;
+    return STORAGE_OK;
+}
 
 static int create(const char *path, char type, const char *content)
 {
@@ -651,7 +658,7 @@ unsigned int storage_self_test(void)
 
     struct block_device failing_device = {
         0, STORAGE_SELFTEST_SECTORS, "failure-test", "test",
-        selftest_fail_read, selftest_fail_write
+        selftest_fail_read, selftest_fail_write, 0
     };
     if (storage_attach_block_device(0) == STORAGE_ERR_INVAL &&
         storage_read_blocks(&failing_device, 0, block, 1) == STORAGE_ERR_IO &&

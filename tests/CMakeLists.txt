@@ -1,4 +1,6 @@
-add_library(ortos_storage STATIC "${ORTOS_SOURCE_DIR}/fs/storage/storage.c")
+add_library(ortos_storage STATIC
+    "${ORTOS_SOURCE_DIR}/fs/storage/storage.c"
+    "${ORTOS_SOURCE_DIR}/fs/vfs/vfs.c")
 target_include_directories(ortos_storage PUBLIC "${ORTOS_INCLUDE_DIR}")
 
 add_executable(ora_format_test

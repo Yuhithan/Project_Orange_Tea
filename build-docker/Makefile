@@ -518,6 +518,19 @@ orangetea_iso/fast:
 .PHONY : orangetea_iso/fast
 
 #=============================================================================
+# Target rules for targets named run_os
+
+# Build rule for target.
+run_os: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_os
+.PHONY : run_os
+
+# fast build rule for target.
+run_os/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/run_os.dir/build.make src/CMakeFiles/run_os.dir/build
+.PHONY : run_os/fast
+
+#=============================================================================
 # Target rules for targets named ortos_storage
 
 # Build rule for target.
@@ -739,6 +752,7 @@ help:
 	@echo "... ora_example"
 	@echo "... orangetea_iso"
 	@echo "... ortos_kernel"
+	@echo "... run_os"
 	@echo "... browser_test"
 	@echo "... core_subsystem_test"
 	@echo "... ethernet_test"

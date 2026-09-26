@@ -2,7 +2,7 @@
 
 #include "framebuffer.h"
 #include "process.h"
-#include "storage.h"
+#include "vfs.h"
 #include "timer.h"
 #include "terminal.h"
 
@@ -90,15 +90,22 @@ static int collect_tasks(const char *prefix, DesktopTask *tasks)
     int count = 0;
     int prefix_length = 0;
     while (prefix[prefix_length]) prefix_length++;
-    for (int index = 0; index < storage_get_entry_count() && count < TASK_LIMIT; index++) {
-        const char *path = storage_get_entry_path(index);
-        if (storage_get_entry_type(index) != 'f' || !task_matches(path, prefix)) continue;
+    for (int index = 0; index < vfs_entry_count() && count < TASK_LIMIT; index++) {
+        struct storage_entry_info info;
+        if (vfs_readdir(index, &info) != STORAGE_OK || info.type != 'f' || !task_matches(info.path, prefix)) continue;
         int slash = prefix_length;
-        while (path[slash] && path[slash] != '/') slash++;
-        if (path[slash] == '/') continue;
+        while (info.path[slash] && info.path[slash] != '/') slash++;
+        if (info.path[slash] == '/') continue;
+        char content[256] = {0};
+        int fd = vfs_open(info.path, 0);
+        if (fd < 0) continue;
+        int length = vfs_read(fd, content, sizeof(content) - 1);
+        vfs_close(fd);
+        if (length < 0) continue;
+        content[length] = 0;
         tasks[count].entry = index;
-        task_label(tasks[count].label, storage_get_entry_name(index));
-        task_command(tasks[count].command, storage_get_entry_content(index), tasks[count].label);
+        task_label(tasks[count].label, info.name);
+        task_command(tasks[count].command, content, tasks[count].label);
         count++;
     }
     return count;
@@ -106,12 +113,18 @@ static int collect_tasks(const char *prefix, DesktopTask *tasks)
 
 static void ensure_directory(const char *path)
 {
-    if (storage_find_entry(path) < 0) storage_mkdir(path);
+    struct storage_entry_info info;
+    if (vfs_stat(path, &info) == STORAGE_ERR_NOENT) vfs_mkdir(path);
 }
 
 static void ensure_task(const char *path, const char *content)
 {
-    if (storage_find_entry(path) < 0) storage_create_entry(path, 'f', content);
+    struct storage_entry_info info;
+    if (vfs_stat(path, &info) == STORAGE_ERR_NOENT) {
+        size_t length = 0;
+        while (content[length]) length++;
+        vfs_create(path, content, length);
+    }
 }
 
 static void ensure_default_tasks(void)
@@ -138,13 +151,15 @@ static void explorer_draw(ORWindow *window)
 {
     ORgui_draw_text(window->x + 10, window->y + 32, "Location: /", OR_COLOR_FIRE_RED);
     int row = window->y + 52;
-    for (int index = 0; index < storage_get_entry_count() && row < window->y + window->height - 12; index++) {
-        const char *path = storage_get_entry_path(index);
+    for (int index = 0; index < vfs_entry_count() && row < window->y + window->height - 12; index++) {
+        struct storage_entry_info info;
+        if (vfs_readdir(index, &info) != STORAGE_OK) continue;
+        const char *path = info.path;
         if (path[0] == '/' && path[1] && path[2] == '\0') {
             ORgui_draw_text(window->x + 14, row,
-                            storage_get_entry_type(index) == 'd' ? "[DIR]" : "[FILE]",
+                            info.type == 'd' ? "[DIR]" : "[FILE]",
                             OR_COLOR_FIRE_ORANGE);
-            ORgui_draw_text(window->x + 62, row, storage_get_entry_name(index), OR_COLOR_FIRE_RED);
+            ORgui_draw_text(window->x + 62, row, info.name, OR_COLOR_FIRE_RED);
             row += 16;
         }
     }

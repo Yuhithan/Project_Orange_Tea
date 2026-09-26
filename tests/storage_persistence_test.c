@@ -4,6 +4,8 @@
 #include "storage.h"
 
 static unsigned char disk[128 * BLOCK_SECTOR_SIZE];
+static int flush_count;
+static int flush_failure;
 static int read_sector(void *context, uint64_t sector, void *buffer)
 {
     (void)context;
@@ -18,10 +20,16 @@ static int write_sector(void *context, uint64_t sector, const void *buffer)
     memcpy(disk + sector * BLOCK_SECTOR_SIZE, buffer, BLOCK_SECTOR_SIZE);
     return 0;
 }
+static int flush_disk(void *context)
+{
+    (void)context;
+    flush_count++;
+    return flush_failure ? -1 : 0;
+}
 
 int main(void)
 {
-    struct block_device device = { 0, 128, "disk0", "test", read_sector, write_sector };
+    struct block_device device = { 0, 128, "disk0", "test", read_sector, write_sector, flush_disk };
     char text[16] = {0};
     size_t length = 0;
 
@@ -30,6 +38,11 @@ int main(void)
     assert(storage_mkdir("/home") == STORAGE_OK);
     assert(storage_write_file("/home/note", "persistent", 10, 0) == 10);
     assert(storage_sync() == STORAGE_OK);
+    int previous_flush_count = flush_count;
+    assert(storage_sync() == STORAGE_OK && flush_count > previous_flush_count);
+    flush_failure = 1;
+    assert(storage_sync() == STORAGE_ERR_IO);
+    flush_failure = 0;
 
     assert(storage_attach_block_device(&device) == STORAGE_OK);
     assert(storage_mount() == STORAGE_OK);

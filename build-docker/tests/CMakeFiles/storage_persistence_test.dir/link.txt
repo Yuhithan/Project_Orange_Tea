@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/storage_persistence_test.dir/storage_persistence_test.c.o -o storage_persistence_test  libortos_storage.a 

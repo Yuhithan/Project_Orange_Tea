@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/ethernet_test.dir/ethernet_test.c.o CMakeFiles/ethernet_test.dir/__/src/net/ethernet.c.o -o ethernet_test 

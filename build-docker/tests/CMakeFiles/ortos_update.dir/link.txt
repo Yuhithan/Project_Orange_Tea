@@ -1,0 +1,2 @@
+/usr/bin/ar qc libortos_update.a CMakeFiles/ortos_update.dir/__/tools/update_lib.c.o
+/usr/bin/ranlib libortos_update.a

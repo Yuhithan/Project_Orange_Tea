@@ -5,7 +5,6 @@ tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o: /root/env/src/
   /usr/include/stdc-predef.h \
   /root/env/include/storage.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
-  /root/env/include/block_device.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h \
   /usr/include/stdint.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
@@ -22,20 +21,17 @@ tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o: /root/env/src/
   /usr/include/x86_64-linux-gnu/bits/time64.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h
+  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+  /root/env/include/block_device.h
 
+
+/root/env/include/block_device.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
 
 /usr/include/x86_64-linux-gnu/bits/typesizes.h:
-
-/usr/include/x86_64-linux-gnu/bits/types.h:
-
-/usr/include/x86_64-linux-gnu/bits/long-double.h:
-
-/root/env/src/fs/storage/storage.c:
 
 /root/env/include/storage.h:
 
@@ -48,8 +44,6 @@ tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o: /root/env/src/
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h:
-
-/root/env/include/block_device.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
@@ -68,3 +62,9 @@ tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o: /root/env/src/
 /usr/include/x86_64-linux-gnu/bits/time64.h:
 
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
+
+/usr/include/x86_64-linux-gnu/bits/types.h:
+
+/root/env/src/fs/storage/storage.c:
+
+/usr/include/x86_64-linux-gnu/bits/long-double.h:

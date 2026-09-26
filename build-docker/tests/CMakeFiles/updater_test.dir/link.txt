@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/updater_test.dir/updater_test.c.o -o updater_test  libortos_update.a 

@@ -7,6 +7,7 @@
 #define STORAGE_BITMAP_BITS_PER_SECTOR (BLOCK_SECTOR_SIZE * 8u)
 #define STORAGE_CACHE_SLOTS 4
 #define STORAGE_CONTENT_CAPACITY 256u
+#define STORAGE_SELFTEST_SECTORS 72u
 
 struct storage_entry {
     char path[STORAGE_MAX_PATH];
@@ -22,12 +23,29 @@ struct cache_sector { uint64_t sector; unsigned char data[BLOCK_SECTOR_SIZE]; in
 static struct storage_entry entries[STORAGE_MAX_ENTRIES];
 static struct storage_fd fds[16];
 static struct cache_sector cache[STORAGE_CACHE_SLOTS];
+static unsigned int cache_next_slot;
 static const struct block_device *storage_device;
 static uint64_t bitmap_sectors;
 static uint64_t data_start;
 static int entry_count;
 static int mounted;
 static int create(const char *path, char type, const char *content);
+
+struct storage_saved_state {
+    struct storage_entry entries[STORAGE_MAX_ENTRIES];
+    struct storage_fd fds[16];
+    struct cache_sector cache[STORAGE_CACHE_SLOTS];
+    const struct block_device *device;
+    uint64_t bitmap_sectors;
+    uint64_t data_start;
+    unsigned int cache_next_slot;
+    int entry_count;
+    int mounted;
+};
+
+static struct storage_saved_state selftest_saved_state;
+static unsigned char selftest_disk[STORAGE_SELFTEST_SECTORS * BLOCK_SECTOR_SIZE];
+static struct block_device selftest_device;
 
 static void zero(void *buffer, size_t length) { unsigned char *p = buffer; while (length--) *p++ = 0; }
 static void copy(void *out, const void *in, size_t length) { unsigned char *d = out; const unsigned char *s = in; while (length--) *d++ = *s++; }
@@ -38,13 +56,42 @@ static uint32_t get32(const unsigned char *p) { return (uint32_t)p[0] | ((uint32
 static uint64_t get64(const unsigned char *p) { uint64_t value = 0; for (int i = 7; i >= 0; i--) value = (value << 8) | p[i]; return value; }
 static void put32(unsigned char *p, uint32_t value) { for (int i = 0; i < 4; i++) { p[i] = (unsigned char)value; value >>= 8; } }
 static void put64(unsigned char *p, uint64_t value) { for (int i = 0; i < 8; i++) { p[i] = (unsigned char)value; value >>= 8; } }
+static int selftest_read_sector(void *context, uint64_t sector, void *buffer)
+{
+    unsigned char *disk = context;
+    if (!disk || !buffer || sector >= STORAGE_SELFTEST_SECTORS) return -1;
+    copy(buffer, disk + sector * BLOCK_SECTOR_SIZE, BLOCK_SECTOR_SIZE);
+    return 0;
+}
+static int selftest_write_sector(void *context, uint64_t sector, const void *buffer)
+{
+    unsigned char *disk = context;
+    if (!disk || !buffer || sector >= STORAGE_SELFTEST_SECTORS) return -1;
+    copy(disk + sector * BLOCK_SECTOR_SIZE, buffer, BLOCK_SECTOR_SIZE);
+    return 0;
+}
+static int selftest_fail_read(void *context, uint64_t sector, void *buffer)
+{
+    (void)context; (void)sector; (void)buffer;
+    return -1;
+}
+static int selftest_fail_write(void *context, uint64_t sector, const void *buffer)
+{
+    (void)context; (void)sector; (void)buffer;
+    return -1;
+}
 
 static int disk_read(uint64_t sector, void *buffer)
 {
     if (!storage_device || sector >= storage_device->sector_count || !buffer) return STORAGE_ERR_IO;
     for (int i = 0; i < STORAGE_CACHE_SLOTS; i++) if (cache[i].valid && cache[i].sector == sector) { copy(buffer, cache[i].data, BLOCK_SECTOR_SIZE); return STORAGE_OK; }
     if (storage_device->read_sector(storage_device->context, sector, buffer) != 0) return STORAGE_ERR_IO;
-    for (int i = 0; i < STORAGE_CACHE_SLOTS; i++) if (!cache[i].valid) { cache[i].valid = 1; cache[i].sector = sector; copy(cache[i].data, buffer, BLOCK_SECTOR_SIZE); break; }
+    int slot = -1;
+    for (int i = 0; i < STORAGE_CACHE_SLOTS; i++) if (!cache[i].valid) { slot = i; break; }
+    if (slot < 0) slot = (int)(cache_next_slot % STORAGE_CACHE_SLOTS);
+    cache_next_slot = ((unsigned int)slot + 1u) % STORAGE_CACHE_SLOTS;
+    cache[slot].valid = 1; cache[slot].sector = sector; cache[slot].dirty = 0;
+    copy(cache[slot].data, buffer, BLOCK_SECTOR_SIZE);
     return STORAGE_OK;
 }
 static int disk_write(uint64_t sector, const void *buffer)
@@ -114,13 +161,20 @@ static int bitmap_bit(uint64_t sector, int set)
     else block[bit / 8] &= (unsigned char)~(1u << (bit % 8));
     return disk_write(bitmap_sector, block);
 }
-static int sector_used(uint64_t sector)
+static int bitmap_value(uint64_t sector, int *value)
 {
     unsigned char block[BLOCK_SECTOR_SIZE];
     uint64_t bitmap_sector = STORAGE_BITMAP_START + sector / STORAGE_BITMAP_BITS_PER_SECTOR;
     unsigned int bit = (unsigned int)(sector % STORAGE_BITMAP_BITS_PER_SECTOR);
-    if (disk_read(bitmap_sector, block) != STORAGE_OK) return 1;
-    return (block[bit / 8] >> (bit % 8)) & 1;
+    if (!value || bitmap_sector >= STORAGE_BITMAP_START + bitmap_sectors || disk_read(bitmap_sector, block) != STORAGE_OK) return STORAGE_ERR_IO;
+    *value = (block[bit / 8] >> (bit % 8)) & 1;
+    return STORAGE_OK;
+}
+static int sector_used(uint64_t sector)
+{
+    int value = 1;
+    if (bitmap_value(sector, &value) != STORAGE_OK) return 1;
+    return value;
 }
 static int allocate_sector(uint32_t *result)
 {
@@ -178,7 +232,7 @@ static int write_super(void)
 int storage_attach_block_device(const struct block_device *device)
 {
     if (!device || !device->read_sector || !device->write_sector || device->sector_count < 70) return STORAGE_ERR_INVAL;
-    storage_device = device; mounted = 0; entry_count = 0; zero(cache, sizeof(cache)); return STORAGE_OK;
+    storage_device = device; mounted = 0; entry_count = 0; cache_next_slot = 0; zero(cache, sizeof(cache)); return STORAGE_OK;
 }
 int storage_read_blocks(const struct block_device *device, uint64_t block, void *buffer, size_t count)
 {
@@ -199,7 +253,7 @@ int storage_format(void)
     bitmap_sectors = (storage_device->sector_count + STORAGE_BITMAP_BITS_PER_SECTOR - 1) / STORAGE_BITMAP_BITS_PER_SECTOR;
     data_start = STORAGE_BITMAP_START + bitmap_sectors;
     if (data_start >= storage_device->sector_count) return STORAGE_ERR_NOSPC;
-    zero(cache, sizeof(cache)); entry_count = 0; mounted = 1;
+    zero(cache, sizeof(cache)); cache_next_slot = 0; entry_count = 0; mounted = 1;
     if (write_super() != STORAGE_OK) return STORAGE_ERR_IO;
     zero(block, sizeof(block));
     for (uint64_t i = 0; i < bitmap_sectors; i++) if (disk_write(STORAGE_BITMAP_START + i, block) != STORAGE_OK) return STORAGE_ERR_IO;
@@ -301,4 +355,202 @@ int storage_seek(int fd, size_t offset) { if (fd < 0 || fd >= 16 || !fds[fd].use
 
 int storage_get_device_info(struct storage_device_info *info) { if (!info || !storage_device) return STORAGE_ERR_NOENT; info->name = storage_device->name ? storage_device->name : "disk0"; info->type = storage_device->type ? storage_device->type : "ATA"; info->sectors = storage_device->sector_count; info->sector_size = BLOCK_SECTOR_SIZE; info->present = 1; info->mounted = mounted; return STORAGE_OK; }
 int storage_get_stats(struct storage_stats *stats) { if (!stats || !mounted) return STORAGE_ERR_NOTMOUNTED; stats->total_sectors = storage_device ? storage_device->sector_count : 0; stats->used_sectors = storage_device ? data_start : 0; stats->sector_size = BLOCK_SECTOR_SIZE; stats->file_count = 0; stats->directory_count = 0; for (int i = 0; i < entry_count; i++) { if (entries[i].type == 'f') { stats->file_count++; if (entries[i].blocks[0]) stats->used_sectors++; } else stats->directory_count++; } stats->free_sectors = stats->total_sectors > stats->used_sectors ? stats->total_sectors - stats->used_sectors : 0; return STORAGE_OK; }
-int storage_fsck(int repair, int *errors) { int found = 0; (void)repair; if (!mounted) return STORAGE_ERR_NOTMOUNTED; for (int i = 0; i < entry_count; i++) { if (!parent_exists(entries[i].path)) found++; for (int j = i + 1; j < entry_count; j++) if (equal(entries[i].path, entries[j].path)) found++; if (entries[i].type == 'f' && entries[i].blocks[0] && (!storage_device || entries[i].blocks[0] < data_start || entries[i].blocks[0] >= storage_device->sector_count)) found++; } if (errors) *errors = found; return found ? STORAGE_ERR_CORRUPT : STORAGE_OK; }
+static int count_allocated_data_sectors(uint64_t *count)
+{
+    unsigned char block[BLOCK_SECTOR_SIZE];
+    uint64_t allocated = 0;
+    for (uint64_t bitmap_index = 0; bitmap_index < bitmap_sectors; bitmap_index++) {
+        uint64_t bitmap_sector = STORAGE_BITMAP_START + bitmap_index;
+        uint64_t first_sector = bitmap_index * STORAGE_BITMAP_BITS_PER_SECTOR;
+        uint64_t end_sector = storage_device->sector_count - first_sector < STORAGE_BITMAP_BITS_PER_SECTOR
+            ? storage_device->sector_count : first_sector + STORAGE_BITMAP_BITS_PER_SECTOR;
+        if (disk_read(bitmap_sector, block) != STORAGE_OK) return STORAGE_ERR_IO;
+        if (first_sector < data_start) first_sector = data_start;
+        for (uint64_t sector = first_sector; sector < end_sector; sector++) {
+            unsigned int bit = (unsigned int)(sector % STORAGE_BITMAP_BITS_PER_SECTOR);
+            if ((block[bit / 8] >> (bit % 8)) & 1) allocated++;
+        }
+    }
+    *count = allocated;
+    return STORAGE_OK;
+}
+
+int storage_fsck(int repair, int *errors)
+{
+    unsigned char super[BLOCK_SECTOR_SIZE];
+    uint64_t expected_bitmap, expected_data_start, allocated_sectors;
+    uint64_t referenced_sectors = 0;
+    int unresolved = 0, corrected = 0;
+
+    if (errors) *errors = 0;
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
+    if (!storage_device || disk_read(0, super) != STORAGE_OK) return STORAGE_ERR_IO;
+
+    expected_bitmap = storage_device->sector_count / STORAGE_BITMAP_BITS_PER_SECTOR;
+    if (storage_device->sector_count % STORAGE_BITMAP_BITS_PER_SECTOR) expected_bitmap++;
+    expected_data_start = STORAGE_BITMAP_START + expected_bitmap;
+    if (get32(super) != STORAGE_MAGIC || get32(super + 4) != STORAGE_VERSION ||
+        get32(super + 8) != (uint32_t)entry_count || get64(super + 16) != storage_device->sector_count ||
+        get64(super + 24) != expected_bitmap || get64(super + 32) != expected_data_start ||
+        bitmap_sectors != expected_bitmap || data_start != expected_data_start ||
+        entry_count < 0 || entry_count > STORAGE_MAX_ENTRIES || data_start >= storage_device->sector_count) {
+        if (errors) *errors = 1;
+        return STORAGE_ERR_CORRUPT;
+    }
+
+    for (int i = 0; i < entry_count; i++) {
+        struct storage_entry *entry = &entries[i];
+        char normalized[STORAGE_MAX_PATH];
+        int valid_path = normalize(entry->path, normalized) == STORAGE_OK && equal(normalized, entry->path);
+        const char *name = entry->path;
+        for (const char *p = entry->path; *p; p++) if (*p == '/') name = p + 1;
+        if (!valid_path || equal(entry->path, "/") || !parent_exists(entry->path) ||
+            (entry->type != 'f' && entry->type != 'd') || !equal(name, entry->name) ||
+            (entry->type == 'f' && entry->size >= sizeof(entry->content)) ||
+            (entry->type == 'd' && entry->size != 0)) unresolved++;
+
+        for (int j = i + 1; j < entry_count; j++) {
+            if (equal(entry->path, entries[j].path)) unresolved++;
+            if (entry->type == 'f' && entries[j].type == 'f' && entry->blocks[0] &&
+                entry->blocks[0] == entries[j].blocks[0]) unresolved++;
+        }
+
+        for (int block_index = 1; block_index < STORAGE_MAX_FILE_BLOCKS; block_index++)
+            if (entry->blocks[block_index]) unresolved++;
+        if (entry->type == 'd' && entry->blocks[0]) unresolved++;
+        if (entry->type != 'f') continue;
+        if (entry->size && !entry->blocks[0]) { unresolved++; continue; }
+        if (!entry->blocks[0]) continue;
+        if (entry->blocks[0] < data_start || entry->blocks[0] >= storage_device->sector_count) {
+            unresolved++;
+            continue;
+        }
+        referenced_sectors++;
+        int is_allocated = 0;
+        if (bitmap_value(entry->blocks[0], &is_allocated) != STORAGE_OK) return STORAGE_ERR_IO;
+        if (!is_allocated) {
+            if (repair && bitmap_bit(entry->blocks[0], 1) == STORAGE_OK) corrected++;
+            else unresolved++;
+        }
+    }
+
+    for (uint64_t sector = 0; sector < data_start; sector++) {
+        int is_allocated = 0;
+        if (bitmap_value(sector, &is_allocated) != STORAGE_OK) return STORAGE_ERR_IO;
+        if (!is_allocated) {
+            if (repair && bitmap_bit(sector, 1) == STORAGE_OK) corrected++;
+            else unresolved++;
+        }
+    }
+
+    if (count_allocated_data_sectors(&allocated_sectors) != STORAGE_OK) return STORAGE_ERR_IO;
+    if (allocated_sectors > referenced_sectors) unresolved++;
+    else if (allocated_sectors < referenced_sectors) unresolved++;
+    if (corrected && storage_sync() != STORAGE_OK) return STORAGE_ERR_IO;
+    if (errors) *errors = unresolved;
+    return unresolved ? STORAGE_ERR_CORRUPT : STORAGE_OK;
+}
+
+unsigned int storage_self_test(void)
+{
+    unsigned int passed = 0;
+    unsigned char block[BLOCK_SECTOR_SIZE], readback[BLOCK_SECTOR_SIZE];
+    char file_data[32] = {0};
+    size_t file_length = 0;
+    int errors = 0;
+
+    copy(selftest_saved_state.entries, entries, sizeof(entries));
+    copy(selftest_saved_state.fds, fds, sizeof(fds));
+    copy(selftest_saved_state.cache, cache, sizeof(cache));
+    selftest_saved_state.device = storage_device;
+    selftest_saved_state.bitmap_sectors = bitmap_sectors;
+    selftest_saved_state.data_start = data_start;
+    selftest_saved_state.cache_next_slot = cache_next_slot;
+    selftest_saved_state.entry_count = entry_count;
+    selftest_saved_state.mounted = mounted;
+
+    zero(selftest_disk, sizeof(selftest_disk));
+    selftest_device.context = selftest_disk;
+    selftest_device.sector_count = STORAGE_SELFTEST_SECTORS;
+    selftest_device.name = "ramtest0";
+    selftest_device.type = "RAM test device";
+    selftest_device.read_sector = selftest_read_sector;
+    selftest_device.write_sector = selftest_write_sector;
+
+    if (storage_attach_block_device(&selftest_device) == STORAGE_OK) passed |= STORAGE_SELFTEST_DEVICE;
+    struct storage_device_info info;
+    if (storage_get_device_info(&info) == STORAGE_OK && info.present &&
+        info.sectors == STORAGE_SELFTEST_SECTORS && info.sector_size == BLOCK_SECTOR_SIZE)
+        passed |= STORAGE_SELFTEST_INFO;
+
+    int io_ok = 1;
+    for (uint64_t sector = 67; sector <= 71; sector++) {
+        zero(block, sizeof(block));
+        block[0] = (unsigned char)sector;
+        if (storage_write_blocks(&selftest_device, sector, block, 1) != STORAGE_OK ||
+            disk_read(sector, readback) != STORAGE_OK || readback[0] != (unsigned char)sector)
+            io_ok = 0;
+    }
+    selftest_disk[67 * BLOCK_SECTOR_SIZE] = 0;
+    if (disk_read(67, readback) != STORAGE_OK || readback[0] != 0) io_ok = 0;
+    selftest_disk[71 * BLOCK_SECTOR_SIZE] = 0;
+    if (disk_read(71, readback) != STORAGE_OK || readback[0] != 71) io_ok = 0;
+    zero(block, sizeof(block)); block[0] = 0xa5;
+    if (disk_write(71, block) != STORAGE_OK || selftest_disk[71 * BLOCK_SECTOR_SIZE] != 0xa5 ||
+        disk_read(71, readback) != STORAGE_OK || readback[0] != 0xa5) io_ok = 0;
+    if (storage_read_blocks(&selftest_device, STORAGE_SELFTEST_SECTORS, block, 1) != STORAGE_ERR_INVAL ||
+        storage_write_blocks(&selftest_device, STORAGE_SELFTEST_SECTORS, block, 1) != STORAGE_ERR_INVAL)
+        io_ok = 0;
+    if (io_ok) passed |= STORAGE_SELFTEST_BLOCK_IO | STORAGE_SELFTEST_CACHE;
+
+    struct block_device failing_device = {
+        0, STORAGE_SELFTEST_SECTORS, "failure-test", "test",
+        selftest_fail_read, selftest_fail_write
+    };
+    if (storage_attach_block_device(0) == STORAGE_ERR_INVAL &&
+        storage_read_blocks(&failing_device, 0, block, 1) == STORAGE_ERR_IO &&
+        storage_write_blocks(&failing_device, 0, block, 1) == STORAGE_ERR_IO)
+        passed |= STORAGE_SELFTEST_ERRORS;
+
+    int format_ok = storage_format() == STORAGE_OK && storage_is_mounted();
+    if (format_ok && storage_unmount() == STORAGE_OK && !storage_is_mounted() &&
+        storage_mount() == STORAGE_OK && storage_is_mounted()) passed |= STORAGE_SELFTEST_MOUNT;
+
+    int files_ok = storage_mkdir("/selftest") == STORAGE_OK &&
+        storage_write_file("/selftest/note", "RAM-only test", 13, 0) == 13 &&
+        storage_read_file("/selftest/note", file_data, sizeof(file_data), &file_length) == 13 &&
+        file_length == 13 && equal(file_data, "RAM-only test");
+    if (files_ok) passed |= STORAGE_SELFTEST_FILES;
+
+    struct storage_stats stats;
+    if (storage_get_stats(&stats) == STORAGE_OK && stats.total_sectors == STORAGE_SELFTEST_SECTORS &&
+        stats.free_sectors > 0 && stats.used_sectors + stats.free_sectors == stats.total_sectors)
+        passed |= STORAGE_SELFTEST_SPACE;
+
+    int fsck_ok = 0;
+    if (storage_write_file("/selftest/probe", "check", 5, 0) == 5) {
+        int probe = find("/selftest/probe");
+        if (probe >= 0 && entries[probe].blocks[0] && storage_fsck(0, &errors) == STORAGE_OK) {
+            uint64_t sector = entries[probe].blocks[0];
+            uint64_t bitmap_sector = STORAGE_BITMAP_START + sector / STORAGE_BITMAP_BITS_PER_SECTOR;
+            unsigned int bit = (unsigned int)(sector % STORAGE_BITMAP_BITS_PER_SECTOR);
+            selftest_disk[bitmap_sector * BLOCK_SECTOR_SIZE + bit / 8] &= (unsigned char)~(1u << (bit % 8));
+            if (storage_attach_block_device(&selftest_device) == STORAGE_OK && storage_mount() == STORAGE_OK &&
+                storage_fsck(0, &errors) == STORAGE_ERR_CORRUPT && errors > 0 &&
+                storage_fsck(1, &errors) == STORAGE_OK && errors == 0 &&
+                storage_fsck(0, &errors) == STORAGE_OK) fsck_ok = 1;
+        }
+    }
+    if (fsck_ok) passed |= STORAGE_SELFTEST_FSCK;
+
+    copy(entries, selftest_saved_state.entries, sizeof(entries));
+    copy(fds, selftest_saved_state.fds, sizeof(fds));
+    copy(cache, selftest_saved_state.cache, sizeof(cache));
+    storage_device = selftest_saved_state.device;
+    bitmap_sectors = selftest_saved_state.bitmap_sectors;
+    data_start = selftest_saved_state.data_start;
+    cache_next_slot = selftest_saved_state.cache_next_slot;
+    entry_count = selftest_saved_state.entry_count;
+    mounted = selftest_saved_state.mounted;
+    return passed;
+}

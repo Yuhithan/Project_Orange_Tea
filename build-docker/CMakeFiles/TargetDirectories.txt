@@ -37,11 +37,16 @@
 /root/env/build-docker/tests/CMakeFiles/ortos_storage.dir
 /root/env/build-docker/tests/CMakeFiles/ora_format_test.dir
 /root/env/build-docker/tests/CMakeFiles/ora_pack.dir
+/root/env/build-docker/tests/CMakeFiles/ortos_update.dir
+/root/env/build-docker/tests/CMakeFiles/ortos_update_cli.dir
+/root/env/build-docker/tests/CMakeFiles/updater_test.dir
 /root/env/build-docker/tests/CMakeFiles/ora_example.dir
 /root/env/build-docker/tests/CMakeFiles/storage_path_test.dir
+/root/env/build-docker/tests/CMakeFiles/storage_persistence_test.dir
 /root/env/build-docker/tests/CMakeFiles/terminal_input_buffer_test.dir
 /root/env/build-docker/tests/CMakeFiles/core_subsystem_test.dir
 /root/env/build-docker/tests/CMakeFiles/network_stack_test.dir
+/root/env/build-docker/tests/CMakeFiles/ethernet_test.dir
 /root/env/build-docker/tests/CMakeFiles/browser_test.dir
 /root/env/build-docker/tests/CMakeFiles/test.dir
 /root/env/build-docker/tests/CMakeFiles/edit_cache.dir

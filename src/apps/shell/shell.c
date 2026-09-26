@@ -317,6 +317,7 @@ static void shell_print_help(void)
     imp_text("  format      - formate le volume avec confirmation\n");
     imp_text("  fsck        - vérifie l'intégrité du volume\n");
     imp_text("  sync        - synchronise les écritures\n");
+    imp_text("  storage-test --safe - teste le stockage sur disque RAM\n");
     imp_text("  tasks       - liste les tâches\n");
     imp_text("  kill        - termine une tâche\n");
     imp_text("  ps          - liste les processus\n");
@@ -625,6 +626,20 @@ static void shell_execute_command(void)
     {
         if (storage_sync() == STORAGE_OK) imp_text("Storage synchronized\n"); else imp_text("sync: storage I/O error\n");
     }
+    else if (shell_streq(cmd, "storage-test") || shell_streq(cmd, "storage-test --safe") || shell_streq(cmd, "test storage"))
+    {
+        unsigned int result = storage_self_test();
+        imp_text((result & STORAGE_SELFTEST_DEVICE) ? "[PASS] Disk detection (RAM device)\n" : "[FAIL] Disk detection (RAM device)\n");
+        imp_text((result & STORAGE_SELFTEST_INFO) ? "[PASS] Disk information\n" : "[FAIL] Disk information\n");
+        imp_text((result & STORAGE_SELFTEST_BLOCK_IO) ? "[PASS] Block read/write and bounds\n" : "[FAIL] Block read/write and bounds\n");
+        imp_text((result & STORAGE_SELFTEST_MOUNT) ? "[PASS] Filesystem format/mount/unmount\n" : "[FAIL] Filesystem format/mount/unmount\n");
+        imp_text((result & STORAGE_SELFTEST_FILES) ? "[PASS] File and directory operations\n" : "[FAIL] File and directory operations\n");
+        imp_text((result & STORAGE_SELFTEST_SPACE) ? "[PASS] Free-space calculation\n" : "[FAIL] Free-space calculation\n");
+        imp_text((result & STORAGE_SELFTEST_CACHE) ? "[PASS] Cache read/write/eviction\n" : "[FAIL] Cache read/write/eviction\n");
+        imp_text((result & STORAGE_SELFTEST_FSCK) ? "[PASS] Filesystem integrity and repair\n" : "[FAIL] Filesystem integrity and repair\n");
+        imp_text((result & STORAGE_SELFTEST_ERRORS) ? "[PASS] Storage error handling\n" : "[FAIL] Storage error handling\n");
+        imp_text((result & STORAGE_SELFTEST_ALL) == STORAGE_SELFTEST_ALL ? "Storage self-test: PASS\n" : "Storage self-test: FAIL\n");
+    }
     else if (shell_starts_with(cmd, "format"))
     {
         const char *argument = shell_skip_spaces(cmd + 6);
@@ -634,7 +649,8 @@ static void shell_execute_command(void)
     }
     else if (shell_starts_with(cmd, "fsck"))
     {
-        int errors = 0; int result = storage_fsck(shell_streq(shell_skip_spaces(cmd + 4), "repair"), &errors);
+        const char *argument = shell_skip_spaces(cmd + 4);
+        int errors = 0; int result = storage_fsck(shell_streq(argument, "repair") || shell_streq(argument, "--repair"), &errors);
         if (result == STORAGE_OK) imp_text("fsck: clean\n"); else { imp_text("fsck: errors detected: "); shell_print_int(errors); imp_char('\n'); }
     }
     else if (shell_starts_with(cmd, "cd"))

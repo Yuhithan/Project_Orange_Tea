@@ -170,6 +170,48 @@ ora_pack/fast:
 .PHONY : ora_pack/fast
 
 # Convenience name for target.
+tests/CMakeFiles/ortos_update.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/ortos_update.dir/rule
+.PHONY : tests/CMakeFiles/ortos_update.dir/rule
+
+# Convenience name for target.
+ortos_update: tests/CMakeFiles/ortos_update.dir/rule
+.PHONY : ortos_update
+
+# fast build rule for target.
+ortos_update/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update.dir/build.make tests/CMakeFiles/ortos_update.dir/build
+.PHONY : ortos_update/fast
+
+# Convenience name for target.
+tests/CMakeFiles/ortos_update_cli.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/ortos_update_cli.dir/rule
+.PHONY : tests/CMakeFiles/ortos_update_cli.dir/rule
+
+# Convenience name for target.
+ortos_update_cli: tests/CMakeFiles/ortos_update_cli.dir/rule
+.PHONY : ortos_update_cli
+
+# fast build rule for target.
+ortos_update_cli/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update_cli.dir/build.make tests/CMakeFiles/ortos_update_cli.dir/build
+.PHONY : ortos_update_cli/fast
+
+# Convenience name for target.
+tests/CMakeFiles/updater_test.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/updater_test.dir/rule
+.PHONY : tests/CMakeFiles/updater_test.dir/rule
+
+# Convenience name for target.
+updater_test: tests/CMakeFiles/updater_test.dir/rule
+.PHONY : updater_test
+
+# fast build rule for target.
+updater_test/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/updater_test.dir/build.make tests/CMakeFiles/updater_test.dir/build
+.PHONY : updater_test/fast
+
+# Convenience name for target.
 tests/CMakeFiles/ora_example.dir/rule:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/ora_example.dir/rule
 .PHONY : tests/CMakeFiles/ora_example.dir/rule
@@ -196,6 +238,20 @@ storage_path_test: tests/CMakeFiles/storage_path_test.dir/rule
 storage_path_test/fast:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_path_test.dir/build.make tests/CMakeFiles/storage_path_test.dir/build
 .PHONY : storage_path_test/fast
+
+# Convenience name for target.
+tests/CMakeFiles/storage_persistence_test.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/storage_persistence_test.dir/rule
+.PHONY : tests/CMakeFiles/storage_persistence_test.dir/rule
+
+# Convenience name for target.
+storage_persistence_test: tests/CMakeFiles/storage_persistence_test.dir/rule
+.PHONY : storage_persistence_test
+
+# fast build rule for target.
+storage_persistence_test/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_persistence_test.dir/build.make tests/CMakeFiles/storage_persistence_test.dir/build
+.PHONY : storage_persistence_test/fast
 
 # Convenience name for target.
 tests/CMakeFiles/terminal_input_buffer_test.dir/rule:
@@ -238,6 +294,20 @@ network_stack_test: tests/CMakeFiles/network_stack_test.dir/rule
 network_stack_test/fast:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/network_stack_test.dir/build.make tests/CMakeFiles/network_stack_test.dir/build
 .PHONY : network_stack_test/fast
+
+# Convenience name for target.
+tests/CMakeFiles/ethernet_test.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/ethernet_test.dir/rule
+.PHONY : tests/CMakeFiles/ethernet_test.dir/rule
+
+# Convenience name for target.
+ethernet_test: tests/CMakeFiles/ethernet_test.dir/rule
+.PHONY : ethernet_test
+
+# fast build rule for target.
+ethernet_test/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ethernet_test.dir/build.make tests/CMakeFiles/ethernet_test.dir/build
+.PHONY : ethernet_test/fast
 
 # Convenience name for target.
 tests/CMakeFiles/browser_test.dir/rule:
@@ -445,6 +515,30 @@ __/src/net/config/network_stack.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/network_stack_test.dir/build.make tests/CMakeFiles/network_stack_test.dir/__/src/net/config/network_stack.c.s
 .PHONY : __/src/net/config/network_stack.c.s
 
+__/src/net/ethernet.o: __/src/net/ethernet.c.o
+.PHONY : __/src/net/ethernet.o
+
+# target to build an object file
+__/src/net/ethernet.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ethernet_test.dir/build.make tests/CMakeFiles/ethernet_test.dir/__/src/net/ethernet.c.o
+.PHONY : __/src/net/ethernet.c.o
+
+__/src/net/ethernet.i: __/src/net/ethernet.c.i
+.PHONY : __/src/net/ethernet.i
+
+# target to preprocess a source file
+__/src/net/ethernet.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ethernet_test.dir/build.make tests/CMakeFiles/ethernet_test.dir/__/src/net/ethernet.c.i
+.PHONY : __/src/net/ethernet.c.i
+
+__/src/net/ethernet.s: __/src/net/ethernet.c.s
+.PHONY : __/src/net/ethernet.s
+
+# target to generate assembly for a file
+__/src/net/ethernet.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ethernet_test.dir/build.make tests/CMakeFiles/ethernet_test.dir/__/src/net/ethernet.c.s
+.PHONY : __/src/net/ethernet.c.s
+
 __/src/ui/core/ORgui.o: __/src/ui/core/ORgui.c.o
 .PHONY : __/src/ui/core/ORgui.o
 
@@ -493,6 +587,54 @@ __/tools/ora_pack.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ora_pack.dir/build.make tests/CMakeFiles/ora_pack.dir/__/tools/ora_pack.c.s
 .PHONY : __/tools/ora_pack.c.s
 
+__/tools/ortos_update.o: __/tools/ortos_update.c.o
+.PHONY : __/tools/ortos_update.o
+
+# target to build an object file
+__/tools/ortos_update.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update_cli.dir/build.make tests/CMakeFiles/ortos_update_cli.dir/__/tools/ortos_update.c.o
+.PHONY : __/tools/ortos_update.c.o
+
+__/tools/ortos_update.i: __/tools/ortos_update.c.i
+.PHONY : __/tools/ortos_update.i
+
+# target to preprocess a source file
+__/tools/ortos_update.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update_cli.dir/build.make tests/CMakeFiles/ortos_update_cli.dir/__/tools/ortos_update.c.i
+.PHONY : __/tools/ortos_update.c.i
+
+__/tools/ortos_update.s: __/tools/ortos_update.c.s
+.PHONY : __/tools/ortos_update.s
+
+# target to generate assembly for a file
+__/tools/ortos_update.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update_cli.dir/build.make tests/CMakeFiles/ortos_update_cli.dir/__/tools/ortos_update.c.s
+.PHONY : __/tools/ortos_update.c.s
+
+__/tools/update_lib.o: __/tools/update_lib.c.o
+.PHONY : __/tools/update_lib.o
+
+# target to build an object file
+__/tools/update_lib.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update.dir/build.make tests/CMakeFiles/ortos_update.dir/__/tools/update_lib.c.o
+.PHONY : __/tools/update_lib.c.o
+
+__/tools/update_lib.i: __/tools/update_lib.c.i
+.PHONY : __/tools/update_lib.i
+
+# target to preprocess a source file
+__/tools/update_lib.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update.dir/build.make tests/CMakeFiles/ortos_update.dir/__/tools/update_lib.c.i
+.PHONY : __/tools/update_lib.c.i
+
+__/tools/update_lib.s: __/tools/update_lib.c.s
+.PHONY : __/tools/update_lib.s
+
+# target to generate assembly for a file
+__/tools/update_lib.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update.dir/build.make tests/CMakeFiles/ortos_update.dir/__/tools/update_lib.c.s
+.PHONY : __/tools/update_lib.c.s
+
 browser_test.o: browser_test.c.o
 .PHONY : browser_test.o
 
@@ -540,6 +682,30 @@ core_subsystem_test.s: core_subsystem_test.c.s
 core_subsystem_test.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/core_subsystem_test.dir/build.make tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.s
 .PHONY : core_subsystem_test.c.s
+
+ethernet_test.o: ethernet_test.c.o
+.PHONY : ethernet_test.o
+
+# target to build an object file
+ethernet_test.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ethernet_test.dir/build.make tests/CMakeFiles/ethernet_test.dir/ethernet_test.c.o
+.PHONY : ethernet_test.c.o
+
+ethernet_test.i: ethernet_test.c.i
+.PHONY : ethernet_test.i
+
+# target to preprocess a source file
+ethernet_test.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ethernet_test.dir/build.make tests/CMakeFiles/ethernet_test.dir/ethernet_test.c.i
+.PHONY : ethernet_test.c.i
+
+ethernet_test.s: ethernet_test.c.s
+.PHONY : ethernet_test.s
+
+# target to generate assembly for a file
+ethernet_test.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ethernet_test.dir/build.make tests/CMakeFiles/ethernet_test.dir/ethernet_test.c.s
+.PHONY : ethernet_test.c.s
 
 network_stack_test.o: network_stack_test.c.o
 .PHONY : network_stack_test.o
@@ -613,6 +779,30 @@ storage_path_test.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_path_test.dir/build.make tests/CMakeFiles/storage_path_test.dir/storage_path_test.c.s
 .PHONY : storage_path_test.c.s
 
+storage_persistence_test.o: storage_persistence_test.c.o
+.PHONY : storage_persistence_test.o
+
+# target to build an object file
+storage_persistence_test.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_persistence_test.dir/build.make tests/CMakeFiles/storage_persistence_test.dir/storage_persistence_test.c.o
+.PHONY : storage_persistence_test.c.o
+
+storage_persistence_test.i: storage_persistence_test.c.i
+.PHONY : storage_persistence_test.i
+
+# target to preprocess a source file
+storage_persistence_test.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_persistence_test.dir/build.make tests/CMakeFiles/storage_persistence_test.dir/storage_persistence_test.c.i
+.PHONY : storage_persistence_test.c.i
+
+storage_persistence_test.s: storage_persistence_test.c.s
+.PHONY : storage_persistence_test.s
+
+# target to generate assembly for a file
+storage_persistence_test.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_persistence_test.dir/build.make tests/CMakeFiles/storage_persistence_test.dir/storage_persistence_test.c.s
+.PHONY : storage_persistence_test.c.s
+
 terminal_input_buffer_test.o: terminal_input_buffer_test.c.o
 .PHONY : terminal_input_buffer_test.o
 
@@ -637,6 +827,30 @@ terminal_input_buffer_test.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/terminal_input_buffer_test.dir/build.make tests/CMakeFiles/terminal_input_buffer_test.dir/terminal_input_buffer_test.c.s
 .PHONY : terminal_input_buffer_test.c.s
 
+updater_test.o: updater_test.c.o
+.PHONY : updater_test.o
+
+# target to build an object file
+updater_test.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/updater_test.dir/build.make tests/CMakeFiles/updater_test.dir/updater_test.c.o
+.PHONY : updater_test.c.o
+
+updater_test.i: updater_test.c.i
+.PHONY : updater_test.i
+
+# target to preprocess a source file
+updater_test.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/updater_test.dir/build.make tests/CMakeFiles/updater_test.dir/updater_test.c.i
+.PHONY : updater_test.c.i
+
+updater_test.s: updater_test.c.s
+.PHONY : updater_test.s
+
+# target to generate assembly for a file
+updater_test.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/updater_test.dir/build.make tests/CMakeFiles/updater_test.dir/updater_test.c.s
+.PHONY : updater_test.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -649,12 +863,17 @@ help:
 	@echo "... ora_example"
 	@echo "... browser_test"
 	@echo "... core_subsystem_test"
+	@echo "... ethernet_test"
 	@echo "... network_stack_test"
 	@echo "... ora_format_test"
 	@echo "... ora_pack"
 	@echo "... ortos_storage"
+	@echo "... ortos_update"
+	@echo "... ortos_update_cli"
 	@echo "... storage_path_test"
+	@echo "... storage_persistence_test"
 	@echo "... terminal_input_buffer_test"
+	@echo "... updater_test"
 	@echo "... __/src/apps/browser.o"
 	@echo "... __/src/apps/browser.i"
 	@echo "... __/src/apps/browser.s"
@@ -679,18 +898,30 @@ help:
 	@echo "... __/src/net/config/network_stack.o"
 	@echo "... __/src/net/config/network_stack.i"
 	@echo "... __/src/net/config/network_stack.s"
+	@echo "... __/src/net/ethernet.o"
+	@echo "... __/src/net/ethernet.i"
+	@echo "... __/src/net/ethernet.s"
 	@echo "... __/src/ui/core/ORgui.o"
 	@echo "... __/src/ui/core/ORgui.i"
 	@echo "... __/src/ui/core/ORgui.s"
 	@echo "... __/tools/ora_pack.o"
 	@echo "... __/tools/ora_pack.i"
 	@echo "... __/tools/ora_pack.s"
+	@echo "... __/tools/ortos_update.o"
+	@echo "... __/tools/ortos_update.i"
+	@echo "... __/tools/ortos_update.s"
+	@echo "... __/tools/update_lib.o"
+	@echo "... __/tools/update_lib.i"
+	@echo "... __/tools/update_lib.s"
 	@echo "... browser_test.o"
 	@echo "... browser_test.i"
 	@echo "... browser_test.s"
 	@echo "... core_subsystem_test.o"
 	@echo "... core_subsystem_test.i"
 	@echo "... core_subsystem_test.s"
+	@echo "... ethernet_test.o"
+	@echo "... ethernet_test.i"
+	@echo "... ethernet_test.s"
 	@echo "... network_stack_test.o"
 	@echo "... network_stack_test.i"
 	@echo "... network_stack_test.s"
@@ -700,9 +931,15 @@ help:
 	@echo "... storage_path_test.o"
 	@echo "... storage_path_test.i"
 	@echo "... storage_path_test.s"
+	@echo "... storage_persistence_test.o"
+	@echo "... storage_persistence_test.i"
+	@echo "... storage_persistence_test.s"
 	@echo "... terminal_input_buffer_test.o"
 	@echo "... terminal_input_buffer_test.i"
 	@echo "... terminal_input_buffer_test.s"
+	@echo "... updater_test.o"
+	@echo "... updater_test.i"
+	@echo "... updater_test.s"
 .PHONY : help
 
 

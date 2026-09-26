@@ -8,6 +8,17 @@
 #define STORAGE_MAX_ENTRIES 64
 #define STORAGE_MAX_FILE_BLOCKS 8
 
+#define STORAGE_SELFTEST_DEVICE (1u << 0)
+#define STORAGE_SELFTEST_INFO (1u << 1)
+#define STORAGE_SELFTEST_BLOCK_IO (1u << 2)
+#define STORAGE_SELFTEST_MOUNT (1u << 3)
+#define STORAGE_SELFTEST_FILES (1u << 4)
+#define STORAGE_SELFTEST_SPACE (1u << 5)
+#define STORAGE_SELFTEST_CACHE (1u << 6)
+#define STORAGE_SELFTEST_FSCK (1u << 7)
+#define STORAGE_SELFTEST_ERRORS (1u << 8)
+#define STORAGE_SELFTEST_ALL ((1u << 9) - 1u)
+
 enum {
     STORAGE_OK = 0,
     STORAGE_ERR_INVAL = -1,
@@ -53,6 +64,7 @@ int storage_get_device_info(struct storage_device_info *info);
 int storage_get_stats(struct storage_stats *stats);
 int storage_fsck(int repair, int *errors);
 int storage_sync(void);
+unsigned int storage_self_test(void);
 int storage_create_entry(const char* path, char type, const char* content);
 int storage_find_entry(const char* path);
 int storage_remove_entry(const char* path);

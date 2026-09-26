@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/ortos_update_cli.dir/__/tools/ortos_update.c.o -o ortos_update_cli  libortos_update.a 

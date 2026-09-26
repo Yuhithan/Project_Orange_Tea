@@ -557,6 +557,45 @@ ora_pack/fast:
 .PHONY : ora_pack/fast
 
 #=============================================================================
+# Target rules for targets named ortos_update
+
+# Build rule for target.
+ortos_update: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ortos_update
+.PHONY : ortos_update
+
+# fast build rule for target.
+ortos_update/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update.dir/build.make tests/CMakeFiles/ortos_update.dir/build
+.PHONY : ortos_update/fast
+
+#=============================================================================
+# Target rules for targets named ortos_update_cli
+
+# Build rule for target.
+ortos_update_cli: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ortos_update_cli
+.PHONY : ortos_update_cli
+
+# fast build rule for target.
+ortos_update_cli/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update_cli.dir/build.make tests/CMakeFiles/ortos_update_cli.dir/build
+.PHONY : ortos_update_cli/fast
+
+#=============================================================================
+# Target rules for targets named updater_test
+
+# Build rule for target.
+updater_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 updater_test
+.PHONY : updater_test
+
+# fast build rule for target.
+updater_test/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/updater_test.dir/build.make tests/CMakeFiles/updater_test.dir/build
+.PHONY : updater_test/fast
+
+#=============================================================================
 # Target rules for targets named ora_example
 
 # Build rule for target.
@@ -581,6 +620,19 @@ storage_path_test: cmake_check_build_system
 storage_path_test/fast:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_path_test.dir/build.make tests/CMakeFiles/storage_path_test.dir/build
 .PHONY : storage_path_test/fast
+
+#=============================================================================
+# Target rules for targets named storage_persistence_test
+
+# Build rule for target.
+storage_persistence_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 storage_persistence_test
+.PHONY : storage_persistence_test
+
+# fast build rule for target.
+storage_persistence_test/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_persistence_test.dir/build.make tests/CMakeFiles/storage_persistence_test.dir/build
+.PHONY : storage_persistence_test/fast
 
 #=============================================================================
 # Target rules for targets named terminal_input_buffer_test
@@ -620,6 +672,19 @@ network_stack_test: cmake_check_build_system
 network_stack_test/fast:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/network_stack_test.dir/build.make tests/CMakeFiles/network_stack_test.dir/build
 .PHONY : network_stack_test/fast
+
+#=============================================================================
+# Target rules for targets named ethernet_test
+
+# Build rule for target.
+ethernet_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ethernet_test
+.PHONY : ethernet_test
+
+# fast build rule for target.
+ethernet_test/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ethernet_test.dir/build.make tests/CMakeFiles/ethernet_test.dir/build
+.PHONY : ethernet_test/fast
 
 #=============================================================================
 # Target rules for targets named browser_test
@@ -676,12 +741,17 @@ help:
 	@echo "... ortos_kernel"
 	@echo "... browser_test"
 	@echo "... core_subsystem_test"
+	@echo "... ethernet_test"
 	@echo "... network_stack_test"
 	@echo "... ora_format_test"
 	@echo "... ora_pack"
 	@echo "... ortos_storage"
+	@echo "... ortos_update"
+	@echo "... ortos_update_cli"
 	@echo "... storage_path_test"
+	@echo "... storage_persistence_test"
 	@echo "... terminal_input_buffer_test"
+	@echo "... updater_test"
 .PHONY : help
 
 

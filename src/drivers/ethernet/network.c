@@ -1,4 +1,6 @@
 #include "network.h"
+#include "net/stack.h"
+#include "rtl8139.h"
 #include <stddef.h>
 
 static size_t ortos_strlen(const char *text)
@@ -37,14 +39,30 @@ static int ethernet_available = 0;
 static int wifi_supported = 0;
 static int wifi_connected = 0;
 static char wifi_ssid[32];
+static ortos_ethernet_device_t ethernet_device;
 
 void enable_network(void)
 {
     network_enabled = 1;
-    ethernet_available = 1;
+    ethernet_available = rtl8139_init(&ethernet_device) == 0;
     wifi_supported = 0;
     wifi_connected = 0;
     wifi_ssid[0] = '\0';
+
+    if (ethernet_available)
+    {
+        ortos_net_interface_t interface = {0};
+        for (size_t index = 0; index < sizeof(interface.address); ++index)
+        {
+            interface.address[index] = ethernet_device.address[index];
+        }
+        interface.mtu = ethernet_device.mtu;
+        interface.up = ethernet_device.link_up;
+        interface.type = ORTOS_NET_IFACE_ETHERNET;
+        interface.name[0] = 'e'; interface.name[1] = 't'; interface.name[2] = 'h';
+        interface.name[3] = '0'; interface.name[4] = '\0';
+        (void)ortos_net_register_interface(&interface);
+    }
 }
 
 int network_has_ethernet(void)

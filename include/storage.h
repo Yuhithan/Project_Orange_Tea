@@ -52,6 +52,14 @@ struct storage_stats {
     uint32_t directory_count;
 };
 
+struct storage_entry_info {
+    const char *name;
+    const char *path;
+    char type;
+    size_t size;
+    uint32_t blocks_used;
+};
+
 void storage_init(void);
 int storage_attach_block_device(const struct block_device *device);
 int storage_read_blocks(const struct block_device *device, uint64_t block, void *buffer, size_t count);
@@ -65,8 +73,13 @@ int storage_get_stats(struct storage_stats *stats);
 int storage_fsck(int repair, int *errors);
 int storage_sync(void);
 unsigned int storage_self_test(void);
+int storage_create_file(const char *path, const void *buffer, size_t length);
 int storage_create_entry(const char* path, char type, const char* content);
 int storage_find_entry(const char* path);
+int storage_get_entry_info(const char *path, struct storage_entry_info *info);
+int storage_unlink(const char *path);
+int storage_rmdir(const char *path);
+int storage_remove_tree(const char *path);
 int storage_remove_entry(const char* path);
 int storage_get_entry_count(void);
 const char* storage_get_entry_name(int index);

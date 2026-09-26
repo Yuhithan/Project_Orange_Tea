@@ -294,64 +294,210 @@ static int create(const char *path, char type, const char *content)
     return storage_sync();
 }
 int storage_create_entry(const char *path, char type, const char *content) { return create(path, type, content) == STORAGE_OK; }
-int storage_mkdir(const char *path) { return create(path, 'd', 0); }
+int storage_mkdir(const char *path)
+{
+    char normalized[STORAGE_MAX_PATH];
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
+    if (normalize(path, normalized) != STORAGE_OK || equal(normalized, "/")) return STORAGE_ERR_INVAL;
+    if (!parent_exists(normalized)) return STORAGE_ERR_NOTDIR;
+    return create(normalized, 'd', 0);
+}
+int storage_create_file(const char *path, const void *buffer, size_t length)
+{
+    char normalized[STORAGE_MAX_PATH];
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
+    if (!buffer && length) return STORAGE_ERR_INVAL;
+    if (length >= STORAGE_CONTENT_CAPACITY) return STORAGE_ERR_NOSPC;
+    if (normalize(path, normalized) != STORAGE_OK || equal(normalized, "/")) return STORAGE_ERR_INVAL;
+    if (find(normalized) >= 0) return STORAGE_ERR_EXIST;
+    if (!parent_exists(normalized)) return STORAGE_ERR_NOTDIR;
+    int result = create(normalized, 'f', 0);
+    if (result != STORAGE_OK) return result;
+    int index = find(normalized);
+    if (index < 0) return STORAGE_ERR_IO;
+    if (length) copy(entries[index].content, buffer, length);
+    entries[index].content[length] = 0;
+    entries[index].size = length;
+    return storage_sync();
+}
 int storage_find_entry(const char *path) { return find(path); }
+int storage_get_entry_info(const char *path, struct storage_entry_info *info)
+{
+    int index;
+    uint32_t blocks = 0;
+    if (!info) return STORAGE_ERR_INVAL;
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
+    char normalized[STORAGE_MAX_PATH];
+    if (normalize(path, normalized) != STORAGE_OK) return STORAGE_ERR_INVAL;
+    if (equal(normalized, "/")) {
+        info->name = "/"; info->path = "/"; info->type = 'd'; info->size = 0; info->blocks_used = 0;
+        return STORAGE_OK;
+    }
+    index = find(normalized);
+    if (index < 0) return STORAGE_ERR_NOENT;
+    for (int i = 0; i < STORAGE_MAX_FILE_BLOCKS; i++) if (entries[index].blocks[i]) blocks++;
+    info->name = entries[index].name;
+    info->path = entries[index].path;
+    info->type = entries[index].type;
+    info->size = entries[index].size;
+    info->blocks_used = blocks;
+    return STORAGE_OK;
+}
 int storage_get_entry_count(void) { return entry_count; }
 const char *storage_get_entry_name(int index) { return index >= 0 && index < entry_count ? entries[index].name : ""; }
 const char *storage_get_entry_path(int index) { return index >= 0 && index < entry_count ? entries[index].path : ""; }
 char storage_get_entry_type(int index) { return index >= 0 && index < entry_count ? entries[index].type : 0; }
 const char *storage_get_entry_content(int index) { return index >= 0 && index < entry_count ? entries[index].content : ""; }
 
-int storage_remove_entry(const char *path)
+static int remove_entry_at(int index)
 {
-    int index = find(path); if (index < 0) return 0;
-    int length = 0; while (entries[index].path[length]) length++;
-    if (entries[index].type == 'd') for (int i = 0; i < entry_count; i++) if (i != index && path_prefix(entries[i].path, entries[index].path)) return 0;
-    for (int i = 0; i < STORAGE_MAX_FILE_BLOCKS; i++) if (entries[index].blocks[i]) (void)bitmap_bit(entries[index].blocks[i], 0);
+    for (int i = 0; i < STORAGE_MAX_FILE_BLOCKS; i++) {
+        uint32_t sector = entries[index].blocks[i];
+        if (sector && (sector < data_start || sector >= storage_device->sector_count || bitmap_bit(sector, 0) != STORAGE_OK)) return STORAGE_ERR_IO;
+    }
     for (int i = index; i + 1 < entry_count; i++) entries[i] = entries[i + 1];
     entry_count--;
     for (int i = 0; i < 16; i++) if (fds[i].used && fds[i].entry >= index) fds[i].used = 0;
-    return storage_sync() == STORAGE_OK;
+    return STORAGE_OK;
+}
+static int remove_path(const char *path, char required_type)
+{
+    char normalized[STORAGE_MAX_PATH];
+    int index;
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
+    if (normalize(path, normalized) != STORAGE_OK || equal(normalized, "/")) return STORAGE_ERR_INVAL;
+    index = find(normalized);
+    if (index < 0) return STORAGE_ERR_NOENT;
+    if (entries[index].type != required_type) return required_type == 'f' ? STORAGE_ERR_ISDIR : STORAGE_ERR_NOTDIR;
+    if (required_type == 'd') {
+        for (int i = 0; i < entry_count; i++) if (i != index && path_prefix(entries[i].path, normalized)) return STORAGE_ERR_NOTEMPTY;
+    }
+    int result = remove_entry_at(index);
+    if (result != STORAGE_OK) return result;
+    return storage_sync();
+}
+int storage_unlink(const char *path) { return remove_path(path, 'f'); }
+int storage_rmdir(const char *path) { return remove_path(path, 'd'); }
+int storage_remove_tree(const char *path)
+{
+    char normalized[STORAGE_MAX_PATH];
+    int index;
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
+    if (normalize(path, normalized) != STORAGE_OK || equal(normalized, "/")) return STORAGE_ERR_INVAL;
+    index = find(normalized);
+    if (index < 0) return STORAGE_ERR_NOENT;
+    if (entries[index].type != 'd') return STORAGE_ERR_NOTDIR;
+    for (int i = entry_count - 1; i >= 0; i--) {
+        if (equal(entries[i].path, normalized) || path_prefix(entries[i].path, normalized)) {
+            int result = remove_entry_at(i);
+            if (result != STORAGE_OK) return result;
+        }
+    }
+    return storage_sync();
+}
+int storage_remove_entry(const char *path)
+{
+    int index = find(path);
+    if (index < 0) return 0;
+    return (entries[index].type == 'd' ? storage_rmdir(path) : storage_unlink(path)) == STORAGE_OK;
 }
 int storage_write_file(const char *path, const void *buffer, size_t length, int append)
 {
-    int index = find(path); if (index < 0) { if (create(path, 'f', 0) != STORAGE_OK) return STORAGE_ERR_NOENT; index = find(path); }
-    if (index < 0 || entries[index].type != 'f' || (!buffer && length)) return STORAGE_ERR_INVAL;
-    if (!append) entries[index].size = 0;
-    if (entries[index].size + length >= sizeof(entries[index].content)) return STORAGE_ERR_NOSPC;
-    copy(entries[index].content + entries[index].size, buffer, length); entries[index].size += length; entries[index].content[entries[index].size] = 0;
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
+    if (!buffer && length) return STORAGE_ERR_INVAL;
+    if (length >= STORAGE_CONTENT_CAPACITY) return STORAGE_ERR_NOSPC;
+    int index = find(path);
+    if (index < 0) {
+        int create_result = create(path, 'f', 0);
+        if (create_result != STORAGE_OK) return create_result;
+        index = find(path);
+    }
+    if (index < 0) return STORAGE_ERR_NOENT;
+    if (entries[index].type != 'f') return STORAGE_ERR_ISDIR;
+    size_t offset = append ? entries[index].size : 0;
+    if (offset >= sizeof(entries[index].content) || length >= sizeof(entries[index].content) - offset) return STORAGE_ERR_NOSPC;
+    copy(entries[index].content + offset, buffer, length); entries[index].size = offset + length; entries[index].content[entries[index].size] = 0;
     return storage_sync() == STORAGE_OK ? (int)length : STORAGE_ERR_IO;
 }
 int storage_read_file(const char *path, void *buffer, size_t capacity, size_t *length)
 {
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
     int index = find(path); if (index < 0) return STORAGE_ERR_NOENT;
-    if (entries[index].type != 'f' || (!buffer && capacity)) return STORAGE_ERR_ISDIR;
+    if (entries[index].type != 'f') return STORAGE_ERR_ISDIR;
+    if (!buffer && capacity) return STORAGE_ERR_INVAL;
     size_t count = entries[index].size < capacity ? entries[index].size : capacity; copy(buffer, entries[index].content, count); if (length) *length = entries[index].size; return (int)count;
 }
 int storage_rename(const char *source, const char *destination)
 {
-    int index = find(source); char normalized[STORAGE_MAX_PATH];
-    if (index < 0 || normalize(destination, normalized) != STORAGE_OK || find(normalized) >= 0 || !parent_directory(normalized)) return STORAGE_ERR_INVAL;
-    text_copy(entries[index].path, normalized, sizeof(entries[index].path)); const char *name = normalized; for (const char *p = normalized; *p; p++) if (*p == '/') name = p + 1; text_copy(entries[index].name, name, sizeof(entries[index].name)); return storage_sync();
+    int index = find(source);
+    char normalized[STORAGE_MAX_PATH], old_path[STORAGE_MAX_PATH];
+    size_t source_length = 0;
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
+    if (index < 0) return STORAGE_ERR_NOENT;
+    if (normalize(destination, normalized) != STORAGE_OK || equal(normalized, "/")) return STORAGE_ERR_INVAL;
+    if (find(normalized) >= 0) return STORAGE_ERR_EXIST;
+    if (!parent_exists(normalized)) return STORAGE_ERR_NOTDIR;
+    if (entries[index].type == 'd' && path_prefix(normalized, entries[index].path)) return STORAGE_ERR_INVAL;
+    text_copy(old_path, entries[index].path, sizeof(old_path));
+    while (old_path[source_length]) source_length++;
+    for (int i = 0; i < entry_count; i++) {
+        int is_root = equal(entries[i].path, old_path);
+        int is_child = entries[index].type == 'd' && path_prefix(entries[i].path, old_path);
+        if (!is_root && !is_child) continue;
+        const char *suffix = entries[i].path + source_length;
+        size_t new_length = 0;
+        while (normalized[new_length]) new_length++;
+        size_t suffix_length = 0;
+        while (suffix[suffix_length]) suffix_length++;
+        if (new_length + suffix_length >= STORAGE_MAX_PATH) return STORAGE_ERR_INVAL;
+        char new_path[STORAGE_MAX_PATH];
+        text_copy(new_path, normalized, sizeof(new_path));
+        text_copy(new_path + new_length, suffix, (int)(sizeof(new_path) - new_length));
+        for (int j = 0; j < entry_count; j++) {
+            int is_source = equal(entries[j].path, old_path) ||
+                (entries[index].type == 'd' && path_prefix(entries[j].path, old_path));
+            if (!is_source &&
+                equal(entries[j].path, new_path)) return STORAGE_ERR_EXIST;
+        }
+    }
+    for (int i = 0; i < entry_count; i++) {
+        int is_root = equal(entries[i].path, old_path);
+        int is_child = entries[index].type == 'd' && path_prefix(entries[i].path, old_path);
+        if (!is_root && !is_child) continue;
+        const char *suffix = entries[i].path + source_length;
+        size_t new_length = 0;
+        while (normalized[new_length]) new_length++;
+        char new_path[STORAGE_MAX_PATH];
+        text_copy(new_path, normalized, sizeof(new_path));
+        text_copy(new_path + new_length, suffix, (int)(sizeof(new_path) - new_length));
+        text_copy(entries[i].path, new_path, sizeof(entries[i].path));
+        const char *name = entries[i].path;
+        for (const char *p = entries[i].path; *p; p++) if (*p == '/') name = p + 1;
+        text_copy(entries[i].name, name, sizeof(entries[i].name));
+    }
+    return storage_sync();
 }
 int storage_copy(const char *source, const char *destination)
 {
-    int index = find(source); if (index < 0) return STORAGE_ERR_NOENT;
-    if (entries[index].type == 'd') return storage_mkdir(destination) ? STORAGE_OK : STORAGE_ERR_IO;
-    return storage_write_file(destination, entries[index].content, entries[index].size, 0) < 0 ? STORAGE_ERR_IO : STORAGE_OK;
+    int index = find(source);
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
+    if (index < 0) return STORAGE_ERR_NOENT;
+    if (entries[index].type != 'f') return STORAGE_ERR_ISDIR;
+    return storage_create_file(destination, entries[index].content, entries[index].size);
 }
 int storage_open(const char *path, int create_if_missing)
 {
-    int entry = find(path); if (entry < 0 && create_if_missing) { if (create(path, 'f', 0) != STORAGE_OK) return STORAGE_ERR_IO; entry = find(path); }
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
+    int entry = find(path); if (entry < 0 && create_if_missing) { int result = create(path, 'f', 0); if (result != STORAGE_OK) return result; entry = find(path); }
     if (entry < 0) return STORAGE_ERR_NOENT;
     if (entries[entry].type != 'f') return STORAGE_ERR_ISDIR;
     for (int fd = 0; fd < 16; fd++) if (!fds[fd].used) { fds[fd].used = 1; fds[fd].entry = entry; fds[fd].offset = 0; return fd; }
     return STORAGE_ERR_NOSPC;
 }
 int storage_close(int fd) { if (fd < 0 || fd >= 16 || !fds[fd].used) return STORAGE_ERR_BADFD; fds[fd].used = 0; return STORAGE_OK; }
-int storage_read(int fd, void *buffer, size_t length) { if (fd < 0 || fd >= 16 || !fds[fd].used || (!buffer && length)) return STORAGE_ERR_BADFD; size_t available = fds[fd].offset < entries[fds[fd].entry].size ? entries[fds[fd].entry].size - fds[fd].offset : 0; if (length > available) length = available; copy(buffer, entries[fds[fd].entry].content + fds[fd].offset, length); fds[fd].offset += length; return (int)length; }
-int storage_write(int fd, const void *buffer, size_t length) { if (fd < 0 || fd >= 16 || !fds[fd].used || (!buffer && length)) return STORAGE_ERR_BADFD; if (fds[fd].offset + length >= sizeof(entries[fds[fd].entry].content)) return STORAGE_ERR_NOSPC; copy(entries[fds[fd].entry].content + fds[fd].offset, buffer, length); fds[fd].offset += length; if (fds[fd].offset > entries[fds[fd].entry].size) entries[fds[fd].entry].size = fds[fd].offset; entries[fds[fd].entry].content[entries[fds[fd].entry].size] = 0; return storage_sync() == STORAGE_OK ? (int)length : STORAGE_ERR_IO; }
-int storage_seek(int fd, size_t offset) { if (fd < 0 || fd >= 16 || !fds[fd].used || offset >= sizeof(entries[0].content)) return STORAGE_ERR_BADFD; fds[fd].offset = offset; return STORAGE_OK; }
+int storage_read(int fd, void *buffer, size_t length) { if (!mounted) return STORAGE_ERR_NOTMOUNTED; if (fd < 0 || fd >= 16 || !fds[fd].used || (!buffer && length)) return STORAGE_ERR_BADFD; size_t available = fds[fd].offset < entries[fds[fd].entry].size ? entries[fds[fd].entry].size - fds[fd].offset : 0; if (length > available) length = available; copy(buffer, entries[fds[fd].entry].content + fds[fd].offset, length); fds[fd].offset += length; return (int)length; }
+int storage_write(int fd, const void *buffer, size_t length) { if (!mounted) return STORAGE_ERR_NOTMOUNTED; if (fd < 0 || fd >= 16 || !fds[fd].used || (!buffer && length)) return STORAGE_ERR_BADFD; if (fds[fd].offset >= sizeof(entries[fds[fd].entry].content) || length >= sizeof(entries[fds[fd].entry].content) - fds[fd].offset) return STORAGE_ERR_NOSPC; copy(entries[fds[fd].entry].content + fds[fd].offset, buffer, length); fds[fd].offset += length; if (fds[fd].offset > entries[fds[fd].entry].size) entries[fds[fd].entry].size = fds[fd].offset; entries[fds[fd].entry].content[entries[fds[fd].entry].size] = 0; return storage_sync() == STORAGE_OK ? (int)length : STORAGE_ERR_IO; }
+int storage_seek(int fd, size_t offset) { if (!mounted) return STORAGE_ERR_NOTMOUNTED; if (fd < 0 || fd >= 16 || !fds[fd].used || offset >= sizeof(entries[0].content)) return STORAGE_ERR_BADFD; fds[fd].offset = offset; return STORAGE_OK; }
 
 int storage_get_device_info(struct storage_device_info *info) { if (!info || !storage_device) return STORAGE_ERR_NOENT; info->name = storage_device->name ? storage_device->name : "disk0"; info->type = storage_device->type ? storage_device->type : "ATA"; info->sectors = storage_device->sector_count; info->sector_size = BLOCK_SECTOR_SIZE; info->present = 1; info->mounted = mounted; return STORAGE_OK; }
 int storage_get_stats(struct storage_stats *stats) { if (!stats || !mounted) return STORAGE_ERR_NOTMOUNTED; stats->total_sectors = storage_device ? storage_device->sector_count : 0; stats->used_sectors = storage_device ? data_start : 0; stats->sector_size = BLOCK_SECTOR_SIZE; stats->file_count = 0; stats->directory_count = 0; for (int i = 0; i < entry_count; i++) { if (entries[i].type == 'f') { stats->file_count++; if (entries[i].blocks[0]) stats->used_sectors++; } else stats->directory_count++; } stats->free_sectors = stats->total_sectors > stats->used_sectors ? stats->total_sectors - stats->used_sectors : 0; return STORAGE_OK; }

@@ -16,7 +16,7 @@ static char history[MAX_HISTORY][MAX_CMD];
 static int history_count = 0;
 static char aliases[MAX_ALIASES][MAX_CMD];
 static int alias_count = 0;
-static char current_dir[32] = "/";
+static char current_dir[STORAGE_MAX_PATH] = "/";
 static char current_layout[16] = "en-us";
 static int shell_seed = 1337;
 static int shell_uptime_seconds = 0;
@@ -104,6 +104,19 @@ static const char* shell_read_token(const char* text, char* token, int max_len)
         token[i++] = *text++;
     }
     token[i] = '\0';
+    return text;
+}
+
+static const char *shell_read_word(const char *text, char *word, int max_len)
+{
+    text = shell_skip_spaces(text);
+    int index = 0;
+    char quote = 0;
+    if (*text == '"' || *text == '\'') quote = *text++;
+    while (*text && (quote ? *text != quote : !shell_is_space(*text)) && index < max_len - 1)
+        word[index++] = *text++;
+    if (quote && *text == quote) text++;
+    word[index] = 0;
     return text;
 }
 
@@ -302,6 +315,7 @@ static void shell_print_help(void)
     imp_text("  pwd         - affiche le dossier courant\n");
     imp_text("  cat         - affiche un fichier\n");
     imp_text("  touch       - crée un fichier\n");
+    imp_text("  create      - crée un fichier/dossier avec contenu optionnel\n");
     imp_text("  mkdir       - crée un dossier\n");
     imp_text("  rm          - supprime un fichier\n");
     imp_text("  cp          - copie un fichier\n");
@@ -309,6 +323,10 @@ static void shell_print_help(void)
     imp_text("  write       - écrit un fichier\n");
     imp_text("  append      - ajoute à un fichier\n");
     imp_text("  rmdir       - supprime un dossier vide\n");
+    imp_text("  del         - supprime récursivement avec confirmation\n");
+    imp_text("  textedit/modify - éditeur de texte console\n");
+    imp_text("  stat        - informations sur un fichier/dossier\n");
+    imp_text("  du          - espace utilisé par un chemin\n");
     imp_text("  disks       - liste les périphériques détectés\n");
     imp_text("  diskinfo    - affiche les informations du disque\n");
     imp_text("  df          - affiche l'espace du volume\n");
@@ -322,6 +340,7 @@ static void shell_print_help(void)
     imp_text("  kill        - termine une tâche\n");
     imp_text("  ps          - liste les processus\n");
     imp_text("  test        - lance les tests du noyau\n");
+    imp_text("  test filesystem - teste le système de fichiers monté\n");
     imp_text("  panic       - déclenche un kernel panic\n");
     imp_text("  beep        - bip du PC Speaker\n");
     imp_text("  cls         - alias de clear\n");
@@ -343,7 +362,7 @@ static void shell_print_help(void)
 static void shell_set_current_dir(const char* path)
 {
     int i = 0;
-    while (path[i] != '\0' && i < 31)
+    while (path[i] != '\0' && i < STORAGE_MAX_PATH - 1)
     {
         current_dir[i] = path[i];
         i++;
@@ -351,74 +370,282 @@ static void shell_set_current_dir(const char* path)
     current_dir[i] = '\0';
 }
 
-static void shell_resolve_path(const char* path, char* out, int max_len)
+static int shell_resolve_path(const char* path, char* out, int max_len)
 {
-    if (path[0] == '/')
-    {
-        shell_copy_string(out, path, max_len);
-        return;
+    char combined[MAX_CMD + STORAGE_MAX_PATH];
+    size_t input_length = 0, current_length = 0;
+    int marks[32], components = 0, length = 1;
+    if (!path || !out || max_len < 2 || !*path) return 0;
+    while (path[input_length] && input_length < MAX_CMD - 1) input_length++;
+    if (path[input_length]) return 0;
+    if (path[0] == '/') shell_copy_string(combined, path, sizeof(combined));
+    else {
+        while (current_dir[current_length] && current_length < STORAGE_MAX_PATH) current_length++;
+        if (current_length + input_length + 2 >= sizeof(combined)) return 0;
+        shell_copy_string(combined, current_dir, sizeof(combined));
+        if (current_length > 1) combined[current_length++] = '/';
+        shell_copy_string(combined + current_length, path, (int)(sizeof(combined) - current_length));
     }
-
-    if (current_dir[0] == '/' && current_dir[1] == '\0')
-    {
-        out[0] = '/';
-        out[1] = '\0';
-        if (path[0] != '\0')
-        {
-            shell_copy_string(out + 1, path, max_len - 1);
+    out[0] = '/'; out[1] = 0;
+    for (size_t position = 0; combined[position];) {
+        while (combined[position] == '/') position++;
+        if (!combined[position]) break;
+        size_t first = position;
+        while (combined[position] && combined[position] != '/') position++;
+        size_t count = position - first;
+        if (count == 1 && combined[first] == '.') continue;
+        if (count == 2 && combined[first] == '.' && combined[first + 1] == '.') {
+            if (components) { length = marks[--components]; out[length] = 0; }
+            continue;
         }
-        return;
+        if (count >= 16 || components >= 32 || length + (length > 1) + count >= STORAGE_MAX_PATH ||
+            length + (length > 1) + count >= (size_t)max_len) return 0;
+        marks[components++] = length;
+        if (length > 1) out[length++] = '/';
+        for (size_t offset = 0; offset < count; offset++) out[length++] = combined[first + offset];
+        out[length] = 0;
     }
-
-    int len = 0;
-    while (current_dir[len] != '\0' && len < max_len - 1)
-    {
-        out[len] = current_dir[len];
-        len++;
-    }
-
-    if (len == 0 || out[len - 1] != '/')
-    {
-        if (len < max_len - 1)
-        {
-            out[len++] = '/';
-        }
-    }
-
-    shell_copy_string(out + len, path, max_len - len);
+    return 1;
 }
 
-static void shell_go_to_parent(void)
+static void shell_print_storage_error(int error)
 {
-    int len = 0;
-    while (current_dir[len] != '\0' && len < 31)
-    {
-        len++;
+    switch (error) {
+    case STORAGE_ERR_NOENT: imp_text("Error: file or directory not found\n"); break;
+    case STORAGE_ERR_EXIST: imp_text("Error: file or directory already exists\n"); break;
+    case STORAGE_ERR_NOTDIR: imp_text("Error: parent is not a directory\n"); break;
+    case STORAGE_ERR_ISDIR: imp_text("Error: is a directory\n"); break;
+    case STORAGE_ERR_NOTEMPTY: imp_text("Error: directory is not empty\n"); break;
+    case STORAGE_ERR_NOSPC: imp_text("Error: storage full\n"); break;
+    case STORAGE_ERR_INVAL: imp_text("Error: invalid path\n"); break;
+    case STORAGE_ERR_NOTMOUNTED: imp_text("Error: filesystem is not mounted\n"); break;
+    default: imp_text("Error: filesystem error\n"); break;
     }
+}
 
-    if (len <= 1)
-    {
-        shell_set_current_dir("/");
+static const char *shell_basename(const char *path)
+{
+    const char *name = path;
+    for (const char *p = path; *p; p++) if (*p == '/') name = p + 1;
+    return name;
+}
+
+static int shell_join_target(const char *source, const char *target, char *out, int max_len)
+{
+    struct storage_entry_info info;
+    size_t target_length = 0, name_length = 0;
+    while (target[target_length]) target_length++;
+    const char *name = shell_basename(source);
+    while (name[name_length]) name_length++;
+    if (storage_get_entry_info(target, &info) != STORAGE_OK || info.type != 'd') {
+        shell_copy_string(out, target, max_len);
+        return 1;
+    }
+    if (target_length + name_length + 2 > (size_t)max_len) return 0;
+    shell_copy_string(out, target, max_len);
+    if (target_length > 1) out[target_length++] = '/';
+    shell_copy_string(out + target_length, name, max_len - (int)target_length);
+    return 1;
+}
+
+static void shell_create_command(const char *arguments)
+{
+    char kind[16], path[STORAGE_MAX_PATH], content[256];
+    const char *cursor = shell_read_word(arguments, kind, sizeof(kind));
+    cursor = shell_skip_spaces(cursor);
+    if (shell_streq(kind, "file")) {
+        const char *separator = cursor;
+        while (*separator && *separator != '>') separator++;
+        size_t content_length = 0;
+        if (*separator == '>') {
+            const char *first = cursor;
+            while (first < separator && shell_is_space(*first)) first++;
+            const char *last = separator;
+            while (last > first && shell_is_space(last[-1])) last--;
+            if (last - first >= 2 && (first[0] == '"' || first[0] == '\'') && last[-1] == first[0]) { first++; last--; }
+            content_length = (size_t)(last - first);
+            if (content_length >= sizeof(content)) { imp_text("Error: file content exceeds filesystem limit\n"); return; }
+            for (size_t i = 0; i < content_length; i++) content[i] = first[i];
+            content[content_length] = 0;
+            cursor = shell_read_word(separator + 1, path, sizeof(path));
+            if (*shell_skip_spaces(cursor)) { imp_text("Usage: create file [text >] <path>\n"); return; }
+        } else {
+            cursor = shell_read_word(cursor, path, sizeof(path));
+            if (!path[0] || *shell_skip_spaces(cursor)) { imp_text("Usage: create file [text >] <path>\n"); return; }
+            content[0] = 0;
+        }
+        char resolved[STORAGE_MAX_PATH];
+        if (!shell_resolve_path(path, resolved, sizeof(resolved))) { imp_text("Error: invalid path\n"); return; }
+        int result = storage_create_file(resolved, content, content_length);
+        if (result == STORAGE_OK) { imp_text("File created: "); imp_text(resolved); imp_char('\n'); }
+        else shell_print_storage_error(result);
         return;
     }
-
-    int slash = len - 1;
-    while (slash > 0 && current_dir[slash] != '/')
-    {
-        slash--;
-    }
-
-    if (slash <= 0)
-    {
-        shell_set_current_dir("/");
+    if (shell_streq(kind, "folder") || shell_streq(kind, "directory")) {
+        cursor = shell_read_word(cursor, path, sizeof(path));
+        if (!path[0] || *shell_skip_spaces(cursor)) { imp_text("Usage: create folder <path>\n"); return; }
+        char resolved[STORAGE_MAX_PATH];
+        if (!shell_resolve_path(path, resolved, sizeof(resolved))) { imp_text("Error: invalid path\n"); return; }
+        int result = storage_mkdir(resolved);
+        if (result == STORAGE_OK) { imp_text("Directory created: "); imp_text(resolved); imp_char('\n'); }
+        else shell_print_storage_error(result);
         return;
     }
+    imp_text("Usage: create file <path> | create file <text> > <path> | create folder <path>\n");
+}
 
-    current_dir[slash] = '\0';
-    if (current_dir[0] == '\0')
-    {
-        shell_set_current_dir("/");
+static void shell_mkdir_command(const char *arguments)
+{
+    int recursive = 0;
+    char path[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH];
+    const char *cursor = shell_skip_spaces(arguments);
+    if (shell_starts_with(cursor, "-p") && shell_is_space(cursor[2])) { recursive = 1; cursor = shell_skip_spaces(cursor + 2); }
+    cursor = shell_read_word(cursor, path, sizeof(path));
+    if (!path[0] || *shell_skip_spaces(cursor)) { imp_text("Usage: mkdir [-p] <directory>\n"); return; }
+    if (!shell_resolve_path(path, resolved, sizeof(resolved))) { imp_text("Error: invalid path\n"); return; }
+    if (!recursive) {
+        int result = storage_mkdir(resolved);
+        if (result == STORAGE_OK) imp_text("Directory created\n"); else shell_print_storage_error(result);
+        return;
     }
+    for (size_t i = 1; resolved[i]; i++) {
+        if (resolved[i] != '/' && resolved[i + 1] != 0) continue;
+        char component[STORAGE_MAX_PATH];
+        size_t length = i;
+        for (size_t j = 0; j < length; j++) component[j] = resolved[j];
+        component[length] = 0;
+        if (storage_find_entry(component) >= 0) {
+            struct storage_entry_info info;
+            if (storage_get_entry_info(component, &info) != STORAGE_OK || info.type != 'd') { imp_text("Error: path component is not a directory\n"); return; }
+            continue;
+        }
+        int result = storage_mkdir(component);
+        if (result != STORAGE_OK) { shell_print_storage_error(result); return; }
+    }
+    if (resolved[1] == 0) { imp_text("Error: invalid path\n"); return; }
+    imp_text("Directory created\n");
+}
+
+static int shell_read_editor_line(char *line, size_t capacity)
+{
+    size_t length = 0;
+    while (1) {
+        int key = keyboard_getchar();
+        if (key == '\n') { line[length] = 0; imp_char('\n'); return 1; }
+        if (key == '\b') { if (length) { length--; imp_text("\b \b"); } continue; }
+        if (key < 32 || key > 126 || length + 1 >= capacity) continue;
+        line[length++] = (char)key;
+        imp_char((char)key);
+    }
+}
+
+static void shell_textedit(const char *path)
+{
+    char current[256], replacement[256], line[128];
+    size_t current_length = 0, replacement_length = 0;
+    int result = storage_read_file(path, current, sizeof(current), &current_length);
+    if (result < 0) { shell_print_storage_error(result); return; }
+    imp_text("Current contents:\n");
+    for (size_t i = 0; i < current_length; i++) imp_char(current[i]);
+    imp_text("\nEnter replacement text, one line at a time. :wq saves; :q! cancels.\n");
+    while (1) {
+        imp_text("edit> ");
+        shell_read_editor_line(line, sizeof(line));
+        if (shell_streq(line, ":q!")) { imp_text("Edit cancelled\n"); return; }
+        if (shell_streq(line, ":wq")) break;
+        size_t line_length = 0;
+        while (line[line_length]) line_length++;
+        if (replacement_length + line_length + 1 >= sizeof(replacement)) { imp_text("Error: file content exceeds filesystem limit\n"); return; }
+        for (size_t i = 0; i < line_length; i++) replacement[replacement_length++] = line[i];
+        replacement[replacement_length++] = '\n';
+    }
+    result = storage_write_file(path, replacement, replacement_length, 0);
+    if (result < 0) shell_print_storage_error(result); else imp_text("File saved\n");
+}
+
+static int shell_confirm_delete(void)
+{
+    imp_text("Delete this directory and all contents? [y/N] ");
+    int answer = keyboard_getchar();
+    int confirmed = answer == 'y' || answer == 'Y';
+    while (answer != '\n' && answer != '\r') answer = keyboard_getchar();
+    imp_char('\n');
+    return confirmed;
+}
+
+static void shell_test_report(const char *name, int passed)
+{
+    imp_text(passed ? "[PASS] " : "[FAIL] ");
+    imp_text(name);
+    imp_char('\n');
+}
+
+static int shell_directory_has_child(const char *directory, const char *child_name)
+{
+    size_t directory_length = (size_t)shell_strlen(directory);
+    for (int i = 0; i < storage_get_entry_count(); i++) {
+        const char *path = storage_get_entry_path(i);
+        const char *child = 0;
+        if (directory_length == 1) child = path[0] == '/' ? path + 1 : 0;
+        else if (shell_starts_with(path, directory) && path[directory_length] == '/') child = path + directory_length + 1;
+        if (!child || !*child) continue;
+        int direct = 1;
+        for (const char *p = child; *p; p++) if (*p == '/') { direct = 0; break; }
+        if (direct && shell_streq(child, child_name)) return 1;
+    }
+    return 0;
+}
+
+static void shell_test_filesystem(void)
+{
+    static const char root[] = "/.ortos-fs-test";
+    static const char nested[] = "/.ortos-fs-test/sub";
+    static const char original[] = "/.ortos-fs-test/sub/original.txt";
+    static const char renamed[] = "/.ortos-fs-test/sub/renamed.txt";
+    static const char copied[] = "/.ortos-fs-test/sub/copied.txt";
+    char content[32] = {0}, saved_directory[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH];
+    size_t length = 0;
+    struct storage_stats stats_before, stats_after;
+    int result;
+    if (storage_find_entry(root) >= 0) { shell_test_report("dedicated test directory is unused", 0); return; }
+    shell_test_report("dedicated test directory is unused", 1);
+
+    result = storage_mkdir(root);
+    shell_test_report("create directory", result == STORAGE_OK);
+    if (result != STORAGE_OK) return;
+    result = storage_mkdir(nested);
+    shell_test_report("create nested directory", result == STORAGE_OK);
+    result = storage_create_file(original, 0, 0);
+    shell_test_report("create file", result == STORAGE_OK);
+    int write_result = result == STORAGE_OK ? storage_write_file(original, "old", 3, 0) : result;
+    shell_test_report("write file", write_result == 3);
+    int read_result = storage_read_file(original, content, sizeof(content), &length);
+    shell_test_report("read file", read_result == 3 && length == 3 && content[0] == 'o' && content[2] == 'd');
+    int modify_result = storage_write_file(original, "new", 3, 0);
+    content[0] = 0; length = 0;
+    read_result = storage_read_file(original, content, sizeof(content), &length);
+    shell_test_report("modify file", modify_result == 3 && read_result == 3 && content[0] == 'n' && content[2] == 'w');
+    shell_test_report("list directory", shell_directory_has_child(nested, "original.txt"));
+
+    shell_copy_string(saved_directory, current_dir, sizeof(saved_directory));
+    shell_set_current_dir(nested);
+    int relative_ok = shell_resolve_path("../sub/original.txt", resolved, sizeof(resolved)) && shell_streq(resolved, original);
+    int absolute_ok = shell_resolve_path(original, resolved, sizeof(resolved)) && shell_streq(resolved, original);
+    shell_set_current_dir(saved_directory);
+    shell_test_report("relative and absolute paths", relative_ok && absolute_ok);
+    shell_test_report("rename file", storage_rename(original, renamed) == STORAGE_OK);
+    shell_test_report("copy file", storage_copy(renamed, copied) == STORAGE_OK);
+    shell_test_report("rmdir rejects non-empty directory", storage_rmdir(nested) == STORAGE_ERR_NOTEMPTY);
+    result = storage_mkdir("/.ortos-fs-test/empty");
+    shell_test_report("rmdir empty directory", result == STORAGE_OK && storage_rmdir("/.ortos-fs-test/empty") == STORAGE_OK);
+    int stats_ok = storage_get_stats(&stats_before) == STORAGE_OK;
+    shell_test_report("filesystem free-space reporting", stats_ok);
+    shell_test_report("storage sync", storage_sync() == STORAGE_OK);
+    int tree_removed = storage_remove_tree(root) == STORAGE_OK && storage_find_entry(root) < 0;
+    shell_test_report("recursive directory deletion and cleanup", tree_removed);
+    int space_restored = storage_get_stats(&stats_after) == STORAGE_OK &&
+        (!stats_ok || stats_after.free_sectors >= stats_before.free_sectors);
+    shell_test_report("free space after cleanup", space_restored);
 }
 
 static void shell_print_current_directory(void)
@@ -585,19 +812,41 @@ static void shell_execute_command(void)
     {
         imp_text("IRQ: keyboard interrupt enabled\n");
     }
-    else if (shell_streq(cmd, "ls"))
+    else if (shell_streq(cmd, "ls") || shell_starts_with(cmd, "ls "))
     {
-        for (int i = 0; i < storage_get_entry_count(); i++)
-        {
-            imp_text(storage_get_entry_name(i));
-            if (storage_get_entry_type(i) == 'd')
-            {
-                imp_char('/');
+        char argument[STORAGE_MAX_PATH], directory[STORAGE_MAX_PATH];
+        const char *cursor = shell_read_word(shell_skip_spaces(cmd + 2), argument, sizeof(argument));
+        if (*shell_skip_spaces(cursor)) { imp_text("Usage: ls [directory]\n"); }
+        else {
+            const char *path = argument[0] ? argument : current_dir;
+            struct storage_entry_info dir_info;
+            if (!shell_resolve_path(path, directory, sizeof(directory))) imp_text("Error: invalid path\n");
+            else if (storage_get_entry_info(directory, &dir_info) != STORAGE_OK) imp_text("Error: directory not found\n");
+            else if (dir_info.type != 'd') imp_text("Error: not a directory\n");
+            else {
+                imp_text("NAME                    TYPE       SIZE\n");
+                size_t base_length = 0;
+                while (directory[base_length]) base_length++;
+                for (int i = 0; i < storage_get_entry_count(); i++) {
+                    const char *entry_path = storage_get_entry_path(i);
+                    const char *child = 0;
+                    if (base_length == 1) {
+                        if (entry_path[0] == '/' && entry_path[1]) child = entry_path + 1;
+                    } else if (shell_starts_with(entry_path, directory) && entry_path[base_length] == '/') child = entry_path + base_length + 1;
+                    if (!child || !*child) continue;
+                    int direct = 1;
+                    for (const char *p = child; *p; p++) if (*p == '/') { direct = 0; break; }
+                    if (!direct) continue;
+                    struct storage_entry_info item;
+                    if (storage_get_entry_info(entry_path, &item) != STORAGE_OK) continue;
+                    imp_text(item.name); imp_text("  ");
+                    imp_text(item.type == 'd' ? "DIR        -\n" : "FILE       ");
+                    if (item.type == 'f') { shell_print_uint64(item.size); imp_text(" B\n"); }
+                }
             }
-            imp_char('\n');
         }
     }
-    else if (shell_streq(cmd, "disks") || shell_streq(cmd, "diskinfo"))
+    else if (shell_streq(cmd, "disks") || shell_streq(cmd, "diskinfo") || shell_streq(cmd, "disk list") || shell_streq(cmd, "disk info"))
     {
         struct storage_device_info info;
         if (storage_get_device_info(&info) != STORAGE_OK) imp_text("No storage device detected\n");
@@ -612,13 +861,13 @@ static void shell_execute_command(void)
     {
         struct storage_stats stats;
         if (storage_get_stats(&stats) != STORAGE_OK) imp_text("df: no mounted filesystem\n");
-        else { imp_text("Filesystem  Total  Used  Free  Block\n"); imp_text("storage     "); shell_print_uint64(stats.total_sectors); imp_char(' '); shell_print_uint64(stats.used_sectors); imp_char(' '); shell_print_uint64(stats.free_sectors); imp_char(' '); shell_print_uint64(stats.sector_size); imp_char('\n'); }
+        else { imp_text("Filesystem    Total sectors    Used    Free    Mount\n"); imp_text("ORFS          "); shell_print_uint64(stats.total_sectors); imp_text("             "); shell_print_uint64(stats.used_sectors); imp_text("     "); shell_print_uint64(stats.free_sectors); imp_text("     /\n"); }
     }
     else if (shell_streq(cmd, "mount"))
     {
         if (storage_mount() == STORAGE_OK) imp_text("Filesystem mounted\n"); else imp_text("mount: no valid filesystem\n");
     }
-    else if (shell_streq(cmd, "umount"))
+    else if (shell_streq(cmd, "umount") || shell_streq(cmd, "unmount"))
     {
         if (storage_unmount() == STORAGE_OK) imp_text("Filesystem unmounted\n"); else imp_text("umount: flush failed\n");
     }
@@ -653,216 +902,144 @@ static void shell_execute_command(void)
         int errors = 0; int result = storage_fsck(shell_streq(argument, "repair") || shell_streq(argument, "--repair"), &errors);
         if (result == STORAGE_OK) imp_text("fsck: clean\n"); else { imp_text("fsck: errors detected: "); shell_print_int(errors); imp_char('\n'); }
     }
-    else if (shell_starts_with(cmd, "cd"))
+    else if (shell_streq(cmd, "cd") || shell_starts_with(cmd, "cd "))
     {
-        const char* argument = shell_skip_spaces(cmd + 2);
-        if (argument[0] == '\0')
-        {
-            imp_text("Usage: cd <dir>\n");
-        }
-        else if (shell_streq(argument, ".."))
-        {
-            shell_go_to_parent();
-        }
-        else
-        {
-            char resolved[MAX_CMD];
-            shell_resolve_path(argument, resolved, sizeof(resolved));
-            int index = storage_find_entry(resolved);
-            if (index >= 0 && storage_get_entry_type(index) == 'd')
-            {
-                imp_text("Changed directory to ");
-                imp_text(argument);
-                imp_char('\n');
-                shell_set_current_dir(resolved);
-            }
-            else
-            {
-                imp_text("No such directory\n");
+        char argument[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH];
+        const char *cursor = shell_read_word(shell_skip_spaces(cmd + 2), argument, sizeof(argument));
+        struct storage_entry_info info;
+        if (!argument[0] || *shell_skip_spaces(cursor)) { imp_text("Usage: cd <directory>\n"); }
+        else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
+        else if (storage_get_entry_info(resolved, &info) != STORAGE_OK) imp_text("Error: directory not found\n");
+        else if (info.type != 'd') imp_text("Error: not a directory\n");
+        else { shell_set_current_dir(resolved); shell_print_current_directory(); }
+    }
+    else if (shell_streq(cmd, "pwd")) shell_print_current_directory();
+    else if (shell_starts_with(cmd, "cat "))
+    {
+        char argument[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH], buffer[64];
+        const char *cursor = shell_read_word(shell_skip_spaces(cmd + 3), argument, sizeof(argument));
+        if (!argument[0] || *shell_skip_spaces(cursor)) { imp_text("Usage: cat <file>\n"); }
+        else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
+        else {
+            int fd = storage_open(resolved, 0);
+            if (fd < 0) shell_print_storage_error(fd);
+            else {
+                int count;
+                while ((count = storage_read(fd, buffer, sizeof(buffer))) > 0)
+                    for (int i = 0; i < count; i++) imp_char(buffer[i]);
+                storage_close(fd);
+                if (count < 0) shell_print_storage_error(count);
             }
         }
     }
-    else if (shell_streq(cmd, "pwd"))
+    else if (shell_starts_with(cmd, "create ")) shell_create_command(shell_skip_spaces(cmd + 6));
+    else if (shell_starts_with(cmd, "textedit ") || shell_starts_with(cmd, "modify "))
     {
-        shell_print_current_directory();
+        const char *arguments = shell_skip_spaces(cmd + (cmd[0] == 'm' ? 6 : 9));
+        char argument[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH];
+        const char *cursor = shell_read_word(arguments, argument, sizeof(argument));
+        if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: textedit <file>\n");
+        else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
+        else shell_textedit(resolved);
     }
-    else if (shell_starts_with(cmd, "cat"))
+    else if (shell_starts_with(cmd, "touch "))
     {
-        const char* argument = shell_skip_spaces(cmd + 3);
-        char resolved[MAX_CMD];
-        shell_resolve_path(argument, resolved, sizeof(resolved));
-        int index = storage_find_entry(resolved);
-        if (index >= 0 && storage_get_entry_type(index) == 'f')
-        {
-            imp_text(storage_get_entry_content(index));
-            imp_char('\n');
-        }
-        else
-        {
-            imp_text("No such file\n");
-        }
+        char argument[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH];
+        const char *cursor = shell_read_word(shell_skip_spaces(cmd + 5), argument, sizeof(argument));
+        if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: touch <file>\n");
+        else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
+        else { int result = storage_create_file(resolved, 0, 0); if (result == STORAGE_OK) imp_text("File created\n"); else shell_print_storage_error(result); }
     }
-    else if (shell_starts_with(cmd, "touch"))
+    else if (shell_streq(cmd, "mkdir") || shell_starts_with(cmd, "mkdir ")) shell_mkdir_command(shell_skip_spaces(cmd + 5));
+    else if (shell_streq(cmd, "rm") || shell_starts_with(cmd, "rm "))
     {
-        const char* argument = shell_skip_spaces(cmd + 5);
-        if (argument[0] != '\0')
-        {
-            char resolved[MAX_CMD];
-            shell_resolve_path(argument, resolved, sizeof(resolved));
-            if (storage_find_entry(resolved) >= 0)
-            {
-                imp_text("File already exists\n");
-            }
-            else
-            {
-                if (storage_create_entry(resolved, 'f', "")) imp_text("File created\n");
-                else imp_text("touch: create failed\n");
-            }
-        }
-        else
-        {
-            imp_text("Usage: touch <file>\n");
-        }
+        char argument[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH];
+        const char *cursor = shell_read_word(shell_skip_spaces(cmd + 2), argument, sizeof(argument));
+        if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: rm <file>\n");
+        else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
+        else { int result = storage_unlink(resolved); if (result == STORAGE_OK) imp_text("File removed\n"); else shell_print_storage_error(result); }
     }
-    else if (shell_starts_with(cmd, "mkdir"))
+    else if (shell_starts_with(cmd, "del "))
     {
-        const char* argument = shell_skip_spaces(cmd + 5);
-        if (argument[0] != '\0')
-        {
-            char resolved[MAX_CMD];
-            shell_resolve_path(argument, resolved, sizeof(resolved));
-            if (storage_find_entry(resolved) >= 0)
-            {
-                imp_text("Directory already exists\n");
-            }
-            else
-            {
-                if (storage_create_entry(resolved, 'd', "")) imp_text("Directory created\n");
-                else imp_text("mkdir: create failed\n");
-            }
-        }
-        else
-        {
-            imp_text("Usage: mkdir <dir>\n");
+        const char *cursor = shell_skip_spaces(cmd + 4);
+        int force = 0;
+        if (shell_starts_with(cursor, "-f") && shell_is_space(cursor[2])) { force = 1; cursor = shell_skip_spaces(cursor + 2); }
+        char argument[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH];
+        cursor = shell_read_word(cursor, argument, sizeof(argument));
+        if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: del [-f] <directory>\n");
+        else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
+        else if (shell_streq(resolved, "/") || shell_streq(resolved, "/C:") || shell_streq(resolved, "/C:/user") || shell_streq(resolved, "/C:/menu") || shell_streq(current_dir, resolved) || shell_starts_with(current_dir, resolved)) imp_text("Error: refusing to delete a protected directory\n");
+        else if (!force && !shell_confirm_delete()) imp_text("Delete cancelled\n");
+        else { int result = storage_remove_tree(resolved); if (result == STORAGE_OK) imp_text("Directory tree removed\n"); else shell_print_storage_error(result); }
+    }
+    else if (shell_starts_with(cmd, "cp ") || shell_starts_with(cmd, "mv "))
+    {
+        int move = cmd[0] == 'm';
+        const char *cursor = shell_skip_spaces(cmd + 2);
+        char source[STORAGE_MAX_PATH], destination[STORAGE_MAX_PATH];
+        char source_path[STORAGE_MAX_PATH], destination_path[STORAGE_MAX_PATH], target_path[STORAGE_MAX_PATH];
+        cursor = shell_read_word(cursor, source, sizeof(source));
+        cursor = shell_read_word(cursor, destination, sizeof(destination));
+        if (!source[0] || !destination[0] || *shell_skip_spaces(cursor)) imp_text(move ? "Usage: mv <source> <destination>\n" : "Usage: cp <source> <destination>\n");
+        else if (!shell_resolve_path(source, source_path, sizeof(source_path)) || !shell_resolve_path(destination, destination_path, sizeof(destination_path))) imp_text("Error: invalid path\n");
+        else if (!shell_join_target(source_path, destination_path, target_path, sizeof(target_path))) imp_text("Error: invalid destination path\n");
+        else {
+            int result = move ? storage_rename(source_path, target_path) : storage_copy(source_path, target_path);
+            if (result == STORAGE_OK) imp_text(move ? "Moved\n" : "Copied\n"); else shell_print_storage_error(result);
         }
     }
-    else if (shell_starts_with(cmd, "rm"))
-    {
-        const char* argument = shell_skip_spaces(cmd + 2);
-        if (argument[0] != '\0')
-        {
-            char resolved[MAX_CMD];
-            shell_resolve_path(argument, resolved, sizeof(resolved));
-            if (storage_remove_entry(resolved))
-            {
-                imp_text("Entry removed\n");
-            }
-            else
-            {
-                imp_text("No such entry\n");
-            }
-        }
-        else
-        {
-            imp_text("Usage: rm <file>\n");
-        }
-    }
-    else if (shell_starts_with(cmd, "cp"))
-    {
-        const char* cursor = shell_skip_spaces(cmd + 2);
-        char src[MAX_CMD];
-        char dst[MAX_CMD];
-        cursor = shell_read_token(cursor, src, sizeof(src));
-        cursor = shell_skip_spaces(cursor);
-        shell_read_token(cursor, dst, sizeof(dst));
-
-        if (src[0] == '\0' || dst[0] == '\0')
-        {
-            imp_text("Usage: cp <src> <dst>\n");
-        }
-        else
-        {
-            char src_path[MAX_CMD];
-            char dst_path[MAX_CMD];
-            shell_resolve_path(src, src_path, sizeof(src_path));
-            shell_resolve_path(dst, dst_path, sizeof(dst_path));
-            int index = storage_find_entry(src_path);
-            if (index >= 0)
-            {
-                if (!storage_create_entry(dst_path, storage_get_entry_type(index), storage_get_entry_content(index)))
-                {
-                    imp_text("Copy failed\n");
-                }
-                else
-                {
-                    imp_text("Copied entry\n");
-                }
-            }
-            else
-            {
-                imp_text("No such entry\n");
-            }
-        }
-    }
-    else if (shell_starts_with(cmd, "mv"))
-    {
-        const char* cursor = shell_skip_spaces(cmd + 2);
-        char src[MAX_CMD];
-        char dst[MAX_CMD];
-        cursor = shell_read_token(cursor, src, sizeof(src));
-        cursor = shell_skip_spaces(cursor);
-        shell_read_token(cursor, dst, sizeof(dst));
-
-        if (src[0] == '\0' || dst[0] == '\0')
-        {
-            imp_text("Usage: mv <src> <dst>\n");
-        }
-        else
-        {
-            char src_path[MAX_CMD];
-            char dst_path[MAX_CMD];
-            shell_resolve_path(src, src_path, sizeof(src_path));
-            shell_resolve_path(dst, dst_path, sizeof(dst_path));
-            int index = storage_find_entry(src_path);
-            if (index >= 0)
-            {
-                if (!storage_create_entry(dst_path, storage_get_entry_type(index), storage_get_entry_content(index)))
-                {
-                    imp_text("Move failed\n");
-                }
-                else
-                {
-                    storage_remove_entry(src_path);
-                    imp_text("Moved entry\n");
-                }
-            }
-            else
-            {
-                imp_text("No such entry\n");
-            }
-        }
-    }
-    else if (shell_starts_with(cmd, "write") || shell_starts_with(cmd, "append"))
+    else if (shell_starts_with(cmd, "write ") || shell_starts_with(cmd, "append "))
     {
         int append = cmd[0] == 'a';
         const char *cursor = shell_skip_spaces(cmd + (append ? 6 : 5));
-        char path[MAX_CMD]; char data[MAX_CMD];
-        cursor = shell_read_token(cursor, path, sizeof(path));
+        char path[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH], data[MAX_CMD];
+        cursor = shell_read_word(cursor, path, sizeof(path));
         cursor = shell_skip_spaces(cursor);
         shell_copy_string(data, cursor, sizeof(data));
-        int length = shell_strlen(data);
-        if (length >= 2 && data[0] == '"' && data[length - 1] == '"') { data[length - 1] = '\0'; cursor = data + 1; }
+        size_t length = (size_t)shell_strlen(data);
+        if (length >= 2 && data[0] == '"' && data[length - 1] == '"') { data[length - 1] = 0; cursor = data + 1; }
         else cursor = data;
-        char resolved[MAX_CMD]; shell_resolve_path(path, resolved, sizeof(resolved));
-        int result = path[0] && cursor[0] ? storage_write_file(resolved, cursor, shell_strlen(cursor), append) : STORAGE_ERR_INVAL;
-        if (result < 0) imp_text("write: operation failed\n"); else imp_text("File written\n");
+        if (!path[0] || !cursor[0]) imp_text("Usage: write|append <file> <text>\n");
+        else if (!shell_resolve_path(path, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
+        else { int result = storage_write_file(resolved, cursor, (size_t)shell_strlen(cursor), append); if (result < 0) shell_print_storage_error(result); else imp_text("File written\n"); }
     }
-    else if (shell_starts_with(cmd, "rmdir"))
+    else if (shell_streq(cmd, "rmdir") || shell_starts_with(cmd, "rmdir "))
     {
-        const char *argument = shell_skip_spaces(cmd + 5); char resolved[MAX_CMD];
-        shell_resolve_path(argument, resolved, sizeof(resolved));
-        if (argument[0] == '\0' || storage_remove_entry(resolved) == 0) imp_text("rmdir: directory is missing or not empty\n");
-        else imp_text("Directory removed\n");
+        char argument[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH];
+        const char *cursor = shell_read_word(shell_skip_spaces(cmd + 5), argument, sizeof(argument));
+        if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: rmdir <empty-directory>\n");
+        else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
+        else { int result = storage_rmdir(resolved); if (result == STORAGE_OK) imp_text("Directory removed\n"); else shell_print_storage_error(result); }
+    }
+    else if (shell_starts_with(cmd, "stat "))
+    {
+        char argument[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH];
+        const char *cursor = shell_read_word(shell_skip_spaces(cmd + 4), argument, sizeof(argument));
+        struct storage_entry_info info;
+        if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: stat <path>\n");
+        else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
+        else if (storage_get_entry_info(resolved, &info) != STORAGE_OK) imp_text("Error: path not found\n");
+        else { imp_text("Path: "); imp_text(info.path); imp_text("\nType: "); imp_text(info.type == 'd' ? "directory\n" : "file\n"); imp_text("Size: "); shell_print_uint64(info.size); imp_text(" bytes\nBlocks: "); shell_print_uint64(info.blocks_used); imp_char('\n'); }
+    }
+    else if (shell_starts_with(cmd, "du "))
+    {
+        char argument[STORAGE_MAX_PATH], resolved[STORAGE_MAX_PATH];
+        const char *cursor = shell_read_word(shell_skip_spaces(cmd + 2), argument, sizeof(argument));
+        struct storage_entry_info info;
+        if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: du <path>\n");
+        else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
+        else if (storage_get_entry_info(resolved, &info) != STORAGE_OK) imp_text("Error: path not found\n");
+        else {
+            uint64_t bytes = info.size;
+            if (info.type == 'd') for (int i = 0; i < storage_get_entry_count(); i++) {
+                const char *entry_path = storage_get_entry_path(i);
+                struct storage_entry_info item;
+                if (shell_starts_with(entry_path, resolved) && entry_path[0] &&
+                    ((resolved[0] == '/' && resolved[1] == 0 && entry_path[1]) || entry_path[shell_strlen(resolved)] == '/') &&
+                    storage_get_entry_info(entry_path, &item) == STORAGE_OK && item.type == 'f') bytes += item.size;
+            }
+            shell_print_uint64(bytes); imp_text(" bytes\t"); imp_text(resolved); imp_char('\n');
+        }
     }
     else if (shell_streq(cmd, "tasks"))
     {
@@ -875,6 +1052,10 @@ static void shell_execute_command(void)
     else if (shell_streq(cmd, "ps"))
     {
         imp_text("PID 1 shell\nPID 2 idle\n");
+    }
+    else if (shell_streq(cmd, "test filesystem"))
+    {
+        shell_test_filesystem();
     }
     else if (shell_streq(cmd, "test"))
     {
@@ -1256,7 +1437,7 @@ static void shell_execute_command(void)
         imp_cls();
         imp_text("Returned from ORgui.\n");
     }
-    else if (shell_streq(cmd, "ospecial"))
+    else if (shell_streq(cmd, "ospec"))
     {
         imp_text("ORTOS Special Command Executed!\n");
         imp_text(
@@ -1368,33 +1549,33 @@ void shell_run()
 
         while (1)
         {
-            char c = (char)keyboard_getchar();
+            int key = keyboard_getchar();
 
-            if (c == KEY_SCROLL_UP) {
+            if (key == KEY_SCROLL_UP) {
                 imp_scroll_up(1);
                 continue;
             }
-            if (c == KEY_SCROLL_DOWN) {
+            if (key == KEY_SCROLL_DOWN) {
                 imp_scroll_down(1);
                 continue;
             }
-            if (c == KEY_PAGE_UP) {
+            if (key == KEY_PAGE_UP) {
                 imp_scroll_up(10);
                 continue;
             }
-            if (c == KEY_PAGE_DOWN) {
+            if (key == KEY_PAGE_DOWN) {
                 imp_scroll_down(10);
                 continue;
             }
 
-            if (c == '\n')
+            if (key == '\n')
             {
                 cmd[pos] = '\0';
                 imp_char('\n');
                 break;
             }
 
-            if (c == '\b')
+            if (key == '\b')
             {
                 if (pos > 0)
                 {
@@ -1407,8 +1588,8 @@ void shell_run()
 
             if (pos < MAX_CMD - 1)
             {
-                cmd[pos++] = c;
-                imp_char(c);
+                cmd[pos++] = (char)key;
+                imp_char((char)key);
             }
         }
 

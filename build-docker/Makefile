@@ -635,6 +635,19 @@ storage_path_test/fast:
 .PHONY : storage_path_test/fast
 
 #=============================================================================
+# Target rules for targets named desktop_storage_test
+
+# Build rule for target.
+desktop_storage_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 desktop_storage_test
+.PHONY : desktop_storage_test
+
+# fast build rule for target.
+desktop_storage_test/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/desktop_storage_test.dir/build.make tests/CMakeFiles/desktop_storage_test.dir/build
+.PHONY : desktop_storage_test/fast
+
+#=============================================================================
 # Target rules for targets named storage_persistence_test
 
 # Build rule for target.
@@ -755,6 +768,7 @@ help:
 	@echo "... run_os"
 	@echo "... browser_test"
 	@echo "... core_subsystem_test"
+	@echo "... desktop_storage_test"
 	@echo "... ethernet_test"
 	@echo "... network_stack_test"
 	@echo "... ora_format_test"

@@ -49,6 +49,11 @@ endif()
 add_executable(storage_path_test storage_path_test.c)
 target_link_libraries(storage_path_test PRIVATE ortos_storage)
 
+add_executable(desktop_storage_test desktop_storage_test.c
+    "${ORTOS_SOURCE_DIR}/ui/core/desktop_storage.c")
+target_link_libraries(desktop_storage_test PRIVATE ortos_storage)
+target_include_directories(desktop_storage_test PRIVATE "${ORTOS_INCLUDE_DIR}")
+
 add_executable(storage_persistence_test storage_persistence_test.c)
 target_link_libraries(storage_persistence_test PRIVATE ortos_storage)
 
@@ -79,6 +84,7 @@ target_include_directories(browser_test PRIVATE "${ORTOS_INCLUDE_DIR}" "${ORTOS_
 
 if(BUILD_TESTING)
     add_test(NAME storage_path_test COMMAND storage_path_test)
+    add_test(NAME desktop_storage_test COMMAND desktop_storage_test)
     add_test(NAME storage_persistence_test COMMAND storage_persistence_test)
     add_test(NAME ora_format_test COMMAND ora_format_test)
     add_test(NAME updater_test COMMAND updater_test)

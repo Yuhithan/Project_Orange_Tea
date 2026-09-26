@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ORgui.h"
+#include "desktop_storage.h"
 
 void desktop_apps_init(void);
 void desktop_apps_draw(void);

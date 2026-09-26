@@ -43,6 +43,7 @@
 /root/env/build-docker/tests/CMakeFiles/updater_test.dir
 /root/env/build-docker/tests/CMakeFiles/ora_example.dir
 /root/env/build-docker/tests/CMakeFiles/storage_path_test.dir
+/root/env/build-docker/tests/CMakeFiles/desktop_storage_test.dir
 /root/env/build-docker/tests/CMakeFiles/storage_persistence_test.dir
 /root/env/build-docker/tests/CMakeFiles/terminal_input_buffer_test.dir
 /root/env/build-docker/tests/CMakeFiles/core_subsystem_test.dir

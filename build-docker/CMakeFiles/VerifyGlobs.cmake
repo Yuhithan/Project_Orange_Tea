@@ -160,6 +160,7 @@ set(OLD_GLOB
   "/root/env/src/ui/core/ORgui.c"
   "/root/env/src/ui/core/desktop.c"
   "/root/env/src/ui/core/desktop_apps.c"
+  "/root/env/src/ui/core/desktop_storage.c"
   "/root/env/src/ui/core/login.c"
   "/root/env/src/ui/core/taskbar.c"
   "/root/env/src/ui/core/ui_animation.c"

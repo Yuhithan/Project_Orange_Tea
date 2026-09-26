@@ -1031,7 +1031,12 @@ static void shell_execute_command(void)
         cursor = shell_read_word(cursor, argument, sizeof(argument));
         if (!argument[0] || *shell_skip_spaces(cursor)) imp_text("Usage: del [-f] <directory>\n");
         else if (!shell_resolve_path(argument, resolved, sizeof(resolved))) imp_text("Error: invalid path\n");
-        else if (shell_streq(resolved, "/") || shell_streq(resolved, "/C:") || shell_streq(resolved, "/C:/user") || shell_streq(resolved, "/C:/menu") || shell_streq(current_dir, resolved) || shell_starts_with(current_dir, resolved)) imp_text("Error: refusing to delete a protected directory\n");
+        else if (shell_streq(resolved, "/") || shell_streq(resolved, "/C:") ||
+             shell_streq(resolved, "/C:/System") || shell_streq(resolved, "/C:/Users") ||
+             shell_streq(resolved, "/C:/Program Files") || shell_streq(resolved, "/C:/ProgramData") ||
+             shell_streq(resolved, "/C:/Logs") || shell_streq(resolved, "/C:/Backups") ||
+             shell_streq(resolved, "/C:/user") || shell_streq(resolved, "/C:/menu") ||
+             shell_streq(current_dir, resolved) || shell_starts_with(current_dir, resolved)) imp_text("Error: refusing to delete a protected directory\n");
         else if (!force && !shell_confirm_delete()) imp_text("Delete cancelled\n");
         else { int result = vfs_remove_tree(resolved); shell_last_storage_status = result; if (result == STORAGE_OK) imp_text("Directory tree removed\n"); else shell_print_storage_error(result); }
     }

@@ -240,6 +240,20 @@ storage_path_test/fast:
 .PHONY : storage_path_test/fast
 
 # Convenience name for target.
+tests/CMakeFiles/desktop_storage_test.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/desktop_storage_test.dir/rule
+.PHONY : tests/CMakeFiles/desktop_storage_test.dir/rule
+
+# Convenience name for target.
+desktop_storage_test: tests/CMakeFiles/desktop_storage_test.dir/rule
+.PHONY : desktop_storage_test
+
+# fast build rule for target.
+desktop_storage_test/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/desktop_storage_test.dir/build.make tests/CMakeFiles/desktop_storage_test.dir/build
+.PHONY : desktop_storage_test/fast
+
+# Convenience name for target.
 tests/CMakeFiles/storage_persistence_test.dir/rule:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/storage_persistence_test.dir/rule
 .PHONY : tests/CMakeFiles/storage_persistence_test.dir/rule
@@ -611,6 +625,30 @@ __/src/ui/core/ORgui.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.s
 .PHONY : __/src/ui/core/ORgui.c.s
 
+__/src/ui/core/desktop_storage.o: __/src/ui/core/desktop_storage.c.o
+.PHONY : __/src/ui/core/desktop_storage.o
+
+# target to build an object file
+__/src/ui/core/desktop_storage.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/desktop_storage_test.dir/build.make tests/CMakeFiles/desktop_storage_test.dir/__/src/ui/core/desktop_storage.c.o
+.PHONY : __/src/ui/core/desktop_storage.c.o
+
+__/src/ui/core/desktop_storage.i: __/src/ui/core/desktop_storage.c.i
+.PHONY : __/src/ui/core/desktop_storage.i
+
+# target to preprocess a source file
+__/src/ui/core/desktop_storage.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/desktop_storage_test.dir/build.make tests/CMakeFiles/desktop_storage_test.dir/__/src/ui/core/desktop_storage.c.i
+.PHONY : __/src/ui/core/desktop_storage.c.i
+
+__/src/ui/core/desktop_storage.s: __/src/ui/core/desktop_storage.c.s
+.PHONY : __/src/ui/core/desktop_storage.s
+
+# target to generate assembly for a file
+__/src/ui/core/desktop_storage.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/desktop_storage_test.dir/build.make tests/CMakeFiles/desktop_storage_test.dir/__/src/ui/core/desktop_storage.c.s
+.PHONY : __/src/ui/core/desktop_storage.c.s
+
 __/src/ui/core/ui_animation.o: __/src/ui/core/ui_animation.c.o
 .PHONY : __/src/ui/core/ui_animation.o
 
@@ -754,6 +792,30 @@ core_subsystem_test.s: core_subsystem_test.c.s
 core_subsystem_test.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/core_subsystem_test.dir/build.make tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.s
 .PHONY : core_subsystem_test.c.s
+
+desktop_storage_test.o: desktop_storage_test.c.o
+.PHONY : desktop_storage_test.o
+
+# target to build an object file
+desktop_storage_test.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/desktop_storage_test.dir/build.make tests/CMakeFiles/desktop_storage_test.dir/desktop_storage_test.c.o
+.PHONY : desktop_storage_test.c.o
+
+desktop_storage_test.i: desktop_storage_test.c.i
+.PHONY : desktop_storage_test.i
+
+# target to preprocess a source file
+desktop_storage_test.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/desktop_storage_test.dir/build.make tests/CMakeFiles/desktop_storage_test.dir/desktop_storage_test.c.i
+.PHONY : desktop_storage_test.c.i
+
+desktop_storage_test.s: desktop_storage_test.c.s
+.PHONY : desktop_storage_test.s
+
+# target to generate assembly for a file
+desktop_storage_test.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/desktop_storage_test.dir/build.make tests/CMakeFiles/desktop_storage_test.dir/desktop_storage_test.c.s
+.PHONY : desktop_storage_test.c.s
 
 ethernet_test.o: ethernet_test.c.o
 .PHONY : ethernet_test.o
@@ -935,6 +997,7 @@ help:
 	@echo "... ora_example"
 	@echo "... browser_test"
 	@echo "... core_subsystem_test"
+	@echo "... desktop_storage_test"
 	@echo "... ethernet_test"
 	@echo "... network_stack_test"
 	@echo "... ora_format_test"
@@ -982,6 +1045,9 @@ help:
 	@echo "... __/src/ui/core/ORgui.o"
 	@echo "... __/src/ui/core/ORgui.i"
 	@echo "... __/src/ui/core/ORgui.s"
+	@echo "... __/src/ui/core/desktop_storage.o"
+	@echo "... __/src/ui/core/desktop_storage.i"
+	@echo "... __/src/ui/core/desktop_storage.s"
 	@echo "... __/src/ui/core/ui_animation.o"
 	@echo "... __/src/ui/core/ui_animation.i"
 	@echo "... __/src/ui/core/ui_animation.s"
@@ -1000,6 +1066,9 @@ help:
 	@echo "... core_subsystem_test.o"
 	@echo "... core_subsystem_test.i"
 	@echo "... core_subsystem_test.s"
+	@echo "... desktop_storage_test.o"
+	@echo "... desktop_storage_test.i"
+	@echo "... desktop_storage_test.s"
 	@echo "... ethernet_test.o"
 	@echo "... ethernet_test.i"
 	@echo "... ethernet_test.s"

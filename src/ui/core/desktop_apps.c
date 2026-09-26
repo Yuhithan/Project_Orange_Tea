@@ -130,42 +130,6 @@ static int collect_tasks(const char *prefix, DesktopTask *tasks)
     return count;
 }
 
-static void ensure_directory(const char *path)
-{
-    struct storage_entry_info info;
-    if (vfs_stat(path, &info) == STORAGE_ERR_NOENT) vfs_mkdir(path);
-}
-
-static void ensure_task(const char *path, const char *content)
-{
-    struct storage_entry_info info;
-    if (vfs_stat(path, &info) == STORAGE_ERR_NOENT) {
-        size_t length = 0;
-        while (content[length]) length++;
-        vfs_create(path, content, length);
-    }
-}
-
-static void ensure_default_tasks(void)
-{
-    ensure_directory("/C:");
-    ensure_directory("/C:/menu");
-    ensure_directory("/C:/menu/taskbar");
-    ensure_directory("/C:/user");
-    ensure_directory("/C:/user/admin");
-    ensure_directory("/C:/user/admin/desktop");
-    ensure_task("/C:/menu/OExplorer.task", "name=OExplorer\ncommand=OExplorer\ncategory=System");
-    ensure_task("/C:/menu/setting.task", "name=setting\ncommand=setting\ncategory=System");
-    ensure_task("/C:/menu/browser.task", "name=browser\ncommand=browser\ncategory=Internet");
-    ensure_task("/C:/menu/terminal.task", "name=Terminal\ncommand=terminal\ncategory=Utilities");
-    ensure_task("/C:/menu/taskbar/OExplorer.task", "name=OExplorer\ncommand=OExplorer");
-    ensure_task("/C:/menu/taskbar/setting.task", "name=setting\ncommand=setting");
-    ensure_task("/C:/menu/taskbar/browser.task", "name=browser\ncommand=browser");
-    ensure_task("/C:/user/admin/desktop/OExplorer.task", "name=OExplorer\ncommand=OExplorer");
-    ensure_task("/C:/user/admin/desktop/setting.task", "name=setting\ncommand=setting");
-    ensure_task("/C:/user/admin/desktop/browser.task", "name=browser\ncommand=browser");
-}
-
 static void explorer_draw(ORWindow *window)
 {
     ORgui_draw_text(window->x + 10, window->y + 32, "Location: /", OR_COLOR_FIRE_RED);
@@ -227,10 +191,10 @@ static ORWindow *launch_task(const DesktopTask *task)
 
 void desktop_apps_init(void)
 {
-    ensure_default_tasks();
-    desktop_task_count = collect_tasks("/C:/user/admin/desktop/", desktop_tasks);
-    menu_task_count = collect_tasks("/C:/menu/", menu_tasks);
-    panel_task_count = collect_tasks("/C:/menu/taskbar/", panel_tasks);
+    (void)desktop_storage_init();
+    desktop_task_count = collect_tasks("/C:/Users/admin/Desktop/", desktop_tasks);
+    menu_task_count = collect_tasks("/C:/ProgramData/ORTos/Menu/", menu_tasks);
+    panel_task_count = collect_tasks("/C:/ProgramData/ORTos/Taskbar/", panel_tasks);
     menu_open = 0;
     notification_until = 0;
     notification_entering = notification_hiding = menu_animating = 0;

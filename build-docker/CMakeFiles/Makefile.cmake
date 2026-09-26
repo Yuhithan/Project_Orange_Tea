@@ -91,6 +91,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "tests/CMakeFiles/updater_test.dir/DependInfo.cmake"
   "tests/CMakeFiles/ora_example.dir/DependInfo.cmake"
   "tests/CMakeFiles/storage_path_test.dir/DependInfo.cmake"
+  "tests/CMakeFiles/desktop_storage_test.dir/DependInfo.cmake"
   "tests/CMakeFiles/storage_persistence_test.dir/DependInfo.cmake"
   "tests/CMakeFiles/terminal_input_buffer_test.dir/DependInfo.cmake"
   "tests/CMakeFiles/core_subsystem_test.dir/DependInfo.cmake"

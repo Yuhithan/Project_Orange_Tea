@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/desktop_storage_test.dir/desktop_storage_test.c.o CMakeFiles/desktop_storage_test.dir/__/src/ui/core/desktop_storage.c.o -o desktop_storage_test  libortos_storage.a 

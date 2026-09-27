@@ -90,7 +90,7 @@ void desktop_run(void)
             else cursor_update = 1;
         }
         while (keyboard_try_getchar(&key)) {
-            if (key == 27 || key == 'q' || key == 'Q') {
+            if (key == 27) {
                 desktop_running = 0;
                 return;
             }

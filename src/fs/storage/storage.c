@@ -285,21 +285,25 @@ int storage_format(void)
 {
     unsigned char block[BLOCK_SECTOR_SIZE];
     if (!storage_device) return STORAGE_ERR_NOENT;
+    mounted = 0;
     bitmap_sectors = (storage_device->sector_count + STORAGE_BITMAP_BITS_PER_SECTOR - 1) / STORAGE_BITMAP_BITS_PER_SECTOR;
     data_start = STORAGE_BITMAP_START + bitmap_sectors;
     if (data_start >= storage_device->sector_count) return STORAGE_ERR_NOSPC;
-    zero(cache, sizeof(cache)); cache_next_slot = 0; entry_count = 0; mounted = 1;
+    zero(cache, sizeof(cache)); cache_next_slot = 0; entry_count = 0;
     next_file_id = 1; last_timestamp = 0;
     if (write_super() != STORAGE_OK) return STORAGE_ERR_IO;
     zero(block, sizeof(block));
     for (uint64_t i = 0; i < bitmap_sectors; i++) if (disk_write(STORAGE_BITMAP_START + i, block) != STORAGE_OK) return STORAGE_ERR_IO;
     for (uint64_t i = 0; i < data_start; i++) if (bitmap_bit(i, 1) != STORAGE_OK) return STORAGE_ERR_IO;
     for (int i = 0; i < STORAGE_MAX_ENTRIES; i++) if (disk_write((uint64_t)i + 1, block) != STORAGE_OK) return STORAGE_ERR_IO;
+    mounted = 1;
     return STORAGE_OK;
 }
 int storage_mount(void)
 {
     unsigned char block[BLOCK_SECTOR_SIZE];
+    mounted = 0;
+    entry_count = 0;
     if (!storage_device) return STORAGE_ERR_NOENT;
     if (disk_read(0, block) != STORAGE_OK) return STORAGE_ERR_IO;
     if (get32(block) != STORAGE_MAGIC || get32(block + 4) != STORAGE_VERSION || get64(block + 16) != storage_device->sector_count) return STORAGE_ERR_NOENT;
@@ -318,7 +322,30 @@ int storage_mount(void)
 }
 int storage_unmount(void) { int result = storage_sync(); if (result == STORAGE_OK) mounted = 0; return result; }
 int storage_is_mounted(void) { return mounted; }
-void storage_init(void) { for (int i = 0; i < 16; i++) fds[i].used = 0; if (storage_device) (void)storage_mount();
+void storage_init(void)
+{
+    for (int i = 0; i < 16; i++) fds[i].used = 0;
+    if (storage_device) {
+        int result = storage_mount();
+        if (result == STORAGE_ERR_NOENT) {
+            unsigned char block[BLOCK_SECTOR_SIZE];
+            int blank = disk_read(0, block) == STORAGE_OK;
+            for (size_t i = 0; blank && i < sizeof(block); i++)
+                if (block[i] != 0) blank = 0;
+            uint64_t metadata_sectors = STORAGE_BITMAP_START +
+                (storage_device->sector_count + STORAGE_BITMAP_BITS_PER_SECTOR - 1) /
+                STORAGE_BITMAP_BITS_PER_SECTOR;
+            for (uint64_t sector = 1; blank && sector < metadata_sectors; sector++) {
+                if (disk_read(sector, block) != STORAGE_OK) {
+                    blank = 0;
+                    break;
+                }
+                for (size_t i = 0; i < sizeof(block); i++)
+                    if (block[i] != 0) blank = 0;
+            }
+            if (blank) (void)storage_format();
+        }
+    }
 #if __STDC_HOSTED__
     else mounted = 1;
 #endif
@@ -336,7 +363,8 @@ int storage_sync(void)
 static int create(const char *path, char type, const char *content)
 {
     char normalized[STORAGE_MAX_PATH];
-    if (!mounted || normalize(path, normalized) != STORAGE_OK || (type != 'f' && type != 'd') || equal(normalized, "/")) return STORAGE_ERR_INVAL;
+    if (!mounted) return STORAGE_ERR_NOTMOUNTED;
+    if (normalize(path, normalized) != STORAGE_OK || (type != 'f' && type != 'd') || equal(normalized, "/")) return STORAGE_ERR_INVAL;
     if (find(normalized) >= 0) return STORAGE_ERR_EXIST;
     if (entry_count == STORAGE_MAX_ENTRIES || !parent_directory(normalized)) return STORAGE_ERR_NOTDIR;
     struct storage_entry *entry = &entries[entry_count]; zero(entry, sizeof(*entry)); text_copy(entry->path, normalized, sizeof(entry->path));

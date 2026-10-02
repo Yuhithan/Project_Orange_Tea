@@ -40,7 +40,7 @@ void desktop_init(uint64_t multiboot_info_addr)
 void desktop_draw(void)
 {
     if (!desktop_ready) return;
-    fb_clear(OR_COLOR_WHITE);
+    fb_clear(OR_COLOR_BACKGROUND);
     fb_fill_rect(0, 0, fb_width(), 34, OR_COLOR_PANEL);
     fb_draw_line(0, 33, fb_width() - 1, 33, OR_COLOR_FIRE_RED);
     if (ui_animation_running(desktop_started, DESKTOP_BOOT_ANIMATION_MS)) {
@@ -49,7 +49,7 @@ void desktop_draw(void)
         int width = fb_width() * progress / 1000;
         if (width > 0) fb_draw_line(0, 33, width - 1, 33, OR_COLOR_FIRE_ORANGE);
     }
-    ORgui_draw_text(14, 14, "ORTOS DESKTOP - ALPHA-3.2.2", OR_COLOR_FIRE_YELLOW);
+    ORgui_draw_text(14, 14, "ORTOS DESKTOP - VERSION 3.3.1", OR_COLOR_FIRE_YELLOW);
     ORgui_draw_text(190, 14, "WILDFIRE", OR_COLOR_FIRE_ORANGE);
     desktop_apps_draw();
     ORgui_draw();

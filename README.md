@@ -755,3 +755,13 @@ Finally report:
 * known limitations
 
 and please continue to give support or code advice for making an better OS
+
+# MENTION
+
+I vibe coded for 2 month, using AI for build my ortOS system on the shell and gui.
+bacause I coded in a browser/codespace, yes codespace is amazing but it's also not good for high ping, i used AI to make an strong foundation and learning basic OS function without taking days or month
+
+I will re-code most of these features but i will use AI for codes that I can't do it
+and i will make an apk pakage system like linux but with a little twist ;)
+
+I will make no promises but i'm honest.

@@ -2,6 +2,7 @@
 #include "ORgui.h"
 #include "imp.h"
 #include "shell.h"
+#include "keyboard.h"
 
 #define TERMINAL_MAX_LINES 128
 #define TERMINAL_LINE_SIZE 128
@@ -10,10 +11,14 @@
 #define TERMINAL_PROMPT "ORangeTea//+ "
 
 static ORWindow *terminal_window;
+
 static char terminal_lines[TERMINAL_MAX_LINES][TERMINAL_LINE_SIZE];
 static int terminal_line_count;
+
 static char terminal_input[TERMINAL_LINE_SIZE];
 static int terminal_input_length;
+
+static int terminal_scroll;
 
 /*
  * Terminal input is edited and rendered from the same UI thread, so there is no
@@ -44,7 +49,11 @@ static void terminal_new_line(void)
 
 static void terminal_put_char(char character)
 {
-    if (character == '\n') { terminal_new_line(); return; }
+    if (character == '\n') { 
+        terminal_new_line();
+        terminal_scroll = 0;
+
+        return; }
     if (terminal_line_count == 0) terminal_new_line();
     int length = 0;
         while (length < TERMINAL_LINE_SIZE - 1 &&
@@ -70,6 +79,7 @@ static void terminal_put_text(const char *text)
 static void terminal_clear(void)
 {
     terminal_line_count = 0;
+    terminal_scroll = 0;
     terminal_new_line();
 }
 
@@ -97,8 +107,11 @@ static void terminal_draw(ORWindow *window)
     int height = window->height - 36;
     int columns = width / TERMINAL_CHAR_WIDTH;
     int rows = height / TERMINAL_LINE_HEIGHT;
-    int first_line = terminal_line_count - rows;
-    if (first_line < 0) first_line = 0;
+    int max_first_line = terminal_line_count - rows;
+    if (max_first_line < 0) max_first_line = 0;
+    if (terminal_scroll < 0) terminal_scroll = 0;
+    if (terminal_scroll > max_first_line) terminal_scroll = max_first_line;
+    int first_line = max_first_line - terminal_scroll;
 
     ORgui_draw_panel(window->x + 4, window->y + 25, window->width - 8,
                      window->height - 29, 0x080808);
@@ -134,16 +147,29 @@ static void terminal_event(ORWindow *window, const OREvent *event)
     if (event->type != OR_EVENT_KEY_DOWN)
         return;
 
-    /* Debug: inspect exactly what the keyboard system sends */
-    // debug_printf("KEY_DOWN: %d '%c'\n", event->key, event->key);
+    //up
+    if (event->key == KEY_PAGE_UP)
+    {
+        terminal_scroll += 5;
+        return;
+    }
+    // down
+    if (event->key == KEY_PAGE_DOWN)
+    {
+        terminal_scroll -= 5;
+
+        if (terminal_scroll <0) terminal_scroll =0;
+
+        return;
+    }
 
     if (event->key == '\b')
     {
         if (terminal_input_length > 0)
-            terminal_input[--terminal_input_length] = '\0';
+        terminal_input[--terminal_input_length] = '\0';
+
         return;
     }
-
     if (event->key == '\n')
     {
         terminal_put_text(TERMINAL_PROMPT);
@@ -154,10 +180,10 @@ static void terminal_event(ORWindow *window, const OREvent *event)
 
         terminal_input_length = 0;
         terminal_input[0] = '\0';
+
         return;
     }
-
-    if (event->key >= 32 && event->key < 127)
+    if (event->key >= 32 && event-> key < 127)
     {
         terminal_input_replace((char)event->key);
     }

@@ -40,7 +40,7 @@ void desktop_init(uint64_t multiboot_info_addr)
 void desktop_draw(void)
 {
     if (!desktop_ready) return;
-    fb_clear(OR_COLOR_BACKGROUND);
+    fb_clear(OR_COLOR_WHITE);
     fb_fill_rect(0, 0, fb_width(), 34, OR_COLOR_PANEL);
     fb_draw_line(0, 33, fb_width() - 1, 33, OR_COLOR_FIRE_RED);
     if (ui_animation_running(desktop_started, DESKTOP_BOOT_ANIMATION_MS)) {

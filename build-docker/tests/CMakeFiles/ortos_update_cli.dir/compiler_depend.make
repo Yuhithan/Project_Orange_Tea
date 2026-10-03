@@ -4,6 +4,7 @@
 tests/CMakeFiles/ortos_update_cli.dir/__/tools/ortos_update.c.o: /root/env/tools/ortos_update.c \
   /usr/include/stdc-predef.h \
   /root/env/include/update.h \
+  /root/env/include/core/update.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
   /usr/include/stdio.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
@@ -50,6 +51,12 @@ tests/CMakeFiles/ortos_update_cli.dir/__/tools/ortos_update.c.o: /root/env/tools
 
 /root/env/include/update.h:
 
+/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/root/env/tools/ortos_update.c:
+
+/usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h:
+
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
 
 /usr/include/stdio.h:
@@ -66,11 +73,7 @@ tests/CMakeFiles/ortos_update_cli.dir/__/tools/ortos_update.c.o: /root/env/tools
 
 /usr/include/features.h:
 
-/root/env/tools/ortos_update.c:
-
-/usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+/root/env/include/core/update.h:
 
 /usr/include/x86_64-linux-gnu/bits/wordsize.h:
 

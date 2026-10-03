@@ -4,6 +4,7 @@
 tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/memory/memory.c.o: /root/env/src/kernel/memory/memory.c \
   /usr/include/stdc-predef.h \
   /root/env/include/memory.h \
+  /root/env/include/core/memory.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h \
   /usr/include/stdint.h \
@@ -26,6 +27,7 @@ tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/memory/memory.c.o: /root/
 tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/process/process.c.o: /root/env/src/kernel/process/process.c \
   /usr/include/stdc-predef.h \
   /root/env/include/process.h \
+  /root/env/include/core/process.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h \
   /usr/include/stdint.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
@@ -47,6 +49,7 @@ tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/process/process.c.o: /roo
 tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/syscall/syscall.c.o: /root/env/src/kernel/syscall/syscall.c \
   /usr/include/stdc-predef.h \
   /root/env/include/syscall.h \
+  /root/env/include/core/syscall.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h \
   /usr/include/stdint.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
@@ -65,10 +68,13 @@ tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/syscall/syscall.c.o: /roo
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
   /root/env/include/vfs.h \
-  /root/env/include/storage.h \
+  /root/env/include/fs/vfs.h \
+  /root/env/include/fs/storage.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
   /root/env/include/block_device.h \
-  /root/env/include/process.h
+  /root/env/include/drivers/block_device.h \
+  /root/env/include/process.h \
+  /root/env/include/core/process.h
 
 tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.o: /root/env/tests/core_subsystem_test.c \
   /usr/include/stdc-predef.h \
@@ -88,6 +94,7 @@ tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.o: /root/env/test
   /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
   /usr/include/strings.h \
   /root/env/include/memory.h \
+  /root/env/include/core/memory.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h \
   /usr/include/stdint.h \
   /usr/include/x86_64-linux-gnu/bits/types.h \
@@ -97,9 +104,13 @@ tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.o: /root/env/test
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
   /root/env/include/process.h \
+  /root/env/include/core/process.h \
   /root/env/include/storage.h \
+  /root/env/include/fs/storage.h \
   /root/env/include/block_device.h \
-  /root/env/include/syscall.h
+  /root/env/include/drivers/block_device.h \
+  /root/env/include/syscall.h \
+  /root/env/include/core/syscall.h
 
 
 /usr/include/strings.h:
@@ -108,7 +119,7 @@ tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.o: /root/env/test
 
 /usr/include/assert.h:
 
-/root/env/src/kernel/process/process.c:
+/root/env/include/fs/storage.h:
 
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
 
@@ -120,6 +131,8 @@ tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.o: /root/env/test
 
 /usr/include/x86_64-linux-gnu/bits/wordsize.h:
 
+/root/env/include/core/syscall.h:
+
 /usr/include/features.h:
 
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
@@ -130,15 +143,43 @@ tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.o: /root/env/test
 
 /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h:
 
-/usr/include/x86_64-linux-gnu/bits/types.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+/root/env/include/core/memory.h:
 
 /root/env/include/memory.h:
 
+/root/env/tests/core_subsystem_test.c:
+
+/root/env/src/kernel/memory/memory.c:
+
+/root/env/include/fs/vfs.h:
+
 /usr/include/x86_64-linux-gnu/bits/typesizes.h:
 
+/root/env/include/block_device.h:
+
+/usr/include/x86_64-linux-gnu/bits/long-double.h:
+
+/root/env/include/drivers/block_device.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/include/x86_64-linux-gnu/bits/types.h:
+
+/root/env/src/kernel/process/process.c:
+
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
+
+/root/env/include/core/process.h:
+
+/root/env/include/storage.h:
+
+/usr/include/string.h:
+
+/usr/include/x86_64-linux-gnu/bits/wchar.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
 
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
 
@@ -151,21 +192,3 @@ tests/CMakeFiles/core_subsystem_test.dir/core_subsystem_test.c.o: /root/env/test
 /root/env/include/syscall.h:
 
 /root/env/include/vfs.h:
-
-/usr/include/string.h:
-
-/usr/include/x86_64-linux-gnu/bits/wchar.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
-
-/root/env/include/storage.h:
-
-/usr/include/x86_64-linux-gnu/bits/long-double.h:
-
-/root/env/include/block_device.h:
-
-/root/env/src/kernel/memory/memory.c:
-
-/root/env/tests/core_subsystem_test.c:

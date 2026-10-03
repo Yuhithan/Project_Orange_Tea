@@ -4,6 +4,7 @@
 tests/CMakeFiles/ortos_update.dir/__/tools/update_lib.c.o: /root/env/tools/update_lib.c \
   /usr/include/stdc-predef.h \
   /root/env/include/update.h \
+  /root/env/include/core/update.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
   /usr/include/errno.h \
   /usr/include/features.h \
@@ -92,9 +93,7 @@ tests/CMakeFiles/ortos_update.dir/__/tools/update_lib.c.o: /root/env/tools/updat
 
 /usr/include/alloca.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/FILE.h:
-
-/usr/include/features.h:
+/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
 
@@ -166,9 +165,15 @@ tests/CMakeFiles/ortos_update.dir/__/tools/update_lib.c.o: /root/env/tools/updat
 
 /root/env/include/update.h:
 
+/root/env/include/core/update.h:
+
 /usr/include/x86_64-linux-gnu/bits/wordsize.h:
 
 /usr/include/stdlib.h:
+
+/usr/include/features.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/FILE.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
 
@@ -225,5 +230,3 @@ tests/CMakeFiles/ortos_update.dir/__/tools/update_lib.c.o: /root/env/tools/updat
 /usr/include/x86_64-linux-gnu/bits/types.h:
 
 /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
-
-/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:

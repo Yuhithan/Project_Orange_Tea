@@ -4,6 +4,7 @@
 tests/CMakeFiles/ora_format_test.dir/__/src/kernel/exec/ora.c.o: /root/env/src/kernel/exec/ora.c \
   /usr/include/stdc-predef.h \
   /root/env/include/ora.h \
+  /root/env/include/apps/ora.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h \
   /usr/include/stdint.h \
@@ -51,6 +52,7 @@ tests/CMakeFiles/ora_format_test.dir/ora_format_test.c.o: /root/env/tests/ora_fo
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /root/env/include/ora.h \
+  /root/env/include/apps/ora.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h \
   /usr/include/stdint.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
@@ -62,7 +64,7 @@ tests/CMakeFiles/ora_format_test.dir/ora_format_test.c.o: /root/env/tests/ora_fo
 
 /usr/include/x86_64-linux-gnu/bits/floatn.h:
 
-/usr/include/x86_64-linux-gnu/bits/long-double.h:
+/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
 
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
 
@@ -82,11 +84,9 @@ tests/CMakeFiles/ora_format_test.dir/ora_format_test.c.o: /root/env/tests/ora_fo
 
 /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+/root/env/include/apps/ora.h:
 
-/usr/include/x86_64-linux-gnu/bits/types.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+/root/env/src/kernel/exec/ora.c:
 
 /usr/include/x86_64-linux-gnu/bits/types/FILE.h:
 
@@ -94,7 +94,13 @@ tests/CMakeFiles/ora_format_test.dir/ora_format_test.c.o: /root/env/tests/ora_fo
 
 /root/env/include/ora.h:
 
-/root/env/src/kernel/exec/ora.c:
+/usr/include/x86_64-linux-gnu/bits/long-double.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/include/x86_64-linux-gnu/bits/types.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
 
@@ -123,5 +129,3 @@ tests/CMakeFiles/ora_format_test.dir/ora_format_test.c.o: /root/env/tests/ora_fo
 /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:

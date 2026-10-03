@@ -5,6 +5,7 @@ tests/CMakeFiles/ortos_update.dir/__/tools/update_lib.c.o
  /root/env/tools/update_lib.c
  /usr/include/stdc-predef.h
  /root/env/include/update.h
+ /root/env/include/core/update.h
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h
  /usr/include/errno.h
  /usr/include/features.h

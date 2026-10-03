@@ -23,8 +23,10 @@ if [ ! -e "$DISK" ]; then
 fi
 
 if command -v qemu-system-x86_64 >/dev/null 2>&1; then
+    # PulseAudio provides live host playback; QEMU's wav backend captures to a file.
     exec qemu-system-x86_64 -m 256 -cdrom "$ISO" -boot order=d \
         -drive "file=$DISK,format=raw,if=ide,index=0" -display curses \
+        -audiodev driver=pa,id=audio0 -machine pcspk-audiodev=audio0 \
         -monitor none -no-reboot
 fi
 
@@ -33,7 +35,8 @@ if command -v docker >/dev/null 2>&1; then
         -v "$ROOT:/root/env" -w /root/env ort-build \
         qemu-system-x86_64 -m 256 -cdrom /root/env/build-docker/OrangeteaOS.iso \
         -boot order=d -drive file=/root/env/build-docker/ortos-storage.img,format=raw,if=ide,index=0 \
-        -display curses -monitor none -no-reboot
+        -display curses -audiodev driver=pa,id=audio0 -machine pcspk-audiodev=audio0 \
+        -monitor none -no-reboot
 fi
 
 printf '%s\n' "QEMU is unavailable. Rebuild ort-build using buildenv/Dockerfile."

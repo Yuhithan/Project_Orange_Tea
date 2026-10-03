@@ -1667,7 +1667,7 @@ static void shell_execute_command(void)
         imp_text("I know you location :)");
     }
     else if (shell_streq(cmd, "audio")) {
-        audio_play_sound(440, 2000); // Play a 440 Hz sound for 2 seconds
+        audio_play_sound(1000, 3000); // Play a 1000 Hz sound for 3 seconds
     }
     else if (shell_streq(cmd, "exit"))
     {

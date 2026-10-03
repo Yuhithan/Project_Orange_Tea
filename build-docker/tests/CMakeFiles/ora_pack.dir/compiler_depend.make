@@ -60,6 +60,7 @@ tests/CMakeFiles/ora_pack.dir/__/tools/ora_pack.c.o: /root/env/tools/ora_pack.c 
   /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
   /usr/include/strings.h \
   /root/env/include/ora.h \
+  /root/env/include/apps/ora.h \
   /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h \
   /usr/include/stdint.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
@@ -159,6 +160,8 @@ tests/CMakeFiles/ora_pack.dir/__/tools/ora_pack.c.o: /root/env/tools/ora_pack.c 
 /usr/include/string.h:
 
 /usr/include/x86_64-linux-gnu/bits/endian.h:
+
+/root/env/include/apps/ora.h:
 
 /usr/include/x86_64-linux-gnu/sys/select.h:
 

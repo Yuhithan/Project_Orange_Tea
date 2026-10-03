@@ -28,5 +28,7 @@ tests/CMakeFiles/storage_persistence_test.dir/storage_persistence_test.c.o
  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h
  /usr/include/strings.h
  /root/env/include/storage.h
+ /root/env/include/fs/storage.h
  /root/env/include/block_device.h
+ /root/env/include/drivers/block_device.h
 

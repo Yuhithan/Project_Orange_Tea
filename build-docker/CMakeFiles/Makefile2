@@ -901,12 +901,12 @@ CMakeFiles/ContinuousSubmit.dir/clean:
 src/CMakeFiles/ortos_kernel.dir/all:
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ortos_kernel.dir/build.make src/CMakeFiles/ortos_kernel.dir/depend
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ortos_kernel.dir/build.make src/CMakeFiles/ortos_kernel.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68 "Built target ortos_kernel"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69 "Built target ortos_kernel"
 .PHONY : src/CMakeFiles/ortos_kernel.dir/all
 
 # Build rule for subdir invocation for target.
 src/CMakeFiles/ortos_kernel.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/env/build-docker/CMakeFiles 38
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/env/build-docker/CMakeFiles 39
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/ortos_kernel.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /root/env/build-docker/CMakeFiles 0
 .PHONY : src/CMakeFiles/ortos_kernel.dir/rule
@@ -932,7 +932,7 @@ src/CMakeFiles/orangetea_iso.dir/all: src/CMakeFiles/ortos_kernel.dir/all
 
 # Build rule for subdir invocation for target.
 src/CMakeFiles/orangetea_iso.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/env/build-docker/CMakeFiles 39
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/env/build-docker/CMakeFiles 40
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/orangetea_iso.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /root/env/build-docker/CMakeFiles 0
 .PHONY : src/CMakeFiles/orangetea_iso.dir/rule
@@ -958,7 +958,7 @@ src/CMakeFiles/run_os.dir/all: src/CMakeFiles/orangetea_iso.dir/all
 
 # Build rule for subdir invocation for target.
 src/CMakeFiles/run_os.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /root/env/build-docker/CMakeFiles 39
+	$(CMAKE_COMMAND) -E cmake_progress_start /root/env/build-docker/CMakeFiles 40
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/run_os.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /root/env/build-docker/CMakeFiles 0
 .PHONY : src/CMakeFiles/run_os.dir/rule
@@ -979,7 +979,7 @@ src/CMakeFiles/run_os.dir/clean:
 tests/CMakeFiles/ortos_storage.dir/all:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_storage.dir/build.make tests/CMakeFiles/ortos_storage.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_storage.dir/build.make tests/CMakeFiles/ortos_storage.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=69,70,71 "Built target ortos_storage"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=70,71,72 "Built target ortos_storage"
 .PHONY : tests/CMakeFiles/ortos_storage.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1057,7 +1057,7 @@ tests/CMakeFiles/ora_pack.dir/clean:
 tests/CMakeFiles/ortos_update.dir/all:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update.dir/build.make tests/CMakeFiles/ortos_update.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update.dir/build.make tests/CMakeFiles/ortos_update.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=72,73 "Built target ortos_update"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=73,74 "Built target ortos_update"
 .PHONY : tests/CMakeFiles/ortos_update.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1083,7 +1083,7 @@ tests/CMakeFiles/ortos_update.dir/clean:
 tests/CMakeFiles/ortos_update_cli.dir/all: tests/CMakeFiles/ortos_update.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update_cli.dir/build.make tests/CMakeFiles/ortos_update_cli.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_update_cli.dir/build.make tests/CMakeFiles/ortos_update_cli.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=74,75 "Built target ortos_update_cli"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=75,76 "Built target ortos_update_cli"
 .PHONY : tests/CMakeFiles/ortos_update_cli.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1109,7 +1109,7 @@ tests/CMakeFiles/ortos_update_cli.dir/clean:
 tests/CMakeFiles/updater_test.dir/all: tests/CMakeFiles/ortos_update.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/updater_test.dir/build.make tests/CMakeFiles/updater_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/updater_test.dir/build.make tests/CMakeFiles/updater_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=82,83 "Built target updater_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=83,84 "Built target updater_test"
 .PHONY : tests/CMakeFiles/updater_test.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1161,7 +1161,7 @@ tests/CMakeFiles/ora_example.dir/clean:
 tests/CMakeFiles/storage_path_test.dir/all: tests/CMakeFiles/ortos_storage.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_path_test.dir/build.make tests/CMakeFiles/storage_path_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_path_test.dir/build.make tests/CMakeFiles/storage_path_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=76,77 "Built target storage_path_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=77,78 "Built target storage_path_test"
 .PHONY : tests/CMakeFiles/storage_path_test.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1213,7 +1213,7 @@ tests/CMakeFiles/desktop_storage_test.dir/clean:
 tests/CMakeFiles/storage_persistence_test.dir/all: tests/CMakeFiles/ortos_storage.dir/all
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_persistence_test.dir/build.make tests/CMakeFiles/storage_persistence_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/storage_persistence_test.dir/build.make tests/CMakeFiles/storage_persistence_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=78,79 "Built target storage_persistence_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=79,80 "Built target storage_persistence_test"
 .PHONY : tests/CMakeFiles/storage_persistence_test.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1239,7 +1239,7 @@ tests/CMakeFiles/storage_persistence_test.dir/clean:
 tests/CMakeFiles/terminal_input_buffer_test.dir/all:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/terminal_input_buffer_test.dir/build.make tests/CMakeFiles/terminal_input_buffer_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/terminal_input_buffer_test.dir/build.make tests/CMakeFiles/terminal_input_buffer_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=80,81 "Built target terminal_input_buffer_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=81,82 "Built target terminal_input_buffer_test"
 .PHONY : tests/CMakeFiles/terminal_input_buffer_test.dir/all
 
 # Build rule for subdir invocation for target.

@@ -1,3 +1,3 @@
 #pragma once
 
-int login_run(void);
+#include "ui/login.h"

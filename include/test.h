@@ -1,3 +1,3 @@
 #pragma once
 
-void test_boot(void);
+#include "apps/test.h"

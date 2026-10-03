@@ -50,6 +50,7 @@ endif()
 # ORTOS_KERNEL_C_SOURCES at src/CMakeLists.txt:12 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/root/env/src/drivers/**/*.c")
 set(OLD_GLOB
+  "/root/env/src/drivers/audio/audio.c"
   "/root/env/src/drivers/display/framebuffer.c"
   "/root/env/src/drivers/ethernet/network.c"
   "/root/env/src/drivers/ethernet/rtl8139.c"
@@ -65,6 +66,7 @@ endif()
 # ORTOS_KERNEL_C_SOURCES at src/CMakeLists.txt:12 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/root/env/src/drivers/*.c")
 set(OLD_GLOB
+  "/root/env/src/drivers/audio/audio.c"
   "/root/env/src/drivers/display/framebuffer.c"
   "/root/env/src/drivers/ethernet/network.c"
   "/root/env/src/drivers/ethernet/rtl8139.c"

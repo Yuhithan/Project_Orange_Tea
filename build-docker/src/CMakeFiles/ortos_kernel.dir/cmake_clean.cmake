@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "cursor_resource.c"
   "ortos-objects/ORgui_8378951d1de981a6a28fa0d39036448f.o"
   "ortos-objects/ata_018c6992e42cd76766859db7f4112e46.o"
+  "ortos-objects/audio_781d83c6db40355e0e43e75dc0445c90.o"
   "ortos-objects/boot_header.o"
   "ortos-objects/boot_interrupts.o"
   "ortos-objects/boot_main.o"

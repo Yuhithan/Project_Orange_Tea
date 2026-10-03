@@ -1,6 +1,6 @@
 tests/CMakeFiles/ora_format_test.dir/__/src/kernel/exec/ora.c.o: \
  /root/env/src/kernel/exec/ora.c /usr/include/stdc-predef.h \
- /root/env/include/ora.h \
+ /root/env/include/ora.h /root/env/include/apps/ora.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \

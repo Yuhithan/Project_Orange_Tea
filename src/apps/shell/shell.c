@@ -7,6 +7,8 @@
 #include "boot_mode.h"
 #include "desktop.h"
 #include "desktop_apps.h"
+#include "drivers/audio.h"
+#include "core/audio_reader.h"
 
 #define MAX_CMD 128
 #define MAX_HISTORY 16
@@ -1663,6 +1665,9 @@ static void shell_execute_command(void)
         "                                                                                                    \n"
                                                                                                                 );
         imp_text("I know you location :)");
+    }
+    else if (shell_streq(cmd, "audio")) {
+        audio_play_sound(440, 2000); // Play a 440 Hz sound for 2 seconds
     }
     else if (shell_streq(cmd, "exit"))
     {

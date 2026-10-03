@@ -1,3 +1,3 @@
 #pragma once
 
-void taskbar_draw(void);
+#include "ui/taskbar.h"

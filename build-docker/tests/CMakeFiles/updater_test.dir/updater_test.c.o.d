@@ -51,4 +51,5 @@ tests/CMakeFiles/updater_test.dir/updater_test.c.o: \
  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
- /usr/include/linux/close_range.h /root/env/include/update.h
+ /usr/include/linux/close_range.h /root/env/include/update.h \
+ /root/env/include/core/update.h

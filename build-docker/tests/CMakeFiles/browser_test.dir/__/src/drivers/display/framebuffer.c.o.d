@@ -1,6 +1,6 @@
 tests/CMakeFiles/browser_test.dir/__/src/drivers/display/framebuffer.c.o: \
  /root/env/src/drivers/display/framebuffer.c /usr/include/stdc-predef.h \
- /root/env/include/framebuffer.h \
+ /root/env/include/framebuffer.h /root/env/include/ui/framebuffer.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \

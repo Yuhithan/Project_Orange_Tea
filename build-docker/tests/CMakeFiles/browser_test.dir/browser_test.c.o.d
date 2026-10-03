@@ -12,4 +12,5 @@ tests/CMakeFiles/browser_test.dir/browser_test.c.o: \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
- /usr/include/strings.h /root/env/include/browser.h
+ /usr/include/strings.h /root/env/include/browser.h \
+ /root/env/include/apps/browser.h

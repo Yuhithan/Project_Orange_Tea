@@ -1,6 +1,6 @@
 tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/memory/memory.c.o: \
  /root/env/src/kernel/memory/memory.c /usr/include/stdc-predef.h \
- /root/env/include/memory.h \
+ /root/env/include/memory.h /root/env/include/core/memory.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \

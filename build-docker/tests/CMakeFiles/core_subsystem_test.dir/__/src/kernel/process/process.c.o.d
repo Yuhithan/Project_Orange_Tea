@@ -1,6 +1,6 @@
 tests/CMakeFiles/core_subsystem_test.dir/__/src/kernel/process/process.c.o: \
  /root/env/src/kernel/process/process.c /usr/include/stdc-predef.h \
- /root/env/include/process.h \
+ /root/env/include/process.h /root/env/include/core/process.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \

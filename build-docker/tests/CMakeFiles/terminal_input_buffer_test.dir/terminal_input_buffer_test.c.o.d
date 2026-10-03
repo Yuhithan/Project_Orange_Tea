@@ -17,4 +17,5 @@ tests/CMakeFiles/terminal_input_buffer_test.dir/terminal_input_buffer_test.c.o: 
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
  /root/env/include/terminal_input_ring.h \
+ /root/env/include/ui/terminal_input_ring.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h

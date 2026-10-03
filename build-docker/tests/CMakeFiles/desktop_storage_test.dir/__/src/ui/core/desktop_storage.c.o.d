@@ -1,6 +1,8 @@
 tests/CMakeFiles/desktop_storage_test.dir/__/src/ui/core/desktop_storage.c.o: \
  /root/env/src/ui/core/desktop_storage.c /usr/include/stdc-predef.h \
- /root/env/include/desktop_storage.h /root/env/include/storage.h \
+ /root/env/include/desktop_storage.h \
+ /root/env/include/ui/desktop_storage.h /root/env/include/storage.h \
+ /root/env/include/fs/storage.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
  /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
@@ -17,4 +19,6 @@ tests/CMakeFiles/desktop_storage_test.dir/__/src/ui/core/desktop_storage.c.o: \
  /usr/include/x86_64-linux-gnu/bits/wchar.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
- /root/env/include/block_device.h /root/env/include/vfs.h
+ /root/env/include/block_device.h \
+ /root/env/include/drivers/block_device.h /root/env/include/vfs.h \
+ /root/env/include/fs/vfs.h

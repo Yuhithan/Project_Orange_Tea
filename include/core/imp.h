@@ -1,0 +1,45 @@
+#pragma once
+
+#include <stdint.h>
+#include <stddef.h>
+
+enum {
+    PRINT_COLOR_BLACK = 0,
+	PRINT_COLOR_BLUE = 1,
+	PRINT_COLOR_GREEN = 2,
+	PRINT_COLOR_CYAN = 3,
+	PRINT_COLOR_RED = 4,
+	PRINT_COLOR_MAGENTA = 5,
+	PRINT_COLOR_BROWN = 6,
+	PRINT_COLOR_LIGHT_GRAY = 7,
+	PRINT_COLOR_DARK_GRAY = 8,
+	PRINT_COLOR_LIGHT_BLUE = 9,
+	PRINT_COLOR_LIGHT_GREEN = 10,
+	PRINT_COLOR_LIGHT_CYAN = 11,
+	PRINT_COLOR_LIGHT_RED = 12,
+	PRINT_COLOR_PINK = 13,
+	PRINT_COLOR_YELLOW = 14,
+	PRINT_COLOR_WHITE = 15,
+};
+
+typedef struct {
+    int (*active)(void);
+    void (*clear)(void);
+    void (*put_char)(char);
+    void (*set_color)(uint8_t fg, uint8_t bg);
+} imp_backend_t;
+
+void imp_set_backend(const imp_backend_t *backend);
+
+void imp_clear();
+void imp_char(char character);
+void imp_str(char* string);
+void imp_set_color(uint8_t foreground, uint8_t background);
+void imp_uint64_dec(uint64_t value);
+void imp_uint64_hex(uint64_t value);
+void imp_uint64_bin(uint64_t value);
+void imp_cls(void);
+void imp_color(uint8_t foreground, uint8_t background);
+void imp_text(const char *str);
+void imp_scroll_up(size_t lines);
+void imp_scroll_down(size_t lines);

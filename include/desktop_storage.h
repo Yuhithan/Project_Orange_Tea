@@ -1,5 +1,3 @@
 #pragma once
 
-#include "storage.h"
-
-int desktop_storage_init(void);
+#include "ui/desktop_storage.h"

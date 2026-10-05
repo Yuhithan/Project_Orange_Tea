@@ -13,6 +13,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/root/env/src/drivers/display/framebuffer.c" "tests/CMakeFiles/browser_test.dir/__/src/drivers/display/framebuffer.c.o" "gcc" "tests/CMakeFiles/browser_test.dir/__/src/drivers/display/framebuffer.c.o.d"
   "/root/env/src/ui/core/ORgui.c" "tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o" "gcc" "tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o.d"
   "/root/env/src/ui/core/ui_animation.c" "tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o" "gcc" "tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o.d"
+  "/root/env/src/ui/font/font.c" "tests/CMakeFiles/browser_test.dir/__/src/ui/font/font.c.o" "gcc" "tests/CMakeFiles/browser_test.dir/__/src/ui/font/font.c.o.d"
   "/root/env/tests/browser_test.c" "tests/CMakeFiles/browser_test.dir/browser_test.c.o" "gcc" "tests/CMakeFiles/browser_test.dir/browser_test.c.o.d"
   )
 

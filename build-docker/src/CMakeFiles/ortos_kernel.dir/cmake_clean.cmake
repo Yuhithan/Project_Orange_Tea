@@ -17,6 +17,7 @@ file(REMOVE_RECURSE
   "ortos-objects/desktop_apps_7809dd250e1be93c1a755afda765ff70.o"
   "ortos-objects/desktop_storage_2e52bed22d446408d299ececc61b7740.o"
   "ortos-objects/ethernet_971059b8d0ec67262e715d0b8c8140d0.o"
+  "ortos-objects/font_e8ada78751969b4bf4842d6b8cb96e76.o"
   "ortos-objects/framebuffer_719cbce6279bc463ae41d822a57e6dd8.o"
   "ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o"
   "ortos-objects/keyboard_c61c887baa3a65f59c312df80553a306.o"

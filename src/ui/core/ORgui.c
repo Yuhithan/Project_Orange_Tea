@@ -1,5 +1,6 @@
 #include "ORgui.h"
 #include "framebuffer.h"
+#include "ui/font.h"
 #include "timer.h"
 #include "ui_animation.h"
 
@@ -45,11 +46,14 @@ static int within(int x, int y, int left, int top, int width, int height)
 
 void ORgui_init(void)
 {
+    font_init();
+
     window_count = 0;
     active_window = 0;
     drag_window = 0;
     pointer_x = pointer_y = 0;
     hovered_close = -1;
+
     for (int i = 0; i < ORGUI_MAX_WINDOWS; i++) {
         windows[i].visible = 0;
         z_order[i] = i;
@@ -136,7 +140,8 @@ void ORgui_draw_panel(int x, int y, int width, int height, uint32_t color)
 
 void ORgui_draw_text(int x, int y, const char *text, uint32_t color)
 {
-    fb_draw_string(x, y, text, color);
+    //fb_draw_string(x, y, text, color);
+    font_draw_string(x, y, text, 1, color);
 }
 
 void ORgui_draw_button(int x, int y, int width, int height, const char *label, int pressed)
@@ -146,7 +151,7 @@ void ORgui_draw_button(int x, int y, int width, int height, const char *label, i
         fill = ui_animation_mix_color(fill, OR_COLOR_FIRE_YELLOW, 180);
     fb_fill_rect(x, y, width, height, fill);
     fb_draw_rect(x, y, width, height, OR_COLOR_FIRE_YELLOW);
-    fb_draw_string(x + 8, y + (height - 5) / 2, label, OR_COLOR_TEXT);
+    font_draw_string(x + 8, y + (height - 7) / 2, label, 1, OR_COLOR_TEXT);
 }
 
 static void draw_window(ORWindow *window)
@@ -177,7 +182,7 @@ static void draw_window(ORWindow *window)
     fb_fill_rect(window->x, window->y, window->width, window->height, OR_COLOR_WINDOW);
     fb_draw_rect(window->x, window->y, window->width, window->height, OR_COLOR_BORDER);
     fb_fill_rect(window->x + 1, window->y + 1, window->width - 2, 20, title_color);
-    fb_draw_string(window->x + 7, window->y + 8, window->title, OR_COLOR_TEXT);
+    font_draw_string(window->x + 7, window->y + 7, window->title, 1, OR_COLOR_TEXT);
     ORgui_draw_button(window->x + window->width - 24, window->y + 4, 17, 14, "X", 0);
     if (drag_window == window)
         fb_draw_rect(window->x - 1, window->y - 1, window->width + 2,

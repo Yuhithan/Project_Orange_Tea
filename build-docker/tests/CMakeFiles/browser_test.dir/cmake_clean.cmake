@@ -9,6 +9,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o.d"
   "CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o"
   "CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.o.d"
+  "CMakeFiles/browser_test.dir/__/src/ui/font/font.c.o"
+  "CMakeFiles/browser_test.dir/__/src/ui/font/font.c.o.d"
   "CMakeFiles/browser_test.dir/browser_test.c.o"
   "CMakeFiles/browser_test.dir/browser_test.c.o.d"
   "browser_test"

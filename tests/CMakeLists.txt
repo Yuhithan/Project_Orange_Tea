@@ -81,8 +81,9 @@ add_executable(browser_test browser_test.c
     "${ORTOS_SOURCE_DIR}/drivers/display/framebuffer.c"
     "${ORTOS_SOURCE_DIR}/ui/core/ORgui.c"
     "${ORTOS_SOURCE_DIR}/ui/core/ui_animation.c"
+    "${ORTOS_SOURCE_DIR}/ui/font/font.c"
     "${ORTOS_SOURCE_DIR}/arch/x86/timer/timer.c")
-target_include_directories(browser_test PRIVATE "${ORTOS_INCLUDE_DIR}" "${ORTOS_SOURCE_DIR}")
+target_include_directories(browser_test PRIVATE "${CMAKE_SOURCE_DIR}/include" "${ORTOS_SOURCE_DIR}")
 
 if(BUILD_TESTING)
     add_test(NAME storage_path_test COMMAND storage_path_test)

@@ -17,5 +17,7 @@ tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
  /root/env/include/framebuffer.h /root/env/include/ui/framebuffer.h \
+ /root/env/include/ui/font.h \
+ /usr/lib/gcc/x86_64-linux-gnu/12/include/stddef.h \
  /root/env/include/timer.h /root/env/include/core/timer.h \
  /root/env/include/ui_animation.h /root/env/include/ui/ui_animation.h

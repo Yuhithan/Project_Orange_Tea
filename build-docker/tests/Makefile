@@ -673,6 +673,30 @@ __/src/ui/core/ui_animation.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ui_animation.c.s
 .PHONY : __/src/ui/core/ui_animation.c.s
 
+__/src/ui/font/font.o: __/src/ui/font/font.c.o
+.PHONY : __/src/ui/font/font.o
+
+# target to build an object file
+__/src/ui/font/font.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/font/font.c.o
+.PHONY : __/src/ui/font/font.c.o
+
+__/src/ui/font/font.i: __/src/ui/font/font.c.i
+.PHONY : __/src/ui/font/font.i
+
+# target to preprocess a source file
+__/src/ui/font/font.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/font/font.c.i
+.PHONY : __/src/ui/font/font.c.i
+
+__/src/ui/font/font.s: __/src/ui/font/font.c.s
+.PHONY : __/src/ui/font/font.s
+
+# target to generate assembly for a file
+__/src/ui/font/font.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/font/font.c.s
+.PHONY : __/src/ui/font/font.c.s
+
 __/tools/ora_pack.o: __/tools/ora_pack.c.o
 .PHONY : __/tools/ora_pack.o
 
@@ -1051,6 +1075,9 @@ help:
 	@echo "... __/src/ui/core/ui_animation.o"
 	@echo "... __/src/ui/core/ui_animation.i"
 	@echo "... __/src/ui/core/ui_animation.s"
+	@echo "... __/src/ui/font/font.o"
+	@echo "... __/src/ui/font/font.i"
+	@echo "... __/src/ui/font/font.s"
 	@echo "... __/tools/ora_pack.o"
 	@echo "... __/tools/ora_pack.i"
 	@echo "... __/tools/ora_pack.s"

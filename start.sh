@@ -12,9 +12,8 @@ ctest --test-dir build --output-on-failure
 
 if command -v docker >/dev/null 2>&1; then
     echo "Docker is available; building the OrangeTea ISO target."
-    mkdir -p build-docker
-    docker run --rm -v "$PWD:/root/env" -w /root/env ort-build \
-      sh -lc 'cmake -S . -B build-docker && cmake --build build-docker --target orangetea_iso && cp -f build-docker/OrangeteaOS.iso /root/env/OrangeTeaOS.iso'
+    rm -xf build-docker/OrangeteaOS.iso
+    docker run --rm -v "$PWD:/root/env" -w /root/env ort-build \ sh -lc 'cmake -S . -B build-docker && cmake --build build-docker'
 else
     echo "Docker not found; skipping dockerized build. Host build already succeeded."
 fi

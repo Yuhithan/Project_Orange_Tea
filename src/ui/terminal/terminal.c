@@ -197,6 +197,11 @@ void terminal_init(void)
 
 ORWindow *terminal_open(void)
 {
+    if (terminal_window && terminal_window->visible) {
+        ORgui_set_active(terminal_window);
+        return terminal_window;
+    }
+
     terminal_window = ORgui_create_window(40, 48, 640, 400, "ORTOS TERMINAL");
     if (terminal_window == 0) return 0;
     terminal_window->on_draw = terminal_draw;

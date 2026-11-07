@@ -6,6 +6,7 @@
 #include "timer.h"
 #include "terminal.h"
 #include "ui_animation.h"
+#include "welcome.h"
 
 #define TASK_LABEL_SIZE 24
 #define TASK_COMMAND_SIZE 32
@@ -205,6 +206,7 @@ void desktop_apps_init(void)
     notification_entering = notification_hiding = menu_animating = 0;
     hover_target = -1;
     pointer_x = pointer_y = 0;
+    welcome_window_open();
 }
 
 int desktop_apps_draw_taskbar(int x, int y, int available_width)

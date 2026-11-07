@@ -11,3 +11,5 @@ void *page_alloc(void);
 int page_free(void *page);
 size_t page_free_count(void);
 int memory_range_valid(const void *address, size_t length);
+void *kmalloc(size_t size);
+void kfree(void *address);

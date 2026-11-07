@@ -5,6 +5,7 @@ file(REMOVE_RECURSE
   "ortos-objects/ORgui_8378951d1de981a6a28fa0d39036448f.o"
   "ortos-objects/ata_018c6992e42cd76766859db7f4112e46.o"
   "ortos-objects/audio_781d83c6db40355e0e43e75dc0445c90.o"
+  "ortos-objects/bmp_64dfe78a2040eff1edc2de193346a2b3.o"
   "ortos-objects/boot_header.o"
   "ortos-objects/boot_interrupts.o"
   "ortos-objects/boot_main.o"
@@ -20,6 +21,7 @@ file(REMOVE_RECURSE
   "ortos-objects/font-renderer_1b0d29eb2cd6cb0ceef332821a676f5b.o"
   "ortos-objects/font_e8ada78751969b4bf4842d6b8cb96e76.o"
   "ortos-objects/framebuffer_719cbce6279bc463ae41d822a57e6dd8.o"
+  "ortos-objects/image_dcf427d2777f1dd3b77b4082f27469db.o"
   "ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o"
   "ortos-objects/keyboard_c61c887baa3a65f59c312df80553a306.o"
   "ortos-objects/login_4259357577d8f182a4536732f1429489.o"
@@ -41,6 +43,7 @@ file(REMOVE_RECURSE
   "ortos-objects/timer_8ff4d01e17f3d990fb64f0074bccb894.o"
   "ortos-objects/ui_animation_101737d9ea1ca92b4c29fbc5b18adbae.o"
   "ortos-objects/vfs_6924b83311ed39ec12ee88cae2070208.o"
+  "ortos-objects/welcome_a296d2c698e4f7c7556d7d9f020480ea.o"
 )
 
 # Per-language clean rules from dependency scanning.

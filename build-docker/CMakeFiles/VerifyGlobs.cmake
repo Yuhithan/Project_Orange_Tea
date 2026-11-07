@@ -124,6 +124,8 @@ endif()
 # ORTOS_KERNEL_C_SOURCES at src/CMakeLists.txt:16 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/root/env/src/ui/*.c")
 set(OLD_GLOB
+  "/root/env/src/ui/apps/welcome.c"
+  "/root/env/src/ui/bmp.c"
   "/root/env/src/ui/core/ORgui.c"
   "/root/env/src/ui/core/desktop.c"
   "/root/env/src/ui/core/desktop_apps.c"
@@ -132,6 +134,7 @@ set(OLD_GLOB
   "/root/env/src/ui/core/taskbar.c"
   "/root/env/src/ui/core/ui_animation.c"
   "/root/env/src/ui/font/font.c"
+  "/root/env/src/ui/image.c"
   "/root/env/src/ui/terminal/terminal.c"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")

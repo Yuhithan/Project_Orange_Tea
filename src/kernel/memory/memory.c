@@ -35,3 +35,35 @@ int memory_range_valid(const void *address, size_t length)
     }
     return 0;
 }
+
+void *kmalloc(size_t size)
+{
+    if (size > (size_t)EARLY_PAGE_COUNT * OR_PAGE_SIZE - sizeof(size_t)) return 0;
+    size_t pages = (size + sizeof(size_t) + OR_PAGE_SIZE - 1u) / OR_PAGE_SIZE;
+    if (size == 0 || pages == 0 || pages > EARLY_PAGE_COUNT) return 0;
+    for (size_t first = 0; first + pages <= EARLY_PAGE_COUNT; first++) {
+        size_t count;
+        for (count = 0; count < pages && !page_used[first + count]; count++) { }
+        if (count != pages) { first += count; continue; }
+        for (count = 0; count < pages; count++) {
+            page_used[first + count] = 1;
+            for (size_t byte = 0; byte < OR_PAGE_SIZE; byte++) early_pages[first + count][byte] = 0;
+        }
+        *(size_t *)early_pages[first] = pages;
+        return early_pages[first] + sizeof(size_t);
+    }
+    return 0;
+}
+
+void kfree(void *address)
+{
+    if (!address) return;
+    for (size_t first = 0; first < EARLY_PAGE_COUNT; first++) {
+        if (address == early_pages[first] + sizeof(size_t) && page_used[first]) {
+            size_t pages = *(size_t *)early_pages[first];
+            if (pages == 0 || pages > EARLY_PAGE_COUNT - first) return;
+            for (size_t i = 0; i < pages; i++) (void)page_free(early_pages[first + i]);
+            return;
+        }
+    }
+}

@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/bmp_test.dir/bmp_test.c.o CMakeFiles/bmp_test.dir/__/src/ui/bmp.c.o CMakeFiles/bmp_test.dir/__/src/kernel/memory/memory.c.o -o bmp_test  libortos_storage.a 

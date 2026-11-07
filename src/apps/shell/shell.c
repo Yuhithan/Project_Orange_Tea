@@ -9,6 +9,7 @@
 #include "desktop_apps.h"
 #include "drivers/audio.h"
 #include "core/audio_reader.h"
+#include "ui/bmp.h"
 
 #define MAX_CMD 128
 #define MAX_HISTORY 16
@@ -373,7 +374,8 @@ static void shell_print_help(void)
     imp_text("  gui         - ouvre l'environnement graphique ORgui\n");
     imp_text("  notify      - affiche une notification graphique\n");
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
-    imp_text("  opsec       - Special command");
+    imp_text("  opsec       - Special command\n");
+    imp_text(" bmp //dev testing");
 }
 
 static void shell_set_current_dir(const char* path)
@@ -1673,6 +1675,9 @@ static void shell_execute_command(void)
     {
         imp_text("Exiting shell...\n");
         asm volatile ("cli; hlt");
+    }
+    else if (shell_streq(cmd, "bmp")) {
+        bmp_test();
     }
     else
     {

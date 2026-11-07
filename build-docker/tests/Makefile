@@ -337,6 +337,20 @@ browser_test/fast:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/build
 .PHONY : browser_test/fast
 
+# Convenience name for target.
+tests/CMakeFiles/window_drag_test.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/window_drag_test.dir/rule
+.PHONY : tests/CMakeFiles/window_drag_test.dir/rule
+
+# Convenience name for target.
+window_drag_test: tests/CMakeFiles/window_drag_test.dir/rule
+.PHONY : window_drag_test
+
+# fast build rule for target.
+window_drag_test/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/window_drag_test.dir/build.make tests/CMakeFiles/window_drag_test.dir/build
+.PHONY : window_drag_test/fast
+
 __/src/apps/browser.o: __/src/apps/browser.c.o
 .PHONY : __/src/apps/browser.o
 
@@ -607,6 +621,7 @@ __/src/ui/core/ORgui.o: __/src/ui/core/ORgui.c.o
 # target to build an object file
 __/src/ui/core/ORgui.c.o:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.o
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/window_drag_test.dir/build.make tests/CMakeFiles/window_drag_test.dir/__/src/ui/core/ORgui.c.o
 .PHONY : __/src/ui/core/ORgui.c.o
 
 __/src/ui/core/ORgui.i: __/src/ui/core/ORgui.c.i
@@ -615,6 +630,7 @@ __/src/ui/core/ORgui.i: __/src/ui/core/ORgui.c.i
 # target to preprocess a source file
 __/src/ui/core/ORgui.c.i:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.i
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/window_drag_test.dir/build.make tests/CMakeFiles/window_drag_test.dir/__/src/ui/core/ORgui.c.i
 .PHONY : __/src/ui/core/ORgui.c.i
 
 __/src/ui/core/ORgui.s: __/src/ui/core/ORgui.c.s
@@ -623,6 +639,7 @@ __/src/ui/core/ORgui.s: __/src/ui/core/ORgui.c.s
 # target to generate assembly for a file
 __/src/ui/core/ORgui.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/ui/core/ORgui.c.s
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/window_drag_test.dir/build.make tests/CMakeFiles/window_drag_test.dir/__/src/ui/core/ORgui.c.s
 .PHONY : __/src/ui/core/ORgui.c.s
 
 __/src/ui/core/desktop_storage.o: __/src/ui/core/desktop_storage.c.o
@@ -1009,6 +1026,30 @@ updater_test.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/updater_test.dir/build.make tests/CMakeFiles/updater_test.dir/updater_test.c.s
 .PHONY : updater_test.c.s
 
+window_drag_test.o: window_drag_test.c.o
+.PHONY : window_drag_test.o
+
+# target to build an object file
+window_drag_test.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/window_drag_test.dir/build.make tests/CMakeFiles/window_drag_test.dir/window_drag_test.c.o
+.PHONY : window_drag_test.c.o
+
+window_drag_test.i: window_drag_test.c.i
+.PHONY : window_drag_test.i
+
+# target to preprocess a source file
+window_drag_test.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/window_drag_test.dir/build.make tests/CMakeFiles/window_drag_test.dir/window_drag_test.c.i
+.PHONY : window_drag_test.c.i
+
+window_drag_test.s: window_drag_test.c.s
+.PHONY : window_drag_test.s
+
+# target to generate assembly for a file
+window_drag_test.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/window_drag_test.dir/build.make tests/CMakeFiles/window_drag_test.dir/window_drag_test.c.s
+.PHONY : window_drag_test.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1033,6 +1074,7 @@ help:
 	@echo "... storage_persistence_test"
 	@echo "... terminal_input_buffer_test"
 	@echo "... updater_test"
+	@echo "... window_drag_test"
 	@echo "... __/src/apps/browser.o"
 	@echo "... __/src/apps/browser.i"
 	@echo "... __/src/apps/browser.s"
@@ -1117,6 +1159,9 @@ help:
 	@echo "... updater_test.o"
 	@echo "... updater_test.i"
 	@echo "... updater_test.s"
+	@echo "... window_drag_test.o"
+	@echo "... window_drag_test.i"
+	@echo "... window_drag_test.s"
 .PHONY : help
 
 

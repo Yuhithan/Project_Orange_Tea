@@ -50,6 +50,7 @@
 /root/env/build-docker/tests/CMakeFiles/network_stack_test.dir
 /root/env/build-docker/tests/CMakeFiles/ethernet_test.dir
 /root/env/build-docker/tests/CMakeFiles/browser_test.dir
+/root/env/build-docker/tests/CMakeFiles/window_drag_test.dir
 /root/env/build-docker/tests/CMakeFiles/test.dir
 /root/env/build-docker/tests/CMakeFiles/edit_cache.dir
 /root/env/build-docker/tests/CMakeFiles/rebuild_cache.dir

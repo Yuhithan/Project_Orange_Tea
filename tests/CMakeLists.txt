@@ -85,6 +85,10 @@ add_executable(browser_test browser_test.c
     "${ORTOS_SOURCE_DIR}/arch/x86/timer/timer.c")
 target_include_directories(browser_test PRIVATE "${CMAKE_SOURCE_DIR}/include" "${ORTOS_SOURCE_DIR}")
 
+add_executable(window_drag_test window_drag_test.c
+    "${ORTOS_SOURCE_DIR}/ui/core/ORgui.c")
+target_include_directories(window_drag_test PRIVATE "${ORTOS_INCLUDE_DIR}")
+
 if(BUILD_TESTING)
     add_test(NAME storage_path_test COMMAND storage_path_test)
     add_test(NAME desktop_storage_test COMMAND desktop_storage_test)
@@ -96,4 +100,5 @@ if(BUILD_TESTING)
     add_test(NAME network_stack_test COMMAND network_stack_test)
     add_test(NAME ethernet_test COMMAND ethernet_test)
     add_test(NAME browser_test COMMAND browser_test)
+    add_test(NAME window_drag_test COMMAND window_drag_test)
 endif()

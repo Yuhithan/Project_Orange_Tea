@@ -33,6 +33,8 @@ int main(void)
     assert(vfs_stat("/C:/Users/admin/Documents", &info) == STORAGE_OK && info.type == 'd');
     assert(vfs_stat("/C:/Program Files/ORTos/Apps", &info) == STORAGE_OK && info.type == 'd');
     assert(vfs_stat("/C:/ProgramData/ORTos/Taskbar", &info) == STORAGE_OK && info.type == 'd');
+    assert(vfs_stat("/C:/ProgramData/ORTos/Taskbar/Terminal.task", &info) == STORAGE_OK &&
+           info.type == 'f');
     assert(vfs_stat("/C:/Temp", &info) == STORAGE_OK && info.type == 'd');
     assert(vfs_stat("/C:/Logs", &info) == STORAGE_OK && info.type == 'd');
     assert(vfs_stat("/C:/Backups", &info) == STORAGE_OK && info.type == 'd');
@@ -44,6 +46,9 @@ int main(void)
     read_text("/C:/Users/admin/Desktop/notes.txt", migrated_text, sizeof(migrated_text));
     assert(strcmp(legacy_text, migrated_text) == 0);
     assert(vfs_stat("/C:/ProgramData/ORTos/Menu/OExplorer.task", &info) == STORAGE_OK);
+    read_text("/C:/ProgramData/ORTos/Taskbar/Terminal.task", migrated_text,
+              sizeof(migrated_text));
+    assert(strcmp(migrated_text, "name=Terminal\ncommand=terminal") == 0);
 
     assert(vfs_write_file("/C:/ProgramData/ORTos/Menu/custom.task", "new version", 11, 0) == 11);
     int entry_count = vfs_entry_count();

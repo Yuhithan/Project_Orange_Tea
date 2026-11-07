@@ -98,4 +98,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "tests/CMakeFiles/network_stack_test.dir/DependInfo.cmake"
   "tests/CMakeFiles/ethernet_test.dir/DependInfo.cmake"
   "tests/CMakeFiles/browser_test.dir/DependInfo.cmake"
+  "tests/CMakeFiles/window_drag_test.dir/DependInfo.cmake"
   )

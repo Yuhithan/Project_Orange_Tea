@@ -725,6 +725,19 @@ browser_test/fast:
 	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/build
 .PHONY : browser_test/fast
 
+#=============================================================================
+# Target rules for targets named window_drag_test
+
+# Build rule for target.
+window_drag_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 window_drag_test
+.PHONY : window_drag_test
+
+# fast build rule for target.
+window_drag_test/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/window_drag_test.dir/build.make tests/CMakeFiles/window_drag_test.dir/build
+.PHONY : window_drag_test/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -780,6 +793,7 @@ help:
 	@echo "... storage_persistence_test"
 	@echo "... terminal_input_buffer_test"
 	@echo "... updater_test"
+	@echo "... window_drag_test"
 .PHONY : help
 
 

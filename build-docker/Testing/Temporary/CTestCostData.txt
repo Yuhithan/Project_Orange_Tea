@@ -1,10 +1,12 @@
-storage_path_test 3 0.00123046
-terminal_input_buffer_test 3 0.00059325
-core_subsystem_test 3 0.000879016
-storage_persistence_test 2 0.00143217
-ora_format_test 2 0.00144986
-updater_test 2 0.00150674
-network_stack_test 2 0.00134075
-ethernet_test 2 0.000616981
-browser_test 2 0.000841348
+storage_path_test 8 0.00202978
+terminal_input_buffer_test 8 0.00120585
+core_subsystem_test 8 0.00139803
+storage_persistence_test 7 0.00181929
+ora_format_test 7 0.00154356
+updater_test 7 0.00227007
+network_stack_test 7 0.00149386
+ethernet_test 7 0.00136214
+browser_test 7 0.00168111
+desktop_storage_test 5 0.00223096
+window_drag_test 4 0.00262838
 ---

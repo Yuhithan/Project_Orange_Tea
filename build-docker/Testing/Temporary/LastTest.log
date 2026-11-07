@@ -1,140 +1,170 @@
-Start testing: Sep 26 08:41 UTC
+Start testing: Nov 06 14:03 UTC
 ----------------------------------------------------------
-1/9 Testing: storage_path_test
-1/9 Test: storage_path_test
+1/11 Testing: storage_path_test
+1/11 Test: storage_path_test
 Command: "/root/env/build-docker/tests/storage_path_test"
 Directory: /root/env/build-docker/tests
-"storage_path_test" start time: Sep 26 08:41 UTC
+"storage_path_test" start time: Nov 06 14:03 UTC
 Output:
 ----------------------------------------------------------
 storage path test passed
 <end of output>
-Test time =   0.00 sec
+Test time =   0.02 sec
 ----------------------------------------------------------
 Test Passed.
-"storage_path_test" end time: Sep 26 08:41 UTC
+"storage_path_test" end time: Nov 06 14:03 UTC
 "storage_path_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-2/9 Testing: storage_persistence_test
-2/9 Test: storage_persistence_test
-Command: "/root/env/build-docker/tests/storage_persistence_test"
+2/11 Testing: desktop_storage_test
+2/11 Test: desktop_storage_test
+Command: "/root/env/build-docker/tests/desktop_storage_test"
 Directory: /root/env/build-docker/tests
-"storage_persistence_test" start time: Sep 26 08:41 UTC
+"desktop_storage_test" start time: Nov 06 14:03 UTC
 Output:
 ----------------------------------------------------------
 <end of output>
-Test time =   0.00 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"storage_persistence_test" end time: Sep 26 08:41 UTC
+"desktop_storage_test" end time: Nov 06 14:03 UTC
+"desktop_storage_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/11 Testing: storage_persistence_test
+3/11 Test: storage_persistence_test
+Command: "/root/env/build-docker/tests/storage_persistence_test"
+Directory: /root/env/build-docker/tests
+"storage_persistence_test" start time: Nov 06 14:03 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"storage_persistence_test" end time: Nov 06 14:03 UTC
 "storage_persistence_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-3/9 Testing: ora_format_test
-3/9 Test: ora_format_test
+4/11 Testing: ora_format_test
+4/11 Test: ora_format_test
 Command: "/root/env/build-docker/tests/ora_format_test"
 Directory: /root/env/build-docker/tests
-"ora_format_test" start time: Sep 26 08:41 UTC
+"ora_format_test" start time: Nov 06 14:03 UTC
 Output:
 ----------------------------------------------------------
 ora format test passed
 <end of output>
-Test time =   0.00 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"ora_format_test" end time: Sep 26 08:41 UTC
+"ora_format_test" end time: Nov 06 14:03 UTC
 "ora_format_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-4/9 Testing: updater_test
-4/9 Test: updater_test
+5/11 Testing: updater_test
+5/11 Test: updater_test
 Command: "/root/env/build-docker/tests/updater_test"
 Directory: /root/env/build-docker/tests
-"updater_test" start time: Sep 26 08:41 UTC
+"updater_test" start time: Nov 06 14:03 UTC
 Output:
 ----------------------------------------------------------
 <end of output>
-Test time =   0.00 sec
+Test time =   0.02 sec
 ----------------------------------------------------------
 Test Passed.
-"updater_test" end time: Sep 26 08:41 UTC
+"updater_test" end time: Nov 06 14:03 UTC
 "updater_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-5/9 Testing: terminal_input_buffer_test
-5/9 Test: terminal_input_buffer_test
+6/11 Testing: terminal_input_buffer_test
+6/11 Test: terminal_input_buffer_test
 Command: "/root/env/build-docker/tests/terminal_input_buffer_test"
 Directory: /root/env/build-docker/tests
-"terminal_input_buffer_test" start time: Sep 26 08:41 UTC
+"terminal_input_buffer_test" start time: Nov 06 14:03 UTC
 Output:
 ----------------------------------------------------------
 <end of output>
-Test time =   0.00 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"terminal_input_buffer_test" end time: Sep 26 08:41 UTC
+"terminal_input_buffer_test" end time: Nov 06 14:03 UTC
 "terminal_input_buffer_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-6/9 Testing: core_subsystem_test
-6/9 Test: core_subsystem_test
+7/11 Testing: core_subsystem_test
+7/11 Test: core_subsystem_test
 Command: "/root/env/build-docker/tests/core_subsystem_test"
 Directory: /root/env/build-docker/tests
-"core_subsystem_test" start time: Sep 26 08:41 UTC
+"core_subsystem_test" start time: Nov 06 14:03 UTC
 Output:
 ----------------------------------------------------------
 <end of output>
-Test time =   0.00 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"core_subsystem_test" end time: Sep 26 08:41 UTC
+"core_subsystem_test" end time: Nov 06 14:03 UTC
 "core_subsystem_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-7/9 Testing: network_stack_test
-7/9 Test: network_stack_test
+8/11 Testing: network_stack_test
+8/11 Test: network_stack_test
 Command: "/root/env/build-docker/tests/network_stack_test"
 Directory: /root/env/build-docker/tests
-"network_stack_test" start time: Sep 26 08:41 UTC
+"network_stack_test" start time: Nov 06 14:03 UTC
 Output:
 ----------------------------------------------------------
 <end of output>
-Test time =   0.00 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"network_stack_test" end time: Sep 26 08:41 UTC
+"network_stack_test" end time: Nov 06 14:03 UTC
 "network_stack_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-8/9 Testing: ethernet_test
-8/9 Test: ethernet_test
+9/11 Testing: ethernet_test
+9/11 Test: ethernet_test
 Command: "/root/env/build-docker/tests/ethernet_test"
 Directory: /root/env/build-docker/tests
-"ethernet_test" start time: Sep 26 08:41 UTC
+"ethernet_test" start time: Nov 06 14:03 UTC
 Output:
 ----------------------------------------------------------
 <end of output>
-Test time =   0.00 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"ethernet_test" end time: Sep 26 08:41 UTC
+"ethernet_test" end time: Nov 06 14:03 UTC
 "ethernet_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-9/9 Testing: browser_test
-9/9 Test: browser_test
+10/11 Testing: browser_test
+10/11 Test: browser_test
 Command: "/root/env/build-docker/tests/browser_test"
 Directory: /root/env/build-docker/tests
-"browser_test" start time: Sep 26 08:41 UTC
+"browser_test" start time: Nov 06 14:03 UTC
 Output:
 ----------------------------------------------------------
 <end of output>
-Test time =   0.00 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"browser_test" end time: Sep 26 08:41 UTC
+"browser_test" end time: Nov 06 14:03 UTC
 "browser_test" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Sep 26 08:41 UTC
+11/11 Testing: window_drag_test
+11/11 Test: window_drag_test
+Command: "/root/env/build-docker/tests/window_drag_test"
+Directory: /root/env/build-docker/tests
+"window_drag_test" start time: Nov 06 14:03 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"window_drag_test" end time: Nov 06 14:03 UTC
+"window_drag_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 06 14:03 UTC

@@ -84,7 +84,8 @@ void desktop_run(void)
         }
         while (mouse_try_get_event(&event)) {
             int app_event = desktop_apps_handle_event(&event);
-            if (!app_event || event.type == OR_EVENT_MOUSE_MOVE) ORgui_handle_event(&event);
+            if (!app_event || event.type == OR_EVENT_MOUSE_MOVE)
+                ORgui_handle_event(&event);
             int pointer_changed = ORgui_track_pointer(&event);
             if (ORgui_event_requires_redraw(&event) || app_event == 2 || pointer_changed) redraw = 1;
             else cursor_update = 1;

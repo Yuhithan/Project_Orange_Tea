@@ -19,6 +19,7 @@ endif()
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/root/env/src/apps/*.c")
 set(OLD_GLOB
   "/root/env/src/apps/browser.c"
+  "/root/env/src/apps/font-renderer/font-installer/font-renderer.c"
   "/root/env/src/apps/shell/shell.c"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")

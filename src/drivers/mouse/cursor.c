@@ -253,10 +253,37 @@ static int write_mouse(uint8_t command)
 /* Put mouse event into queue. */
 static void queue_event(OREventType type, int button)
 {
+    if (type == OR_EVENT_MOUSE_MOVE && event_head != event_tail) {
+        int last = (event_head + MOUSE_QUEUE_SIZE - 1) % MOUSE_QUEUE_SIZE;
+        if (event_queue[last].type == OR_EVENT_MOUSE_MOVE) {
+            event_queue[last].x = cursor_x;
+            event_queue[last].y = cursor_y;
+            return;
+        }
+    }
+
     int next = (event_head + 1) % MOUSE_QUEUE_SIZE;
 
-    if (next == event_tail)
-        return;
+    if (next == event_tail) {
+        if (type == OR_EVENT_MOUSE_MOVE)
+            return;
+
+        int index = event_tail;
+        while (index != event_head &&
+               event_queue[index].type != OR_EVENT_MOUSE_MOVE)
+            index = (index + 1) % MOUSE_QUEUE_SIZE;
+        if (index == event_head)
+            return;
+
+        int following = (index + 1) % MOUSE_QUEUE_SIZE;
+        while (following != event_head) {
+            event_queue[index] = event_queue[following];
+            index = following;
+            following = (following + 1) % MOUSE_QUEUE_SIZE;
+        }
+        event_head = (event_head + MOUSE_QUEUE_SIZE - 1) % MOUSE_QUEUE_SIZE;
+        next = (event_head + 1) % MOUSE_QUEUE_SIZE;
+    }
 
     event_queue[event_head].type = type;
     event_queue[event_head].key = 0;

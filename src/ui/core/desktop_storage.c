@@ -46,6 +46,7 @@ static const struct desktop_task_seed desktop_tasks[] = {
     { "/C:/ProgramData/ORTos/Taskbar/OExplorer.task", "name=OExplorer\ncommand=OExplorer" },
     { "/C:/ProgramData/ORTos/Taskbar/setting.task", "name=setting\ncommand=setting" },
     { "/C:/ProgramData/ORTos/Taskbar/browser.task", "name=browser\ncommand=browser" },
+    { "/C:/ProgramData/ORTos/Taskbar/Terminal.task", "name=Terminal\ncommand=terminal" },
     { "/C:/Users/Guest/Desktop/OExplorer.task", "name=OExplorer\ncommand=OExplorer" },
     { "/C:/Users/Guest/Desktop/setting.task", "name=setting\ncommand=setting" },
     { "/C:/Users/Guest/Desktop/browser.task", "name=browser\ncommand=browser" }

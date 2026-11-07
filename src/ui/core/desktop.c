@@ -9,6 +9,7 @@
 #include "imp.h"
 #include "timer.h"
 #include "ui_animation.h"
+#include "ui/wallpaper.h"
 
 #define DESKTOP_FRAME_TIME_MS 16u
 #define DESKTOP_BOOT_ANIMATION_MS 320u

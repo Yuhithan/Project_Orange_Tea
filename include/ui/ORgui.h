@@ -109,7 +109,8 @@ enum {
 
     OR_COLOR_FOCUS         = 0x2196F3,
     OR_COLOR_DISABLED      = 0x666666,
-    OR_COLOR_SEPARATOR     = 0x444444
+    OR_COLOR_SEPARATOR     = 0x444444,
+
 };
 
 typedef enum {

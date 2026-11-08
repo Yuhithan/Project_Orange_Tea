@@ -18,4 +18,5 @@ tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
  /root/env/include/block_device.h \
- /root/env/include/drivers/block_device.h
+ /root/env/include/drivers/block_device.h \
+ /root/env/src/fs/storage/fat32.h

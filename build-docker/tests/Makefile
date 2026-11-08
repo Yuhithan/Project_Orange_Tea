@@ -268,6 +268,20 @@ storage_persistence_test/fast:
 .PHONY : storage_persistence_test/fast
 
 # Convenience name for target.
+tests/CMakeFiles/fat32_test.dir/rule:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/fat32_test.dir/rule
+.PHONY : tests/CMakeFiles/fat32_test.dir/rule
+
+# Convenience name for target.
+fat32_test: tests/CMakeFiles/fat32_test.dir/rule
+.PHONY : fat32_test
+
+# fast build rule for target.
+fat32_test/fast:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/fat32_test.dir/build.make tests/CMakeFiles/fat32_test.dir/build
+.PHONY : fat32_test/fast
+
+# Convenience name for target.
 tests/CMakeFiles/terminal_input_buffer_test.dir/rule:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/terminal_input_buffer_test.dir/rule
 .PHONY : tests/CMakeFiles/terminal_input_buffer_test.dir/rule
@@ -422,6 +436,30 @@ __/src/drivers/display/framebuffer.s: __/src/drivers/display/framebuffer.c.s
 __/src/drivers/display/framebuffer.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/browser_test.dir/build.make tests/CMakeFiles/browser_test.dir/__/src/drivers/display/framebuffer.c.s
 .PHONY : __/src/drivers/display/framebuffer.c.s
+
+__/src/fs/storage/fat32.o: __/src/fs/storage/fat32.c.o
+.PHONY : __/src/fs/storage/fat32.o
+
+# target to build an object file
+__/src/fs/storage/fat32.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_storage.dir/build.make tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/fat32.c.o
+.PHONY : __/src/fs/storage/fat32.c.o
+
+__/src/fs/storage/fat32.i: __/src/fs/storage/fat32.c.i
+.PHONY : __/src/fs/storage/fat32.i
+
+# target to preprocess a source file
+__/src/fs/storage/fat32.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_storage.dir/build.make tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/fat32.c.i
+.PHONY : __/src/fs/storage/fat32.c.i
+
+__/src/fs/storage/fat32.s: __/src/fs/storage/fat32.c.s
+.PHONY : __/src/fs/storage/fat32.s
+
+# target to generate assembly for a file
+__/src/fs/storage/fat32.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ortos_storage.dir/build.make tests/CMakeFiles/ortos_storage.dir/__/src/fs/storage/fat32.c.s
+.PHONY : __/src/fs/storage/fat32.c.s
 
 __/src/fs/storage/storage.o: __/src/fs/storage/storage.c.o
 .PHONY : __/src/fs/storage/storage.o
@@ -882,6 +920,30 @@ ethernet_test.c.s:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/ethernet_test.dir/build.make tests/CMakeFiles/ethernet_test.dir/ethernet_test.c.s
 .PHONY : ethernet_test.c.s
 
+fat32_test.o: fat32_test.c.o
+.PHONY : fat32_test.o
+
+# target to build an object file
+fat32_test.c.o:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/fat32_test.dir/build.make tests/CMakeFiles/fat32_test.dir/fat32_test.c.o
+.PHONY : fat32_test.c.o
+
+fat32_test.i: fat32_test.c.i
+.PHONY : fat32_test.i
+
+# target to preprocess a source file
+fat32_test.c.i:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/fat32_test.dir/build.make tests/CMakeFiles/fat32_test.dir/fat32_test.c.i
+.PHONY : fat32_test.c.i
+
+fat32_test.s: fat32_test.c.s
+.PHONY : fat32_test.s
+
+# target to generate assembly for a file
+fat32_test.c.s:
+	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/fat32_test.dir/build.make tests/CMakeFiles/fat32_test.dir/fat32_test.c.s
+.PHONY : fat32_test.c.s
+
 network_stack_test.o: network_stack_test.c.o
 .PHONY : network_stack_test.o
 
@@ -1064,6 +1126,7 @@ help:
 	@echo "... core_subsystem_test"
 	@echo "... desktop_storage_test"
 	@echo "... ethernet_test"
+	@echo "... fat32_test"
 	@echo "... network_stack_test"
 	@echo "... ora_format_test"
 	@echo "... ora_pack"
@@ -1084,6 +1147,9 @@ help:
 	@echo "... __/src/drivers/display/framebuffer.o"
 	@echo "... __/src/drivers/display/framebuffer.i"
 	@echo "... __/src/drivers/display/framebuffer.s"
+	@echo "... __/src/fs/storage/fat32.o"
+	@echo "... __/src/fs/storage/fat32.i"
+	@echo "... __/src/fs/storage/fat32.s"
 	@echo "... __/src/fs/storage/storage.o"
 	@echo "... __/src/fs/storage/storage.i"
 	@echo "... __/src/fs/storage/storage.s"
@@ -1141,6 +1207,9 @@ help:
 	@echo "... ethernet_test.o"
 	@echo "... ethernet_test.i"
 	@echo "... ethernet_test.s"
+	@echo "... fat32_test.o"
+	@echo "... fat32_test.i"
+	@echo "... fat32_test.s"
 	@echo "... network_stack_test.o"
 	@echo "... network_stack_test.i"
 	@echo "... network_stack_test.s"

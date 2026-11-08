@@ -375,7 +375,7 @@ static void shell_print_help(void)
     imp_text("  notify      - affiche une notification graphique\n");
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
     imp_text("  opsec       - Special command\n");
-    imp_text(" bmp //dev testing");
+    imp_text("  bmp //dev testing");
 }
 
 static void shell_set_current_dir(const char* path)

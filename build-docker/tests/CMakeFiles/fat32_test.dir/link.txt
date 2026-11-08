@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/fat32_test.dir/fat32_test.c.o -o fat32_test  libortos_storage.a 

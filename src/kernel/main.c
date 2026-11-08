@@ -17,6 +17,7 @@
 #include "ata.h"
 #include "storage.h"
 #include "vfs.h"
+#include "ui/graphics.h"
 
 
 static void start_shell(void)
@@ -41,6 +42,15 @@ static void start_shell(void)
 void kmain(uint64_t multiboot_magic,
            uint64_t multiboot_info_addr)
 {
+
+        /* Initialize graphics system. */
+    if (!gfx_init(multiboot_info_addr)) {
+        imp_text("Graphics initialization failed.\n");
+    } 
+    else {
+        imp_text("Graphics initialized successfully.\n");
+    }
+
     imp_text("BOOT 1: kernel entry\n");
 
     if (multiboot_magic == 0x36d76289u &&
@@ -85,7 +95,7 @@ void kmain(uint64_t multiboot_magic,
     /*
      * GUI mode.
      */
-    if (fb_is_available())
+    if (gfx_is_available())
     {
         ortos_boot_mode_set(ORTOS_BOOT_MODE_GUI);
 

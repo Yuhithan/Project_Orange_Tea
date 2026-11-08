@@ -14,7 +14,7 @@ static void welcome_draw(ORWindow *window)
 {
     ORgui_draw_panel(window->x + 14, window->y + 34,
                      window->width - 28, window->height - 48,
-                     OR_COLOR_PANEL);
+                     OR_COLOR_CYAN);
     ORgui_draw_text(window->x + 30, window->y + 52,
                     "WELCOME TO ORANGE TEA", OR_COLOR_FIRE_YELLOW);
     ORgui_draw_text(window->x + 30, window->y + 84,

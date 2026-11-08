@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "block_device.h"
 
-#define STORAGE_MAX_PATH 64
+#define STORAGE_MAX_PATH 512
 #define STORAGE_MAX_ENTRIES 64
 #define STORAGE_MAX_FILE_BLOCKS 8
 
@@ -83,6 +83,7 @@ int storage_mount(void);
 int storage_unmount(void);
 int storage_format(void);
 int storage_is_mounted(void);
+int storage_is_fat32(void);
 int storage_get_device_info(struct storage_device_info *info);
 int storage_get_stats(struct storage_stats *stats);
 int storage_fsck(int repair, int *errors);

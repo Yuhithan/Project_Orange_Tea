@@ -1,7 +1,10 @@
 #include "storage.h"
+#include "fat32.h"
 
 #define STORAGE_MAGIC 0x4f525346u
 #define STORAGE_VERSION 2u
+#define STORAGE_LEGACY_MAX_PATH 64
+#define FAT32_MIN_FORMAT_SECTORS 67500u
 #define STORAGE_INODE_SECTORS STORAGE_MAX_ENTRIES
 #define STORAGE_BITMAP_START (1u + STORAGE_INODE_SECTORS)
 #define STORAGE_BITMAP_BITS_PER_SECTOR (BLOCK_SECTOR_SIZE * 8u)
@@ -11,7 +14,7 @@
 #define STORAGE_METADATA_OFFSET 400u
 
 struct storage_entry {
-    char path[STORAGE_MAX_PATH];
+    char path[STORAGE_LEGACY_MAX_PATH];
     char name[16];
     char type;
     size_t size;
@@ -37,6 +40,7 @@ static uint64_t last_timestamp;
 static storage_clock_fn storage_clock;
 static int entry_count;
 static int mounted;
+static int fat32_active;
 static int create(const char *path, char type, const char *content);
 
 struct storage_saved_state {
@@ -139,7 +143,8 @@ static int normalize(const char *path, char out[STORAGE_MAX_PATH])
         int count = i - first;
         if (count == 1 && path[first] == '.') continue;
         if (count == 2 && path[first] == '.' && path[first + 1] == '.') { if (components) { length = starts[--components]; out[length] = 0; } continue; }
-        if (count >= 16 || components == 32 || length + count + 1 >= STORAGE_MAX_PATH) return STORAGE_ERR_INVAL;
+        if (count >= 16 || components == 32 ||
+            length + count + 1 >= STORAGE_LEGACY_MAX_PATH) return STORAGE_ERR_INVAL;
         starts[components++] = length;
         if (length > 1) out[length++] = '/';
         for (int j = 0; j < count; j++) out[length++] = path[first + j];
@@ -267,7 +272,7 @@ static int write_super(void)
 int storage_attach_block_device(const struct block_device *device)
 {
     if (!device || !device->read_sector || !device->write_sector || device->sector_count < 70) return STORAGE_ERR_INVAL;
-    storage_device = device; mounted = 0; entry_count = 0; cache_next_slot = 0; zero(cache, sizeof(cache)); return STORAGE_OK;
+    storage_device = device; mounted = 0; fat32_active = 0; entry_count = 0; cache_next_slot = 0; zero(cache, sizeof(cache)); return STORAGE_OK;
 }
 int storage_read_blocks(const struct block_device *device, uint64_t block, void *buffer, size_t count)
 {
@@ -285,6 +290,12 @@ int storage_format(void)
 {
     unsigned char block[BLOCK_SECTOR_SIZE];
     if (!storage_device) return STORAGE_ERR_NOENT;
+    if (storage_device->sector_count >= FAT32_MIN_FORMAT_SECTORS) {
+        int result = fat32_format(storage_device);
+        if (result == STORAGE_OK) { fat32_active = 1; mounted = 0; entry_count = 0; }
+        return result;
+    }
+    fat32_active = 0;
     mounted = 0;
     bitmap_sectors = (storage_device->sector_count + STORAGE_BITMAP_BITS_PER_SECTOR - 1) / STORAGE_BITMAP_BITS_PER_SECTOR;
     data_start = STORAGE_BITMAP_START + bitmap_sectors;
@@ -305,6 +316,10 @@ int storage_mount(void)
     mounted = 0;
     entry_count = 0;
     if (!storage_device) return STORAGE_ERR_NOENT;
+    int fat_result = fat32_mount(storage_device);
+    if (fat_result == STORAGE_OK) { fat32_active = 1; return STORAGE_OK; }
+    fat32_active = 0;
+    if (fat_result != STORAGE_ERR_NOENT) return fat_result;
     if (disk_read(0, block) != STORAGE_OK) return STORAGE_ERR_IO;
     if (get32(block) != STORAGE_MAGIC || get32(block + 4) != STORAGE_VERSION || get64(block + 16) != storage_device->sector_count) return STORAGE_ERR_NOENT;
     entry_count = (int)get32(block + 8); bitmap_sectors = get64(block + 24); data_start = get64(block + 32);
@@ -320,14 +335,23 @@ int storage_mount(void)
     if (!next_file_id) next_file_id = highest_file_id + 1;
     mounted = 1; return STORAGE_OK;
 }
-int storage_unmount(void) { int result = storage_sync(); if (result == STORAGE_OK) mounted = 0; return result; }
-int storage_is_mounted(void) { return mounted; }
+int storage_unmount(void)
+{
+    if (fat32_active) return fat32_unmount();
+    int result = storage_sync();
+    if (result == STORAGE_OK) mounted = 0;
+    return result;
+}
+int storage_is_mounted(void) { return fat32_active ? fat32_is_mounted() : mounted; }
+int storage_is_fat32(void) { return fat32_active && fat32_is_mounted(); }
 void storage_init(void)
 {
     for (int i = 0; i < 16; i++) fds[i].used = 0;
     if (storage_device) {
         int result = storage_mount();
         if (result == STORAGE_ERR_NOENT) {
+#if __STDC_HOSTED__
+            if (storage_device->sector_count >= FAT32_MIN_FORMAT_SECTORS) return;
             unsigned char block[BLOCK_SECTOR_SIZE];
             int blank = disk_read(0, block) == STORAGE_OK;
             for (size_t i = 0; blank && i < sizeof(block); i++)
@@ -344,6 +368,7 @@ void storage_init(void)
                     if (block[i] != 0) blank = 0;
             }
             if (blank) (void)storage_format();
+#endif
         }
     }
 #if __STDC_HOSTED__
@@ -353,6 +378,7 @@ void storage_init(void)
 void storage_set_clock(storage_clock_fn clock) { storage_clock = clock; }
 int storage_sync(void)
 {
+    if (fat32_active) return fat32_sync();
     if (!storage_device) return mounted ? STORAGE_OK : STORAGE_ERR_NOENT;
     if (mounted && write_super() != STORAGE_OK) return STORAGE_ERR_IO;
     for (int i = 0; i < entry_count; i++) if (write_inode(i) != STORAGE_OK) return STORAGE_ERR_IO;
@@ -377,9 +403,14 @@ static int create(const char *path, char type, const char *content)
     if (type == 'f' && content) { text_copy(entry->content, content, sizeof(entry->content)); while (entry->content[entry->size]) entry->size++; }
     return storage_sync();
 }
-int storage_create_entry(const char *path, char type, const char *content) { return create(path, type, content) == STORAGE_OK; }
+int storage_create_entry(const char *path, char type, const char *content)
+{
+    if (fat32_active) return fat32_create_entry(path, type, content);
+    return create(path, type, content) == STORAGE_OK;
+}
 int storage_mkdir(const char *path)
 {
+    if (fat32_active) return fat32_mkdir(path);
     char normalized[STORAGE_MAX_PATH];
     if (!mounted) return STORAGE_ERR_NOTMOUNTED;
     if (normalize(path, normalized) != STORAGE_OK || equal(normalized, "/")) return STORAGE_ERR_INVAL;
@@ -388,6 +419,7 @@ int storage_mkdir(const char *path)
 }
 int storage_create_file(const char *path, const void *buffer, size_t length)
 {
+    if (fat32_active) return fat32_create_file(path, buffer, length);
     char normalized[STORAGE_MAX_PATH];
     if (!mounted) return STORAGE_ERR_NOTMOUNTED;
     if (!buffer && length) return STORAGE_ERR_INVAL;
@@ -404,9 +436,10 @@ int storage_create_file(const char *path, const void *buffer, size_t length)
     entries[index].size = length;
     return storage_sync();
 }
-int storage_find_entry(const char *path) { return find(path); }
+int storage_find_entry(const char *path) { return fat32_active ? fat32_find_entry(path) : find(path); }
 int storage_get_entry_info(const char *path, struct storage_entry_info *info)
 {
+    if (fat32_active) return fat32_get_entry_info(path, info);
     int index;
     uint32_t blocks = 0;
     if (!info) return STORAGE_ERR_INVAL;
@@ -432,11 +465,11 @@ int storage_get_entry_info(const char *path, struct storage_entry_info *info)
     info->attributes = entries[index].attributes;
     return STORAGE_OK;
 }
-int storage_get_entry_count(void) { return entry_count; }
-const char *storage_get_entry_name(int index) { return index >= 0 && index < entry_count ? entries[index].name : ""; }
-const char *storage_get_entry_path(int index) { return index >= 0 && index < entry_count ? entries[index].path : ""; }
-char storage_get_entry_type(int index) { return index >= 0 && index < entry_count ? entries[index].type : 0; }
-const char *storage_get_entry_content(int index) { return index >= 0 && index < entry_count ? entries[index].content : ""; }
+int storage_get_entry_count(void) { return fat32_active ? fat32_get_entry_count() : entry_count; }
+const char *storage_get_entry_name(int index) { return fat32_active ? fat32_get_entry_name(index) : index >= 0 && index < entry_count ? entries[index].name : ""; }
+const char *storage_get_entry_path(int index) { return fat32_active ? fat32_get_entry_path(index) : index >= 0 && index < entry_count ? entries[index].path : ""; }
+char storage_get_entry_type(int index) { return fat32_active ? fat32_get_entry_type(index) : index >= 0 && index < entry_count ? entries[index].type : 0; }
+const char *storage_get_entry_content(int index) { return fat32_active ? fat32_get_entry_content(index) : index >= 0 && index < entry_count ? entries[index].content : ""; }
 
 static int remove_entry_at(int index)
 {
@@ -465,10 +498,11 @@ static int remove_path(const char *path, char required_type)
     if (result != STORAGE_OK) return result;
     return storage_sync();
 }
-int storage_unlink(const char *path) { return remove_path(path, 'f'); }
-int storage_rmdir(const char *path) { return remove_path(path, 'd'); }
+int storage_unlink(const char *path) { return fat32_active ? fat32_unlink(path) : remove_path(path, 'f'); }
+int storage_rmdir(const char *path) { return fat32_active ? fat32_rmdir(path) : remove_path(path, 'd'); }
 int storage_remove_tree(const char *path)
 {
+    if (fat32_active) return fat32_remove_tree(path);
     char normalized[STORAGE_MAX_PATH];
     int index;
     if (!mounted) return STORAGE_ERR_NOTMOUNTED;
@@ -492,6 +526,7 @@ int storage_remove_entry(const char *path)
 }
 int storage_write_file(const char *path, const void *buffer, size_t length, int append)
 {
+    if (fat32_active) return fat32_write_file(path, buffer, length, append);
     if (!mounted) return STORAGE_ERR_NOTMOUNTED;
     if (!buffer && length) return STORAGE_ERR_INVAL;
     if (length >= STORAGE_CONTENT_CAPACITY) return STORAGE_ERR_NOSPC;
@@ -511,6 +546,7 @@ int storage_write_file(const char *path, const void *buffer, size_t length, int 
 }
 int storage_read_file(const char *path, void *buffer, size_t capacity, size_t *length)
 {
+    if (fat32_active) return fat32_read_file(path, buffer, capacity, length);
     if (!mounted) return STORAGE_ERR_NOTMOUNTED;
     int index = find(path); if (index < 0) return STORAGE_ERR_NOENT;
     if (entries[index].type != 'f') return STORAGE_ERR_ISDIR;
@@ -519,6 +555,7 @@ int storage_read_file(const char *path, void *buffer, size_t capacity, size_t *l
 }
 int storage_rename(const char *source, const char *destination)
 {
+    if (fat32_active) return fat32_rename(source, destination);
     int index = find(source);
     char normalized[STORAGE_MAX_PATH], old_path[STORAGE_MAX_PATH];
     size_t source_length = 0;
@@ -569,6 +606,7 @@ int storage_rename(const char *source, const char *destination)
 }
 int storage_copy(const char *source, const char *destination)
 {
+    if (fat32_active) return fat32_copy(source, destination);
     int index = find(source);
     if (!mounted) return STORAGE_ERR_NOTMOUNTED;
     if (index < 0) return STORAGE_ERR_NOENT;
@@ -577,6 +615,7 @@ int storage_copy(const char *source, const char *destination)
 }
 int storage_open(const char *path, int create_if_missing)
 {
+    if (fat32_active) return fat32_open(path, create_if_missing);
     if (!mounted) return STORAGE_ERR_NOTMOUNTED;
     int entry = find(path); if (entry < 0 && create_if_missing) { int result = create(path, 'f', 0); if (result != STORAGE_OK) return result; entry = find(path); }
     if (entry < 0) return STORAGE_ERR_NOENT;
@@ -584,13 +623,13 @@ int storage_open(const char *path, int create_if_missing)
     for (int fd = 0; fd < 16; fd++) if (!fds[fd].used) { fds[fd].used = 1; fds[fd].entry = entry; fds[fd].offset = 0; return fd; }
     return STORAGE_ERR_NOSPC;
 }
-int storage_close(int fd) { if (fd < 0 || fd >= 16 || !fds[fd].used) return STORAGE_ERR_BADFD; fds[fd].used = 0; return STORAGE_OK; }
-int storage_read(int fd, void *buffer, size_t length) { if (!mounted) return STORAGE_ERR_NOTMOUNTED; if (fd < 0 || fd >= 16 || !fds[fd].used || (!buffer && length)) return STORAGE_ERR_BADFD; size_t available = fds[fd].offset < entries[fds[fd].entry].size ? entries[fds[fd].entry].size - fds[fd].offset : 0; if (length > available) length = available; copy(buffer, entries[fds[fd].entry].content + fds[fd].offset, length); fds[fd].offset += length; return (int)length; }
-int storage_write(int fd, const void *buffer, size_t length) { if (!mounted) return STORAGE_ERR_NOTMOUNTED; if (fd < 0 || fd >= 16 || !fds[fd].used || (!buffer && length)) return STORAGE_ERR_BADFD; if (fds[fd].offset >= sizeof(entries[fds[fd].entry].content) || length >= sizeof(entries[fds[fd].entry].content) - fds[fd].offset) return STORAGE_ERR_NOSPC; copy(entries[fds[fd].entry].content + fds[fd].offset, buffer, length); fds[fd].offset += length; if (fds[fd].offset > entries[fds[fd].entry].size) entries[fds[fd].entry].size = fds[fd].offset; entries[fds[fd].entry].content[entries[fds[fd].entry].size] = 0; return storage_sync() == STORAGE_OK ? (int)length : STORAGE_ERR_IO; }
-int storage_seek(int fd, size_t offset) { if (!mounted) return STORAGE_ERR_NOTMOUNTED; if (fd < 0 || fd >= 16 || !fds[fd].used || offset >= sizeof(entries[0].content)) return STORAGE_ERR_BADFD; fds[fd].offset = offset; return STORAGE_OK; }
+int storage_close(int fd) { if (fat32_active) return fat32_close(fd); if (fd < 0 || fd >= 16 || !fds[fd].used) return STORAGE_ERR_BADFD; fds[fd].used = 0; return STORAGE_OK; }
+int storage_read(int fd, void *buffer, size_t length) { if (fat32_active) return fat32_read(fd, buffer, length); if (!mounted) return STORAGE_ERR_NOTMOUNTED; if (fd < 0 || fd >= 16 || !fds[fd].used || (!buffer && length)) return STORAGE_ERR_BADFD; size_t available = fds[fd].offset < entries[fds[fd].entry].size ? entries[fds[fd].entry].size - fds[fd].offset : 0; if (length > available) length = available; copy(buffer, entries[fds[fd].entry].content + fds[fd].offset, length); fds[fd].offset += length; return (int)length; }
+int storage_write(int fd, const void *buffer, size_t length) { if (fat32_active) return fat32_write(fd, buffer, length); if (!mounted) return STORAGE_ERR_NOTMOUNTED; if (fd < 0 || fd >= 16 || !fds[fd].used || (!buffer && length)) return STORAGE_ERR_BADFD; if (fds[fd].offset >= sizeof(entries[fds[fd].entry].content) || length >= sizeof(entries[fds[fd].entry].content) - fds[fd].offset) return STORAGE_ERR_NOSPC; copy(entries[fds[fd].entry].content + fds[fd].offset, buffer, length); fds[fd].offset += length; if (fds[fd].offset > entries[fds[fd].entry].size) entries[fds[fd].entry].size = fds[fd].offset; entries[fds[fd].entry].content[entries[fds[fd].entry].size] = 0; return storage_sync() == STORAGE_OK ? (int)length : STORAGE_ERR_IO; }
+int storage_seek(int fd, size_t offset) { if (fat32_active) return fat32_seek(fd, offset); if (!mounted) return STORAGE_ERR_NOTMOUNTED; if (fd < 0 || fd >= 16 || !fds[fd].used || offset >= sizeof(entries[0].content)) return STORAGE_ERR_BADFD; fds[fd].offset = offset; return STORAGE_OK; }
 
-int storage_get_device_info(struct storage_device_info *info) { if (!info || !storage_device) return STORAGE_ERR_NOENT; info->name = storage_device->name ? storage_device->name : "disk0"; info->type = storage_device->type ? storage_device->type : "ATA"; info->sectors = storage_device->sector_count; info->sector_size = BLOCK_SECTOR_SIZE; info->present = 1; info->mounted = mounted; return STORAGE_OK; }
-int storage_get_stats(struct storage_stats *stats) { if (!stats || !mounted) return STORAGE_ERR_NOTMOUNTED; stats->total_sectors = storage_sector_limit(); stats->used_sectors = storage_device ? data_start : 0; stats->sector_size = BLOCK_SECTOR_SIZE; stats->file_count = 0; stats->directory_count = 0; for (int i = 0; i < entry_count; i++) { if (entries[i].type == 'f') { stats->file_count++; for (int j = 0; j < STORAGE_MAX_FILE_BLOCKS; j++) if (entries[i].blocks[j]) stats->used_sectors++; } else stats->directory_count++; } stats->free_sectors = stats->total_sectors > stats->used_sectors ? stats->total_sectors - stats->used_sectors : 0; return STORAGE_OK; }
+int storage_get_device_info(struct storage_device_info *info) { if (!info || !storage_device) return STORAGE_ERR_NOENT; info->name = storage_device->name ? storage_device->name : "disk0"; info->type = storage_device->type ? storage_device->type : "ATA"; info->sectors = storage_device->sector_count; info->sector_size = BLOCK_SECTOR_SIZE; info->present = 1; info->mounted = storage_is_mounted(); return STORAGE_OK; }
+int storage_get_stats(struct storage_stats *stats) { if (fat32_active) return fat32_get_stats(stats); if (!stats || !mounted) return STORAGE_ERR_NOTMOUNTED; stats->total_sectors = storage_sector_limit(); stats->used_sectors = storage_device ? data_start : 0; stats->sector_size = BLOCK_SECTOR_SIZE; stats->file_count = 0; stats->directory_count = 0; for (int i = 0; i < entry_count; i++) { if (entries[i].type == 'f') { stats->file_count++; for (int j = 0; j < STORAGE_MAX_FILE_BLOCKS; j++) if (entries[i].blocks[j]) stats->used_sectors++; } else stats->directory_count++; } stats->free_sectors = stats->total_sectors > stats->used_sectors ? stats->total_sectors - stats->used_sectors : 0; return STORAGE_OK; }
 static int count_allocated_data_sectors(uint64_t *count)
 {
     unsigned char block[BLOCK_SECTOR_SIZE];
@@ -613,6 +652,7 @@ static int count_allocated_data_sectors(uint64_t *count)
 
 int storage_fsck(int repair, int *errors)
 {
+    if (fat32_active) return fat32_fsck(repair, errors);
     unsigned char super[BLOCK_SECTOR_SIZE];
     uint64_t expected_bitmap, expected_data_start, allocated_sectors;
     uint64_t referenced_sectors = 0;

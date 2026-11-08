@@ -492,6 +492,19 @@ ContinuousSubmit/fast:
 .PHONY : ContinuousSubmit/fast
 
 #=============================================================================
+# Target rules for targets named create_sysroot
+
+# Build rule for target.
+create_sysroot: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 create_sysroot
+.PHONY : create_sysroot
+
+# fast build rule for target.
+create_sysroot/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/create_sysroot.dir/build.make src/CMakeFiles/create_sysroot.dir/build
+.PHONY : create_sysroot/fast
+
+#=============================================================================
 # Target rules for targets named ortos_kernel
 
 # Build rule for target.
@@ -516,6 +529,19 @@ orangetea_iso: cmake_check_build_system
 orangetea_iso/fast:
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/orangetea_iso.dir/build.make src/CMakeFiles/orangetea_iso.dir/build
 .PHONY : orangetea_iso/fast
+
+#=============================================================================
+# Target rules for targets named ortos_sysroot_image
+
+# Build rule for target.
+ortos_sysroot_image: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ortos_sysroot_image
+.PHONY : ortos_sysroot_image
+
+# fast build rule for target.
+ortos_sysroot_image/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ortos_sysroot_image.dir/build.make src/CMakeFiles/ortos_sysroot_image.dir/build
+.PHONY : ortos_sysroot_image/fast
 
 #=============================================================================
 # Target rules for targets named run_os
@@ -661,6 +687,19 @@ storage_persistence_test/fast:
 .PHONY : storage_persistence_test/fast
 
 #=============================================================================
+# Target rules for targets named fat32_test
+
+# Build rule for target.
+fat32_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fat32_test
+.PHONY : fat32_test
+
+# fast build rule for target.
+fat32_test/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/fat32_test.dir/build.make tests/CMakeFiles/fat32_test.dir/build
+.PHONY : fat32_test/fast
+
+#=============================================================================
 # Target rules for targets named terminal_input_buffer_test
 
 # Build rule for target.
@@ -778,11 +817,14 @@ help:
 	@echo "... ora_example"
 	@echo "... orangetea_iso"
 	@echo "... ortos_kernel"
+	@echo "... ortos_sysroot_image"
 	@echo "... run_os"
 	@echo "... browser_test"
 	@echo "... core_subsystem_test"
+	@echo "... create_sysroot"
 	@echo "... desktop_storage_test"
 	@echo "... ethernet_test"
+	@echo "... fat32_test"
 	@echo "... network_stack_test"
 	@echo "... ora_format_test"
 	@echo "... ora_pack"

@@ -1,5 +1,8 @@
 set(ORTOS_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ortos-objects")
 
+add_executable(create_sysroot "${ORTOS_SOURCE_DIR}/../tools/create_sysroot.c")
+target_compile_options(create_sysroot PRIVATE -Wall -Wextra)
+
 find_program(ORTOS_C_COMPILER NAMES x86_64-elf-gcc gcc)
 find_program(ORTOS_LINKER NAMES x86_64-elf-ld ld)
 find_program(ORTOS_ASSEMBLER NAMES nasm)
@@ -305,6 +308,30 @@ if(ORTOS_ASSEMBLER AND ORTOS_BOOT_OBJECTS)
             DEPENDS "${ORTOS_ISO}"
         )
 
+        set(ORTOS_STORAGE_IMAGE
+            "${CMAKE_CURRENT_BINARY_DIR}/../ortos-storage.img"
+        )
+        set(ORTOS_EXAMPLE_APP
+            "${CMAKE_CURRENT_BINARY_DIR}/../tests/hello.ora"
+        )
+
+        add_custom_target(
+            ortos_sysroot_image
+            ALL
+            COMMAND "$<TARGET_FILE:create_sysroot>"
+                "${ORTOS_STORAGE_IMAGE}"
+                "${ORTOS_SOURCE_DIR}/sysroot"
+                "${ORTOS_KERNEL_BIN}"
+                "${ORTOS_TARGET_DIR}/iso/boot/grub/grub.cfg"
+                "${ORTOS_EXAMPLE_APP}"
+            DEPENDS
+                create_sysroot
+                ortos_kernel
+                "${ORTOS_SOURCE_DIR}/../tools/create_sysroot.c"
+                "${ORTOS_TARGET_DIR}/iso/boot/grub/grub.cfg"
+            VERBATIM
+        )
+
         # -------------------------------------------------------------------
         # Run OS
         # -------------------------------------------------------------------
@@ -317,6 +344,7 @@ if(ORTOS_ASSEMBLER AND ORTOS_BOOT_OBJECTS)
 
             DEPENDS
                 orangetea_iso
+                ortos_sysroot_image
 
             WORKING_DIRECTORY
                 "${CMAKE_CURRENT_SOURCE_DIR}/.."

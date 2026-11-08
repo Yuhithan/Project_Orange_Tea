@@ -125,7 +125,7 @@ int vfs_resolve_path(const char *cwd, const char *path, char *out, size_t capaci
             continue;
         }
         size_t separator = output_length > 1;
-        if (count >= 16 || components >= 32 || output_length + separator + count >= STORAGE_MAX_PATH ||
+        if (count > 255 || components >= 32 || output_length + separator + count >= STORAGE_MAX_PATH ||
             output_length + separator + count >= capacity) return STORAGE_ERR_INVAL;
         starts[components++] = output_length;
         if (separator) out[output_length++] = '/';

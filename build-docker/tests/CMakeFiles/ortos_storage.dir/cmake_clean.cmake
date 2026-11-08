@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/ortos_storage.dir/__/src/fs/storage/fat32.c.o"
+  "CMakeFiles/ortos_storage.dir/__/src/fs/storage/fat32.c.o.d"
   "CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o"
   "CMakeFiles/ortos_storage.dir/__/src/fs/storage/storage.c.o.d"
   "CMakeFiles/ortos_storage.dir/__/src/fs/vfs/vfs.c.o"

@@ -1,5 +1,6 @@
 add_library(ortos_storage STATIC
     "${ORTOS_SOURCE_DIR}/fs/storage/storage.c"
+    "${ORTOS_SOURCE_DIR}/fs/storage/fat32.c"
     "${ORTOS_SOURCE_DIR}/fs/vfs/vfs.c")
 target_include_directories(ortos_storage PUBLIC "${ORTOS_INCLUDE_DIR}")
 target_compile_definitions(ortos_storage PUBLIC
@@ -59,6 +60,9 @@ target_include_directories(desktop_storage_test PRIVATE "${ORTOS_INCLUDE_DIR}")
 add_executable(storage_persistence_test storage_persistence_test.c)
 target_link_libraries(storage_persistence_test PRIVATE ortos_storage)
 
+add_executable(fat32_test fat32_test.c)
+target_link_libraries(fat32_test PRIVATE ortos_storage)
+
 add_executable(terminal_input_buffer_test terminal_input_buffer_test.c)
 target_include_directories(terminal_input_buffer_test PRIVATE "${ORTOS_INCLUDE_DIR}" "${ORTOS_SOURCE_DIR}")
 
@@ -93,6 +97,7 @@ if(BUILD_TESTING)
     add_test(NAME storage_path_test COMMAND storage_path_test)
     add_test(NAME desktop_storage_test COMMAND desktop_storage_test)
     add_test(NAME storage_persistence_test COMMAND storage_persistence_test)
+    add_test(NAME fat32_test COMMAND fat32_test)
     add_test(NAME bmp_test COMMAND bmp_test)
     add_test(NAME ora_format_test COMMAND ora_format_test)
     add_test(NAME updater_test COMMAND updater_test)

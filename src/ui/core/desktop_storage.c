@@ -33,6 +33,43 @@ static const char *const desktop_directories[] = {
     "/C:/Backups",
 };
 
+static const char *const fat32_directories[] = {
+    "/C:/Windows",
+    "/C:/Windows/System32",
+    "/C:/Windows/System32/Drivers",
+    "/C:/Windows/System32/Libraries",
+    "/C:/Windows/System32/Core",
+    "/C:/Windows/System32/Services",
+    "/C:/Windows/Resources",
+    "/C:/Windows/Configuration",
+    "/C:/Windows/Fonts",
+    "/C:/Windows/Themes",
+    "/C:/Windows/Logs",
+    "/C:/Programs",
+    "/C:/Programs/Installed",
+    "/C:/Programs/Portable",
+    "/C:/Programs/Shared",
+    "/C:/Users/Default",
+    "/C:/Users/Default/Desktop",
+    "/C:/Users/Default/Documents",
+    "/C:/Users/Default/Downloads",
+    "/C:/Users/Default/Pictures",
+    "/C:/Users/Default/Music",
+    "/C:/Users/Default/Videos",
+    "/C:/Users/Default/AppData",
+    "/C:/Users/Public",
+    "/C:/Desktop",
+    "/C:/Documents",
+    "/C:/Downloads",
+    "/C:/Pictures",
+    "/C:/Music",
+    "/C:/Videos",
+    "/C:/Boot",
+    "/C:/Boot/Kernel",
+    "/C:/Boot/Bootloader",
+    "/C:/Boot/Configuration",
+};
+
 struct desktop_task_seed {
     const char *path;
     const char *content;
@@ -134,6 +171,13 @@ int desktop_storage_init(void)
     for (size_t index = 0; index < sizeof(desktop_directories) / sizeof(desktop_directories[0]); index++) {
         int result = ensure_directory(desktop_directories[index]);
         if (result != STORAGE_OK) return result;
+    }
+
+    if (storage_is_fat32()) {
+        for (size_t index = 0; index < sizeof(fat32_directories) / sizeof(fat32_directories[0]); index++) {
+            int result = ensure_directory(fat32_directories[index]);
+            if (result != STORAGE_OK) return result;
+        }
     }
 
     for (size_t index = 0; index < sizeof(migrations) / sizeof(migrations[0]); index++) {

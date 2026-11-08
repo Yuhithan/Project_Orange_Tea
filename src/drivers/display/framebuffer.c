@@ -162,6 +162,73 @@ void fb_put_pixel(int x, int y, uint32_t color)
     fb_mark_dirty((uint32_t)x, (uint32_t)y, (uint32_t)x + 1u, (uint32_t)y + 1u);
 }
 
+
+
+/*
+ * Copy a 32-bit pixel buffer into the framebuffer.
+ *
+ * Source pixels must be numeric 0x00RRGGBB values (the common
+ * SDL_PIXELFORMAT_XRGB8888-style channel ordering).
+ * source_pitch is measured in BYTES, not pixels.
+ *
+ * The destination rectangle is clipped to the screen. The source
+ * buffer is not modified. The framebuffer is flushed once at the end.
+ */
+void fb_blit(int x, int y, int width, int height,
+             const uint32_t *pixels, uint32_t source_pitch)
+{
+    if (!fb_valid() || pixels == 0 || width <= 0 || height <= 0)
+        return;
+
+    /* A row must contain at least width 32-bit pixels. */
+    if ((uint64_t)source_pitch < (uint64_t)(uint32_t)width * sizeof(uint32_t))
+        return;
+
+    int src_x = 0;
+    int src_y = 0;
+
+    /* Clip left/top while keeping the source and destination aligned. */
+    if (x < 0) {
+        src_x = -x;
+        width -= src_x;
+        x = 0;
+    }
+    if (y < 0) {
+        src_y = -y;
+        height -= src_y;
+        y = 0;
+    }
+
+    if (width <= 0 || height <= 0 ||
+        (uint32_t)x >= framebuffer_width ||
+        (uint32_t)y >= framebuffer_height)
+        return;
+
+    /* Clip right/bottom to the framebuffer dimensions. */
+    if ((uint64_t)(uint32_t)x + (uint32_t)width > framebuffer_width)
+        width = (int)(framebuffer_width - (uint32_t)x);
+    if ((uint64_t)(uint32_t)y + (uint32_t)height > framebuffer_height)
+        height = (int)(framebuffer_height - (uint32_t)y);
+
+    if (width <= 0 || height <= 0)
+        return;
+
+    const uint32_t source_stride = source_pitch / sizeof(uint32_t);
+
+    for (int row = 0; row < height; row++) {
+        const uint32_t *source_row =
+            pixels + (uint64_t)(src_y + row) * source_stride + (uint32_t)src_x;
+
+        for (int column = 0; column < width; column++) {
+            /* fb_put_pixel expects 0x00RRGGBB. */
+            fb_put_pixel(x + column, y + row,
+                         source_row[column] & 0x00FFFFFFu);
+        }
+    }
+
+    fb_flush();
+}
+
 void fb_flush(void)
 {
     if (!fb_valid() || framebuffer == 0 || framebuffer_back == 0) return;

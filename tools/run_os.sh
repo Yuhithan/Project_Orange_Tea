@@ -11,15 +11,14 @@ if [ ! -f "$ISO" ]; then
 fi
 
 if [ ! -e "$DISK" ]; then
-    if command -v qemu-img >/dev/null 2>&1; then
-        qemu-img create -f raw "$DISK" 64M
-    elif command -v docker >/dev/null 2>&1; then
-        docker run --rm -v "$ROOT:/root/env" -w /root/env ort-build \
-            qemu-img create -f raw build-docker/ortos-storage.img 64M
-    else
-        printf '%s\n' "QEMU/qemu-img or Docker with the ort-build image is required."
+    CREATOR="$ROOT/build-docker/src/create_sysroot"
+    if [ ! -x "$CREATOR" ]; then
+        printf '%s\n' "Missing $CREATOR; build the ortos_sysroot_image target first."
         exit 1
     fi
+    "$CREATOR" "$DISK" "$ROOT/src/sysroot" "$ROOT/build-docker/kernel.bin" \
+        "$ROOT/targets/x86_64/iso/boot/grub/grub.cfg" \
+        "$ROOT/build-docker/tests/hello.ora"
 fi
 
 if command -v qemu-system-x86_64 >/dev/null 2>&1; then

@@ -4,17 +4,20 @@ ORTos is a freestanding x86_64 kernel booted by GRUB 2. Its console uses VGA
 80-by-25 text mode; the shell, keyboard input, memory management, networking,
 and storage subsystems run directly in the kernel.
 
-## Build and test
+## Build
 
 ```sh
 cmake -S . -B build
 cmake --build build
-ctest --test-dir build --output-on-failure
+```
+
+```sh
+docker run --rm -v "$PWD:/root/env" -w /root/env ort-build \
+ sh -lc 'cmake -S . -B build-docker && cmake --build build-docker'
 ```
 
 The bare-metal kernel and ISO targets require a C compiler/linker, NASM,
-`grub-mkrescue`, and `xorriso`. The `storage_path_test` and related host tests
-use the host compiler.
+`grub-mkrescue`, and `xorriso`.
 
 The Multiboot2 header does not request a graphics framebuffer, and the GRUB
 configuration retains text mode. The kernel initializes VGA text output before

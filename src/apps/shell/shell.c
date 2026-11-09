@@ -350,13 +350,9 @@ static void shell_print_help(void)
     imp_text("  format      - formate le volume avec confirmation\n");
     imp_text("  fsck        - vérifie l'intégrité du volume\n");
     imp_text("  sync        - synchronise les écritures\n");
-    imp_text("  storage-test --safe - teste le stockage sur disque RAM\n");
     imp_text("  tasks       - liste les tâches\n");
     imp_text("  kill        - termine une tâche\n");
     imp_text("  ps          - liste les processus\n");
-    imp_text("  test        - lance les tests du noyau\n");
-    imp_text("  test filesystem - teste les commandes sur le système de fichiers monté\n");
-    imp_text("  test storage - alias de test filesystem\n");
     imp_text("  panic       - déclenche un kernel panic\n");
     imp_text("  beep        - bip du PC Speaker\n");
     imp_text("  cls         - alias de clear\n");
@@ -608,154 +604,6 @@ static int shell_confirm_delete(void)
     while (answer != '\n' && answer != '\r') answer = keyboard_getchar();
     imp_char('\n');
     return confirmed;
-}
-
-static const char *shell_storage_error_name(int error)
-{
-    switch (error) {
-    case STORAGE_OK: return "success";
-    case STORAGE_ERR_INVAL: return "invalid argument/path";
-    case STORAGE_ERR_NOENT: return "not found";
-    case STORAGE_ERR_EXIST: return "already exists";
-    case STORAGE_ERR_NOTDIR: return "not a directory";
-    case STORAGE_ERR_ISDIR: return "is a directory";
-    case STORAGE_ERR_NOSPC: return "storage full";
-    case STORAGE_ERR_NOTEMPTY: return "directory not empty";
-    case STORAGE_ERR_IO: return "storage I/O error";
-    case STORAGE_ERR_NOTMOUNTED: return "filesystem not mounted";
-    case STORAGE_ERR_CORRUPT: return "filesystem corrupted";
-    default: return "unexpected result";
-    }
-}
-
-static void shell_test_report(const char *name, int actual, int expected, const char *path)
-{
-    imp_text("[TEST] ");
-    imp_text(name);
-    imp_char('\n');
-    if (actual == expected) {
-        imp_text("[PASS] ");
-        imp_text(name);
-        imp_char('\n');
-        return;
-    }
-    imp_text("[FAIL] ");
-    imp_text(name);
-    imp_char('\n');
-    imp_text("error: ");
-    imp_text(shell_storage_error_name(actual));
-    imp_text("\npath: ");
-    imp_text(path ? path : "(none)");
-    imp_text("\nerrno: ");
-    shell_print_int(actual);
-    imp_char('\n');
-}
-
-static int shell_directory_has_child(const char *directory, const char *child_name)
-{
-    size_t directory_length = (size_t)shell_strlen(directory);
-    for (int i = 0; i < vfs_entry_count(); i++) {
-        struct storage_entry_info info;
-        if (vfs_readdir(i, &info) != STORAGE_OK) continue;
-        const char *path = info.path;
-        const char *child = 0;
-        if (directory_length == 1) child = path[0] == '/' ? path + 1 : 0;
-        else if (shell_starts_with(path, directory) && path[directory_length] == '/') child = path + directory_length + 1;
-        if (!child || !*child) continue;
-        int direct = 1;
-        for (const char *p = child; *p; p++) if (*p == '/') { direct = 0; break; }
-        if (direct && shell_streq(child, child_name)) return 1;
-    }
-    return 0;
-}
-
-static int shell_test_read_file(const char *path, char *buffer, size_t capacity)
-{
-    int fd = vfs_open(path, 0);
-    if (fd < 0) return fd;
-    int count = vfs_read(fd, buffer, capacity);
-    vfs_close(fd);
-    return count;
-}
-
-static void shell_test_filesystem(void)
-{
-    static const char root[] = "/.ortos-fs-test";
-    static const char nested[] = "/.ortos-fs-test/subdir";
-    static const char file[] = "/.ortos-fs-test/test.txt";
-    static const char copy[] = "/.ortos-fs-test/copy.txt";
-    static const char moved[] = "/.ortos-fs-test/moved.txt";
-    char content[32] = {0}, saved_directory[STORAGE_MAX_PATH];
-    struct storage_stats stats_before, stats_after;
-    struct storage_entry_info existing;
-    shell_copy_string(saved_directory, current_dir, sizeof(saved_directory));
-    int result = vfs_stat(root, &existing);
-    shell_test_report("dedicated path is unused", result, STORAGE_ERR_NOENT, root);
-    if (result != STORAGE_ERR_NOENT) return;
-
-    shell_execute_line("mkdir /.ortos-fs-test");
-    result = shell_last_storage_status;
-    shell_test_report("mkdir", result, STORAGE_OK, root);
-    if (result != STORAGE_OK || vfs_stat(root, &existing) != STORAGE_OK) return;
-
-    shell_execute_line("mkdir /.ortos-fs-test/subdir");
-    shell_test_report("nested mkdir", shell_last_storage_status, STORAGE_OK, nested);
-    shell_execute_line("create file \"hello\" > /.ortos-fs-test/test.txt");
-    shell_test_report("create file", shell_last_storage_status, STORAGE_OK, file);
-    shell_execute_line("cat /.ortos-fs-test/test.txt");
-    int count = shell_test_read_file(file, content, sizeof(content));
-    shell_test_report("cat/read contents", count == 5 && content[0] == 'h' && content[4] == 'o' ? STORAGE_OK : (count < 0 ? count : STORAGE_ERR_CORRUPT), STORAGE_OK, file);
-
-    shell_execute_line("write /.ortos-fs-test/test.txt \"persistent test\"");
-    shell_test_report("write file", shell_last_storage_status, 15, file);
-    shell_execute_line("cat /.ortos-fs-test/test.txt");
-    count = shell_test_read_file(file, content, sizeof(content));
-    shell_test_report("read modified contents", count == 15 && content[0] == 'p' && content[14] == 't' ? STORAGE_OK : (count < 0 ? count : STORAGE_ERR_CORRUPT), STORAGE_OK, file);
-
-    shell_execute_line("cp /.ortos-fs-test/test.txt /.ortos-fs-test/copy.txt");
-    shell_test_report("cp", shell_last_storage_status, STORAGE_OK, copy);
-    shell_execute_line("mv /.ortos-fs-test/copy.txt /.ortos-fs-test/moved.txt");
-    shell_test_report("mv", shell_last_storage_status, STORAGE_OK, moved);
-    shell_execute_line("stat /.ortos-fs-test/moved.txt");
-    struct storage_entry_info file_info;
-    result = vfs_stat(moved, &file_info);
-    shell_test_report("stat", result == STORAGE_OK && file_info.type == 'f' && file_info.size == 15 ? STORAGE_OK : (result < 0 ? result : STORAGE_ERR_CORRUPT), STORAGE_OK, moved);
-
-    shell_execute_line("cd /.ortos-fs-test/subdir");
-    shell_test_report("cd", shell_streq(current_dir, nested) ? STORAGE_OK : STORAGE_ERR_CORRUPT, STORAGE_OK, nested);
-    shell_execute_line("pwd");
-    shell_test_report("pwd", shell_streq(current_dir, nested) ? STORAGE_OK : STORAGE_ERR_CORRUPT, STORAGE_OK, nested);
-    shell_execute_line("create file \"relative\" > ./relative.txt");
-    shell_test_report("relative path create", shell_last_storage_status, STORAGE_OK, "/.ortos-fs-test/subdir/relative.txt");
-    shell_execute_line("ls");
-    shell_test_report("ls", shell_directory_has_child(nested, "relative.txt") ? STORAGE_OK : STORAGE_ERR_NOENT, STORAGE_OK, nested);
-    shell_execute_line("cd /");
-    shell_test_report("cd root", shell_streq(current_dir, "/") ? STORAGE_OK : STORAGE_ERR_CORRUPT, STORAGE_OK, "/");
-    shell_execute_line("mkdir /.ortos-fs-test/empty");
-    shell_execute_line("rmdir /.ortos-fs-test/empty");
-    shell_test_report("empty rmdir", shell_last_storage_status, STORAGE_OK, "/.ortos-fs-test/empty");
-    shell_execute_line("rmdir /.ortos-fs-test/subdir");
-    shell_test_report("non-empty rmdir rejected", shell_last_storage_status, STORAGE_ERR_NOTEMPTY, nested);
-    shell_execute_line("rm /.ortos-fs-test/subdir/relative.txt");
-    shell_test_report("rm", shell_last_storage_status, STORAGE_OK, "/.ortos-fs-test/subdir/relative.txt");
-    shell_execute_line("rmdir /.ortos-fs-test/subdir");
-    shell_test_report("rmdir after emptying", shell_last_storage_status, STORAGE_OK, nested);
-    shell_execute_line("rmdir /.ortos-fs-test");
-    shell_test_report("non-empty parent rmdir rejected", shell_last_storage_status, STORAGE_ERR_NOTEMPTY, root);
-
-    shell_execute_line("du /.ortos-fs-test");
-    shell_execute_line("df");
-    int stats_result = vfs_get_stats(&stats_before);
-    shell_test_report("free-space reporting", stats_result, STORAGE_OK, root);
-    shell_execute_line("sync");
-    shell_test_report("sync", shell_last_storage_status, STORAGE_OK, root);
-    shell_execute_line("del -f /.ortos-fs-test");
-    result = shell_last_storage_status;
-    if (result == STORAGE_OK) result = vfs_stat(root, &existing) == STORAGE_ERR_NOENT ? STORAGE_OK : STORAGE_ERR_CORRUPT;
-    shell_test_report("recursive deletion", result, STORAGE_OK, root);
-    stats_result = vfs_get_stats(&stats_after);
-    shell_test_report("space after cleanup", stats_result == STORAGE_OK && stats_after.free_sectors >= stats_before.free_sectors ? STORAGE_OK : (stats_result < 0 ? stats_result : STORAGE_ERR_CORRUPT), STORAGE_OK, root);
-    if (!shell_starts_with(saved_directory, root)) shell_set_current_dir(saved_directory);
 }
 
 static void shell_print_current_directory(void)
@@ -1023,20 +871,6 @@ static void shell_execute_command(void)
         shell_last_storage_status = vfs_sync();
         if (shell_last_storage_status == STORAGE_OK) imp_text("Storage synchronized\n"); else shell_print_storage_error(shell_last_storage_status);
     }
-    else if (shell_streq(cmd, "storage-test") || shell_streq(cmd, "storage-test --safe"))
-    {
-        unsigned int result = storage_self_test();
-        imp_text((result & STORAGE_SELFTEST_DEVICE) ? "[PASS] Disk detection (RAM device)\n" : "[FAIL] Disk detection (RAM device)\n");
-        imp_text((result & STORAGE_SELFTEST_INFO) ? "[PASS] Disk information\n" : "[FAIL] Disk information\n");
-        imp_text((result & STORAGE_SELFTEST_BLOCK_IO) ? "[PASS] Block read/write and bounds\n" : "[FAIL] Block read/write and bounds\n");
-        imp_text((result & STORAGE_SELFTEST_MOUNT) ? "[PASS] Filesystem format/mount/unmount\n" : "[FAIL] Filesystem format/mount/unmount\n");
-        imp_text((result & STORAGE_SELFTEST_FILES) ? "[PASS] File and directory operations\n" : "[FAIL] File and directory operations\n");
-        imp_text((result & STORAGE_SELFTEST_SPACE) ? "[PASS] Free-space calculation\n" : "[FAIL] Free-space calculation\n");
-        imp_text((result & STORAGE_SELFTEST_CACHE) ? "[PASS] Cache read/write/eviction\n" : "[FAIL] Cache read/write/eviction\n");
-        imp_text((result & STORAGE_SELFTEST_FSCK) ? "[PASS] Filesystem integrity and repair\n" : "[FAIL] Filesystem integrity and repair\n");
-        imp_text((result & STORAGE_SELFTEST_ERRORS) ? "[PASS] Storage error handling\n" : "[FAIL] Storage error handling\n");
-        imp_text((result & STORAGE_SELFTEST_ALL) == STORAGE_SELFTEST_ALL ? "Storage self-test: PASS\n" : "Storage self-test: FAIL\n");
-    }
     else if (shell_starts_with(cmd, "format"))
     {
         const char *argument = shell_skip_spaces(cmd + 6);
@@ -1207,14 +1041,6 @@ static void shell_execute_command(void)
     else if (shell_streq(cmd, "ps"))
     {
         imp_text("PID 1 shell\nPID 2 idle\n");
-    }
-    else if (shell_streq_case_insensitive(cmd, "test filesystem") || shell_streq_case_insensitive(cmd, "test storage"))
-    {
-        shell_test_filesystem();
-    }
-    else if (shell_streq(cmd, "test"))
-    {
-        imp_text("Kernel tests: OK\n");
     }
     else if (shell_streq(cmd, "panic"))
     {

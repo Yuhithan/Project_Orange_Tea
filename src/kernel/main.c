@@ -4,7 +4,6 @@
 #include "keyboard.h"
 #include "network.h"
 #include "boot_mode.h"
-#include "test.h"
 #include "timer.h"
 #include "irq.h"
 #include "memory.h"

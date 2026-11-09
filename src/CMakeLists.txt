@@ -3,10 +3,39 @@ set(ORTOS_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/ortos-objects")
 add_executable(create_sysroot "${ORTOS_SOURCE_DIR}/../tools/create_sysroot.c")
 target_compile_options(create_sysroot PRIVATE -Wall -Wextra)
 
+add_executable(ora_pack "${ORTOS_SOURCE_DIR}/../tools/ora_pack.c")
+target_include_directories(ora_pack PRIVATE "${ORTOS_INCLUDE_DIR}")
+
 find_program(ORTOS_C_COMPILER NAMES x86_64-elf-gcc gcc)
 find_program(ORTOS_LINKER NAMES x86_64-elf-ld ld)
 find_program(ORTOS_ASSEMBLER NAMES nasm)
 find_program(GRUB_MKRESCUE NAMES grub-mkrescue)
+
+if(ORTOS_ASSEMBLER)
+    set(ORA_EXAMPLE_TEXT "${CMAKE_CURRENT_BINARY_DIR}/hello.text.bin")
+    set(ORA_EXAMPLE_DATA "${CMAKE_CURRENT_BINARY_DIR}/hello.data.bin")
+    set(ORTOS_EXAMPLE_APP "${CMAKE_CURRENT_BINARY_DIR}/hello.ora")
+    add_custom_command(
+        OUTPUT "${ORA_EXAMPLE_TEXT}"
+        COMMAND "${ORTOS_ASSEMBLER}" -f bin
+            "${ORTOS_SOURCE_DIR}/../examples/hello.text.asm"
+            -o "${ORA_EXAMPLE_TEXT}"
+        DEPENDS "${ORTOS_SOURCE_DIR}/../examples/hello.text.asm"
+        VERBATIM)
+    add_custom_command(
+        OUTPUT "${ORA_EXAMPLE_DATA}"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${ORA_EXAMPLE_DATA}"
+        VERBATIM)
+    add_custom_command(
+        OUTPUT "${ORTOS_EXAMPLE_APP}"
+        COMMAND "$<TARGET_FILE:ora_pack>" "${ORA_EXAMPLE_TEXT}"
+            "${ORA_EXAMPLE_DATA}" "${ORTOS_EXAMPLE_APP}"
+        DEPENDS ora_pack "${ORA_EXAMPLE_TEXT}" "${ORA_EXAMPLE_DATA}"
+        VERBATIM)
+    add_custom_target(ora_example ALL DEPENDS "${ORTOS_EXAMPLE_APP}")
+else()
+    set(ORTOS_EXAMPLE_APP "")
+endif()
 
 if(NOT ORTOS_C_COMPILER OR NOT ORTOS_LINKER)
     message(FATAL_ERROR "A C compiler and linker are required to build ORTos.")
@@ -26,7 +55,6 @@ file(GLOB_RECURSE ORTOS_KERNEL_C_SOURCES CONFIGURE_DEPENDS
     "${ORTOS_SOURCE_DIR}/apps/*.c"
     "${ORTOS_SOURCE_DIR}/security/*.c"
     "${ORTOS_SOURCE_DIR}/lib/*.c"
-    "${ORTOS_SOURCE_DIR}/test/*.c"
 )
 
 # ---------------------------------------------------------------------------
@@ -248,10 +276,6 @@ if(ORTOS_ASSEMBLER AND ORTOS_BOOT_OBJECTS)
         set(ORTOS_STORAGE_IMAGE
             "${CMAKE_CURRENT_BINARY_DIR}/../ortos-storage.img"
         )
-        set(ORTOS_EXAMPLE_APP
-            "${CMAKE_CURRENT_BINARY_DIR}/../tests/hello.ora"
-        )
-
         add_custom_target(
             ortos_sysroot_image
             ALL
@@ -268,6 +292,10 @@ if(ORTOS_ASSEMBLER AND ORTOS_BOOT_OBJECTS)
                 "${ORTOS_TARGET_DIR}/iso/boot/grub/grub.cfg"
             VERBATIM
         )
+
+        if(ORTOS_ASSEMBLER)
+            add_dependencies(ortos_sysroot_image ora_example)
+        endif()
 
         # -------------------------------------------------------------------
         # Run OS

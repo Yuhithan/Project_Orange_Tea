@@ -1,4 +1,3 @@
-
 # ============================================================================
 # ORTOS - Minimal Kernel Build
 # ============================================================================
@@ -40,7 +39,7 @@ endforeach()
 # Architecture
 # ============================================================================
 
-set(ORTOS_BOOT_ARCH x86)
+set(ORTOS_BOOT_ARCH x86_64)
 
 # ============================================================================
 # Kernel C sources
@@ -54,9 +53,15 @@ set(ORTOS_KERNEL_C_SOURCES
     ${ORTOS_INTERRUPT_SOURCES}
 
     "${ORTOS_SOURCE_DIR}/kernel/core/print.c"
-    "${ORTOS_SOURCE_DIR}/apps/shell/shell.c"
     "${ORTOS_SOURCE_DIR}/kernel/main.c"
     "${ORTOS_SOURCE_DIR}/kernel/memory/memory.c"
+
+    "${ORTOS_SOURCE_DIR}/drivers/port.c"
+    "${ORTOS_SOURCE_DIR}/drivers/rtc.c"
+    "${ORTOS_SOURCE_DIR}/drivers/pic.c"
+    "${ORTOS_SOURCE_DIR}/drivers/idt.c"
+    "${ORTOS_SOURCE_DIR}/drivers/ps2.c"
+    "${ORTOS_SOURCE_DIR}/drivers/keyboard/keyboard.c"
 )
 
 # ============================================================================
@@ -76,7 +81,8 @@ endforeach()
 file(GLOB_RECURSE ORTOS_KERNEL_HEADERS CONFIGURE_DEPENDS
     "${ORTOS_INCLUDE_DIR}/core/*.h"
     "${ORTOS_INCLUDE_DIR}/drivers/*.h"
-    "${ORTOS_INCLUDE_DIR}/apps/shell/shell.h"
+    "${ORTOS_INCLUDE_DIR}/apps/shell/*.h"
+    "${ORTOS_INCLUDE_DIR}/${ORTOS_BOOT_ARCH}/*.h"
 )
 
 # ============================================================================
@@ -88,6 +94,7 @@ set(ORTOS_BOOT_ASM_SOURCES
     "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/boot/interrupts.asm"
     "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/boot/main.asm"
     "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/boot/main64.asm"
+    "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/port.asm"
 )
 
 foreach(source IN LISTS ORTOS_BOOT_ASM_SOURCES)
@@ -95,6 +102,21 @@ foreach(source IN LISTS ORTOS_BOOT_ASM_SOURCES)
         message(FATAL_ERROR "Required boot file not found: ${source}")
     endif()
 endforeach()
+
+# ============================================================================
+# Compiler flags
+# ============================================================================
+
+set(ORTOS_C_FLAGS
+    -ffreestanding
+    -m64
+    -fno-pie
+    -fno-stack-protector
+    -mno-red-zone
+    -Wall
+    -Wextra
+    -Werror
+)
 
 # ============================================================================
 # Kernel C objects
@@ -107,28 +129,19 @@ foreach(source IN LISTS ORTOS_KERNEL_C_SOURCES)
     get_filename_component(name "${source}" NAME_WE)
     string(MD5 source_id "${source}")
 
-    set(object
-        "${ORTOS_BUILD_DIR}/${name}_${source_id}.o"
-    )
+    set(object "${ORTOS_BUILD_DIR}/${name}_${source_id}.o")
 
     add_custom_command(
         OUTPUT "${object}"
 
-        COMMAND "${CMAKE_COMMAND}"
-            -E make_directory
-            "${ORTOS_BUILD_DIR}"
+        COMMAND "${CMAKE_COMMAND}" -E make_directory
+                "${ORTOS_BUILD_DIR}"
 
         COMMAND "${ORTOS_C_COMPILER}"
-            -c "${source}"
-            -o "${object}"
-            "-I${ORTOS_INCLUDE_DIR}"
-            -ffreestanding
-            -m64
-            -fno-pie
-            -fno-stack-protector
-            -mno-red-zone
-            -Wall
-            -Wextra
+                ${ORTOS_C_FLAGS}
+                -c "${source}"
+                -o "${object}"
+                "-I${ORTOS_INCLUDE_DIR}"
 
         DEPENDS
             "${source}"
@@ -150,24 +163,20 @@ set(ORTOS_BOOT_OBJECTS)
 foreach(source IN LISTS ORTOS_BOOT_ASM_SOURCES)
 
     get_filename_component(name "${source}" NAME_WE)
-
     string(MD5 source_id "${source}")
 
-    set(object
-        "${ORTOS_BUILD_DIR}/boot_${name}_${source_id}.o"
-    )
+    set(object "${ORTOS_BUILD_DIR}/boot_${name}_${source_id}.o")
 
     add_custom_command(
         OUTPUT "${object}"
 
-        COMMAND "${CMAKE_COMMAND}"
-            -E make_directory
-            "${ORTOS_BUILD_DIR}"
+        COMMAND "${CMAKE_COMMAND}" -E make_directory
+                "${ORTOS_BUILD_DIR}"
 
         COMMAND "${ORTOS_ASSEMBLER}"
-            -f elf64
-            "${source}"
-            -o "${object}"
+                -f elf64
+                "${source}"
+                -o "${object}"
 
         DEPENDS "${source}"
 
@@ -182,19 +191,17 @@ endforeach()
 # Kernel binary
 # ============================================================================
 
-set(ORTOS_KERNEL_BIN
-    "${CMAKE_CURRENT_BINARY_DIR}/../kernel.bin"
-)
+set(ORTOS_KERNEL_BIN "${CMAKE_CURRENT_BINARY_DIR}/../kernel.bin")
 
 add_custom_command(
     OUTPUT "${ORTOS_KERNEL_BIN}"
 
     COMMAND "${ORTOS_LINKER}"
-        -n
-        -o "${ORTOS_KERNEL_BIN}"
-        -T "${ORTOS_TARGET_DIR}/linker.ld"
-        ${ORTOS_KERNEL_OBJECTS}
-        ${ORTOS_BOOT_OBJECTS}
+            -n
+            -o "${ORTOS_KERNEL_BIN}"
+            -T "${ORTOS_TARGET_DIR}/linker.ld"
+            ${ORTOS_KERNEL_OBJECTS}
+            ${ORTOS_BOOT_OBJECTS}
 
     DEPENDS
         ${ORTOS_KERNEL_OBJECTS}
@@ -215,17 +222,10 @@ add_custom_target(
 
 if(GRUB_MKRESCUE)
 
-    set(ORTOS_ISO_ROOT
-        "${CMAKE_CURRENT_BINARY_DIR}/iso"
-    )
+    set(ORTOS_ISO_ROOT "${CMAKE_CURRENT_BINARY_DIR}/iso")
+    set(ORTOS_ISO "${CMAKE_CURRENT_BINARY_DIR}/../OrangeteaOS.iso")
 
-    set(ORTOS_ISO
-        "${CMAKE_CURRENT_BINARY_DIR}/../OrangeteaOS.iso"
-    )
-
-    file(MAKE_DIRECTORY
-        "${ORTOS_ISO_ROOT}/boot/grub"
-    )
+    file(MAKE_DIRECTORY "${ORTOS_ISO_ROOT}/boot/grub")
 
     configure_file(
         "${ORTOS_TARGET_DIR}/iso/boot/grub/grub.cfg"
@@ -236,18 +236,16 @@ if(GRUB_MKRESCUE)
     add_custom_command(
         OUTPUT "${ORTOS_ISO}"
 
-        COMMAND "${CMAKE_COMMAND}"
-            -E make_directory
-            "${ORTOS_ISO_ROOT}/boot"
+        COMMAND "${CMAKE_COMMAND}" -E make_directory
+                "${ORTOS_ISO_ROOT}/boot"
 
-        COMMAND "${CMAKE_COMMAND}"
-            -E copy
-            "${ORTOS_KERNEL_BIN}"
-            "${ORTOS_ISO_ROOT}/boot/kernel.bin"
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                "${ORTOS_KERNEL_BIN}"
+                "${ORTOS_ISO_ROOT}/boot/kernel.bin"
 
         COMMAND "${GRUB_MKRESCUE}"
-            -o "${ORTOS_ISO}"
-            "${ORTOS_ISO_ROOT}"
+                -o "${ORTOS_ISO}"
+                "${ORTOS_ISO_ROOT}"
 
         DEPENDS
             ortos_kernel
@@ -269,13 +267,12 @@ if(GRUB_MKRESCUE)
         run_os
 
         COMMAND sh
-            "${CMAKE_CURRENT_SOURCE_DIR}/../tools/run_os.sh"
-            "${ORTOS_ISO}"
+                "${CMAKE_CURRENT_SOURCE_DIR}/../tools/run_os.sh"
+                "${ORTOS_ISO}"
 
         DEPENDS orangetea_iso
 
-        WORKING_DIRECTORY
-            "${CMAKE_CURRENT_SOURCE_DIR}/.."
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
 
         USES_TERMINAL
     )

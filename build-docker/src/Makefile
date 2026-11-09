@@ -118,48 +118,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-src/CMakeFiles/create_sysroot.dir/rule:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/create_sysroot.dir/rule
-.PHONY : src/CMakeFiles/create_sysroot.dir/rule
-
-# Convenience name for target.
-create_sysroot: src/CMakeFiles/create_sysroot.dir/rule
-.PHONY : create_sysroot
-
-# fast build rule for target.
-create_sysroot/fast:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/create_sysroot.dir/build.make src/CMakeFiles/create_sysroot.dir/build
-.PHONY : create_sysroot/fast
-
-# Convenience name for target.
-src/CMakeFiles/ora_pack.dir/rule:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/ora_pack.dir/rule
-.PHONY : src/CMakeFiles/ora_pack.dir/rule
-
-# Convenience name for target.
-ora_pack: src/CMakeFiles/ora_pack.dir/rule
-.PHONY : ora_pack
-
-# fast build rule for target.
-ora_pack/fast:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ora_pack.dir/build.make src/CMakeFiles/ora_pack.dir/build
-.PHONY : ora_pack/fast
-
-# Convenience name for target.
-src/CMakeFiles/ora_example.dir/rule:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/ora_example.dir/rule
-.PHONY : src/CMakeFiles/ora_example.dir/rule
-
-# Convenience name for target.
-ora_example: src/CMakeFiles/ora_example.dir/rule
-.PHONY : ora_example
-
-# fast build rule for target.
-ora_example/fast:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ora_example.dir/build.make src/CMakeFiles/ora_example.dir/build
-.PHONY : ora_example/fast
-
-# Convenience name for target.
 src/CMakeFiles/ortos_kernel.dir/rule:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/ortos_kernel.dir/rule
 .PHONY : src/CMakeFiles/ortos_kernel.dir/rule
@@ -188,20 +146,6 @@ orangetea_iso/fast:
 .PHONY : orangetea_iso/fast
 
 # Convenience name for target.
-src/CMakeFiles/ortos_sysroot_image.dir/rule:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/ortos_sysroot_image.dir/rule
-.PHONY : src/CMakeFiles/ortos_sysroot_image.dir/rule
-
-# Convenience name for target.
-ortos_sysroot_image: src/CMakeFiles/ortos_sysroot_image.dir/rule
-.PHONY : ortos_sysroot_image
-
-# fast build rule for target.
-ortos_sysroot_image/fast:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ortos_sysroot_image.dir/build.make src/CMakeFiles/ortos_sysroot_image.dir/build
-.PHONY : ortos_sysroot_image/fast
-
-# Convenience name for target.
 src/CMakeFiles/run_os.dir/rule:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/run_os.dir/rule
 .PHONY : src/CMakeFiles/run_os.dir/rule
@@ -215,54 +159,6 @@ run_os/fast:
 	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/run_os.dir/build.make src/CMakeFiles/run_os.dir/build
 .PHONY : run_os/fast
 
-__/tools/create_sysroot.o: __/tools/create_sysroot.c.o
-.PHONY : __/tools/create_sysroot.o
-
-# target to build an object file
-__/tools/create_sysroot.c.o:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/create_sysroot.dir/build.make src/CMakeFiles/create_sysroot.dir/__/tools/create_sysroot.c.o
-.PHONY : __/tools/create_sysroot.c.o
-
-__/tools/create_sysroot.i: __/tools/create_sysroot.c.i
-.PHONY : __/tools/create_sysroot.i
-
-# target to preprocess a source file
-__/tools/create_sysroot.c.i:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/create_sysroot.dir/build.make src/CMakeFiles/create_sysroot.dir/__/tools/create_sysroot.c.i
-.PHONY : __/tools/create_sysroot.c.i
-
-__/tools/create_sysroot.s: __/tools/create_sysroot.c.s
-.PHONY : __/tools/create_sysroot.s
-
-# target to generate assembly for a file
-__/tools/create_sysroot.c.s:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/create_sysroot.dir/build.make src/CMakeFiles/create_sysroot.dir/__/tools/create_sysroot.c.s
-.PHONY : __/tools/create_sysroot.c.s
-
-__/tools/ora_pack.o: __/tools/ora_pack.c.o
-.PHONY : __/tools/ora_pack.o
-
-# target to build an object file
-__/tools/ora_pack.c.o:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ora_pack.dir/build.make src/CMakeFiles/ora_pack.dir/__/tools/ora_pack.c.o
-.PHONY : __/tools/ora_pack.c.o
-
-__/tools/ora_pack.i: __/tools/ora_pack.c.i
-.PHONY : __/tools/ora_pack.i
-
-# target to preprocess a source file
-__/tools/ora_pack.c.i:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ora_pack.dir/build.make src/CMakeFiles/ora_pack.dir/__/tools/ora_pack.c.i
-.PHONY : __/tools/ora_pack.c.i
-
-__/tools/ora_pack.s: __/tools/ora_pack.c.s
-.PHONY : __/tools/ora_pack.s
-
-# target to generate assembly for a file
-__/tools/ora_pack.c.s:
-	cd /root/env/build-docker && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/ora_pack.dir/build.make src/CMakeFiles/ora_pack.dir/__/tools/ora_pack.c.s
-.PHONY : __/tools/ora_pack.c.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -271,19 +167,9 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... ora_example"
 	@echo "... orangetea_iso"
 	@echo "... ortos_kernel"
-	@echo "... ortos_sysroot_image"
 	@echo "... run_os"
-	@echo "... create_sysroot"
-	@echo "... ora_pack"
-	@echo "... __/tools/create_sysroot.o"
-	@echo "... __/tools/create_sysroot.i"
-	@echo "... __/tools/create_sysroot.s"
-	@echo "... __/tools/ora_pack.o"
-	@echo "... __/tools/ora_pack.i"
-	@echo "... __/tools/ora_pack.s"
 .PHONY : help
 
 

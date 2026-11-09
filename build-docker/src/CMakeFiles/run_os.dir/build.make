@@ -67,7 +67,7 @@ include src/CMakeFiles/run_os.dir/compiler_depend.make
 include src/CMakeFiles/run_os.dir/progress.make
 
 src/CMakeFiles/run_os:
-	cd /root/env && sh /root/env/src/../tools/run_os.sh
+	cd /root/env && sh /root/env/src/../tools/run_os.sh /root/env/build-docker/src/../OrangeteaOS.iso
 
 run_os: src/CMakeFiles/run_os
 run_os: src/CMakeFiles/run_os.dir/build.make

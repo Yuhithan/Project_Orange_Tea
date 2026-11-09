@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/create_sysroot.dir/__/tools/create_sysroot.c.o -o create_sysroot 

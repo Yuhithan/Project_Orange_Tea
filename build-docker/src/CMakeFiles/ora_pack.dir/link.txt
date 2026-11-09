@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/ora_pack.dir/__/tools/ora_pack.c.o -o ora_pack 

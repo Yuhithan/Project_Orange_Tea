@@ -1,4 +1,4 @@
-#include "memory.h"
+#include "core/memory.h"
 
 #define EARLY_PAGE_COUNT 128
 static uint8_t early_pages[EARLY_PAGE_COUNT][OR_PAGE_SIZE] __attribute__((aligned(OR_PAGE_SIZE)));

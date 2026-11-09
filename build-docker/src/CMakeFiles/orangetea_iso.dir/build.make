@@ -72,7 +72,7 @@ OrangeteaOS.iso: /root/env/targets/x86_64/iso/boot/grub/grub.cfg
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating ../OrangeteaOS.iso"
 	cd /root/env/build-docker/src && /usr/bin/cmake -E make_directory /root/env/build-docker/src/iso/boot
 	cd /root/env/build-docker/src && /usr/bin/cmake -E copy /root/env/build-docker/src/../kernel.bin /root/env/build-docker/src/iso/boot/kernel.bin
-	cd /root/env/build-docker/src && /usr/bin/grub-mkrescue /usr/lib/grub/i386-pc -o /root/env/build-docker/src/../OrangeteaOS.iso /root/env/build-docker/src/iso
+	cd /root/env/build-docker/src && /usr/bin/grub-mkrescue -o /root/env/build-docker/src/../OrangeteaOS.iso /root/env/build-docker/src/iso
 
 orangetea_iso: OrangeteaOS.iso
 orangetea_iso: src/CMakeFiles/orangetea_iso

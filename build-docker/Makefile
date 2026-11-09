@@ -118,45 +118,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named create_sysroot
-
-# Build rule for target.
-create_sysroot: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 create_sysroot
-.PHONY : create_sysroot
-
-# fast build rule for target.
-create_sysroot/fast:
-	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/create_sysroot.dir/build.make src/CMakeFiles/create_sysroot.dir/build
-.PHONY : create_sysroot/fast
-
-#=============================================================================
-# Target rules for targets named ora_pack
-
-# Build rule for target.
-ora_pack: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ora_pack
-.PHONY : ora_pack
-
-# fast build rule for target.
-ora_pack/fast:
-	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ora_pack.dir/build.make src/CMakeFiles/ora_pack.dir/build
-.PHONY : ora_pack/fast
-
-#=============================================================================
-# Target rules for targets named ora_example
-
-# Build rule for target.
-ora_example: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ora_example
-.PHONY : ora_example
-
-# fast build rule for target.
-ora_example/fast:
-	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ora_example.dir/build.make src/CMakeFiles/ora_example.dir/build
-.PHONY : ora_example/fast
-
-#=============================================================================
 # Target rules for targets named ortos_kernel
 
 # Build rule for target.
@@ -183,19 +144,6 @@ orangetea_iso/fast:
 .PHONY : orangetea_iso/fast
 
 #=============================================================================
-# Target rules for targets named ortos_sysroot_image
-
-# Build rule for target.
-ortos_sysroot_image: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ortos_sysroot_image
-.PHONY : ortos_sysroot_image
-
-# fast build rule for target.
-ortos_sysroot_image/fast:
-	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ortos_sysroot_image.dir/build.make src/CMakeFiles/ortos_sysroot_image.dir/build
-.PHONY : ortos_sysroot_image/fast
-
-#=============================================================================
 # Target rules for targets named run_os
 
 # Build rule for target.
@@ -216,13 +164,9 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... ora_example"
 	@echo "... orangetea_iso"
 	@echo "... ortos_kernel"
-	@echo "... ortos_sysroot_image"
 	@echo "... run_os"
-	@echo "... create_sysroot"
-	@echo "... ora_pack"
 .PHONY : help
 
 

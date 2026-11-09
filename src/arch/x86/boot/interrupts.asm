@@ -1,6 +1,5 @@
 bits 64
 
-extern irq_dispatch
 extern irq_exception
 
 %macro PUSH_REGS 0
@@ -95,26 +94,3 @@ ISR_NO_ERROR 28
 ISR_NO_ERROR 29
 ISR_ERROR 30
 ISR_NO_ERROR 31
-
-irq_common:
-    PUSH_REGS
-    mov rdi, [rsp + 120]
-    call irq_dispatch
-    POP_REGS
-    add rsp, 8
-    iretq
-
-global irq0_stub
-irq0_stub:
-    push qword 32
-    jmp irq_common
-
-global irq1_stub
-irq1_stub:
-    push qword 33
-    jmp irq_common
-
-global irq12_stub
-irq12_stub:
-    push qword 44
-    jmp irq_common

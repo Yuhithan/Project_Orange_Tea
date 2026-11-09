@@ -7,7 +7,7 @@ section .text
 bits 64
 
 long_mode_start:
-    ; Boot into the kernel shell using the standard VGA-compatible path.
+    ; Enter the kernel with the Multiboot2 handoff values.
     mov ax, 0
     mov ss, ax
     mov ds, ax

@@ -7,8 +7,6 @@ RUN apt-get install -y grub-pc-bin
 RUN apt-get install -y xorriso
 RUN apt-get install -y nasm
 RUN apt-get install -y cmake 
-RUN apt-get install -y pkg-config
-RUN apt-get install -y libsdl2-dev
 
 VOLUME [ "/root/env" ]
 WORKDIR /root/env

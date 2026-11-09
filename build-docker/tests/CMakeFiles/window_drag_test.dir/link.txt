@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/window_drag_test.dir/window_drag_test.c.o CMakeFiles/window_drag_test.dir/__/src/ui/core/ORgui.c.o -o window_drag_test 

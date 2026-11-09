@@ -1,6 +1,6 @@
 # Hashes of file build rules.
 1345d0a60c62f79928cdbe37b1f3d6d6 OrangeteaOS.iso
-bfca424d76d8ef10afe4ff0b4840af65 kernel.bin
+d11005dad05f8bdd7bb859dd3e4930da kernel.bin
 23722143d573049d8bdd90d7e3958109 src/CMakeFiles/orangetea_iso
 23722143d573049d8bdd90d7e3958109 src/CMakeFiles/ortos_kernel
 6281d02c9052f210cc690dd3fc1baf44 src/CMakeFiles/run_os
@@ -12,3 +12,4 @@ ec932471ca7e70ed5f4b2821e39c85af src/ortos-objects/irq_e1157e0e935c3b9562506bf0d
 3fad22f30a9d447df5d401ec9ab57e7c src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o
 96abc427b9bf8d64b885ef0a54e6b6ce src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o
 3733bd8281a1fd25df7ade07ae098594 src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o
+7dbb0f42ba05cbcb2af5a06995a3e3ce src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o

@@ -70,6 +70,7 @@ src/CMakeFiles/ortos_kernel: kernel.bin
 
 kernel.bin: src/ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o
 kernel.bin: src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o
+kernel.bin: src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o
 kernel.bin: src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o
 kernel.bin: src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o
 kernel.bin: src/ortos-objects/boot_header_afcf4d88f9d9f344ad47153b2a540eda.o
@@ -78,7 +79,7 @@ kernel.bin: src/ortos-objects/boot_main_1ecd55b48c74eb61e123828250b81317.o
 kernel.bin: src/ortos-objects/boot_main64_795c9968dac7cbd7e1809d7c4928a80c.o
 kernel.bin: /root/env/targets/x86_64/linker.ld
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating ../kernel.bin"
-	cd /root/env/build-docker/src && /usr/local/bin/x86_64-elf-ld -n -o /root/env/build-docker/src/../kernel.bin -T /root/env/targets/x86_64/linker.ld /root/env/build-docker/src/ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o /root/env/build-docker/src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o /root/env/build-docker/src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o /root/env/build-docker/src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o /root/env/build-docker/src/ortos-objects/boot_header_afcf4d88f9d9f344ad47153b2a540eda.o /root/env/build-docker/src/ortos-objects/boot_interrupts_4ec4da9f6f97432959336ffd1d1e006b.o /root/env/build-docker/src/ortos-objects/boot_main_1ecd55b48c74eb61e123828250b81317.o /root/env/build-docker/src/ortos-objects/boot_main64_795c9968dac7cbd7e1809d7c4928a80c.o
+	cd /root/env/build-docker/src && /usr/local/bin/x86_64-elf-ld -n -o /root/env/build-docker/src/../kernel.bin -T /root/env/targets/x86_64/linker.ld /root/env/build-docker/src/ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o /root/env/build-docker/src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o /root/env/build-docker/src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o /root/env/build-docker/src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o /root/env/build-docker/src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o /root/env/build-docker/src/ortos-objects/boot_header_afcf4d88f9d9f344ad47153b2a540eda.o /root/env/build-docker/src/ortos-objects/boot_interrupts_4ec4da9f6f97432959336ffd1d1e006b.o /root/env/build-docker/src/ortos-objects/boot_main_1ecd55b48c74eb61e123828250b81317.o /root/env/build-docker/src/ortos-objects/boot_main64_795c9968dac7cbd7e1809d7c4928a80c.o
 
 src/ortos-objects/boot_header_afcf4d88f9d9f344ad47153b2a540eda.o: /root/env/src/arch/x86/boot/header.asm
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating ortos-objects/boot_header_afcf4d88f9d9f344ad47153b2a540eda.o"
@@ -101,6 +102,7 @@ src/ortos-objects/boot_main_1ecd55b48c74eb61e123828250b81317.o: /root/env/src/ar
 	cd /root/env/build-docker/src && /usr/bin/nasm -f elf64 /root/env/src/arch/x86/boot/main.asm -o /root/env/build-docker/src/ortos-objects/boot_main_1ecd55b48c74eb61e123828250b81317.o
 
 src/ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o: /root/env/src/arch/x86/interrupts/irq.c
+src/ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o: /root/env/include/apps/shell/shell.h
 src/ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o: /root/env/include/core/irq.h
 src/ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o: /root/env/include/core/memory.h
 src/ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o: /root/env/include/core/print.h
@@ -111,6 +113,7 @@ src/ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o: /root/env/include/driv
 	cd /root/env/build-docker/src && /usr/local/bin/x86_64-elf-gcc -c /root/env/src/arch/x86/interrupts/irq.c -o /root/env/build-docker/src/ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o -I/root/env/include -ffreestanding -m64 -fno-pie -fno-stack-protector -mno-red-zone -Wall -Wextra
 
 src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o: /root/env/src/kernel/main.c
+src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o: /root/env/include/apps/shell/shell.h
 src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o: /root/env/include/core/irq.h
 src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o: /root/env/include/core/memory.h
 src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o: /root/env/include/core/print.h
@@ -121,6 +124,7 @@ src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o: /root/env/include/dri
 	cd /root/env/build-docker/src && /usr/local/bin/x86_64-elf-gcc -c /root/env/src/kernel/main.c -o /root/env/build-docker/src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o -I/root/env/include -ffreestanding -m64 -fno-pie -fno-stack-protector -mno-red-zone -Wall -Wextra
 
 src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o: /root/env/src/kernel/memory/memory.c
+src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o: /root/env/include/apps/shell/shell.h
 src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o: /root/env/include/core/irq.h
 src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o: /root/env/include/core/memory.h
 src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o: /root/env/include/core/print.h
@@ -131,6 +135,7 @@ src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o: /root/env/include/d
 	cd /root/env/build-docker/src && /usr/local/bin/x86_64-elf-gcc -c /root/env/src/kernel/memory/memory.c -o /root/env/build-docker/src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o -I/root/env/include -ffreestanding -m64 -fno-pie -fno-stack-protector -mno-red-zone -Wall -Wextra
 
 src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o: /root/env/src/kernel/core/print.c
+src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o: /root/env/include/apps/shell/shell.h
 src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o: /root/env/include/core/irq.h
 src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o: /root/env/include/core/memory.h
 src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o: /root/env/include/core/print.h
@@ -139,6 +144,17 @@ src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o: /root/env/include/dr
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Generating ortos-objects/print_5650bb2801c6069054c943dae57403f5.o"
 	cd /root/env/build-docker/src && /usr/bin/cmake -E make_directory /root/env/build-docker/src/ortos-objects
 	cd /root/env/build-docker/src && /usr/local/bin/x86_64-elf-gcc -c /root/env/src/kernel/core/print.c -o /root/env/build-docker/src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o -I/root/env/include -ffreestanding -m64 -fno-pie -fno-stack-protector -mno-red-zone -Wall -Wextra
+
+src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o: /root/env/src/apps/shell/shell.c
+src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o: /root/env/include/apps/shell/shell.h
+src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o: /root/env/include/core/irq.h
+src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o: /root/env/include/core/memory.h
+src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o: /root/env/include/core/print.h
+src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o: /root/env/include/drivers/io.h
+src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o: /root/env/include/drivers/vga.h
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/root/env/build-docker/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Generating ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o"
+	cd /root/env/build-docker/src && /usr/bin/cmake -E make_directory /root/env/build-docker/src/ortos-objects
+	cd /root/env/build-docker/src && /usr/local/bin/x86_64-elf-gcc -c /root/env/src/apps/shell/shell.c -o /root/env/build-docker/src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o -I/root/env/include -ffreestanding -m64 -fno-pie -fno-stack-protector -mno-red-zone -Wall -Wextra
 
 ortos_kernel: kernel.bin
 ortos_kernel: src/CMakeFiles/ortos_kernel
@@ -150,6 +166,7 @@ ortos_kernel: src/ortos-objects/irq_e1157e0e935c3b9562506bf0da55e988.o
 ortos_kernel: src/ortos-objects/main_85606f633508dfd2c25a35641ec115f5.o
 ortos_kernel: src/ortos-objects/memory_32c39ea0950877dfbbf1ebfe5fa28b5a.o
 ortos_kernel: src/ortos-objects/print_5650bb2801c6069054c943dae57403f5.o
+ortos_kernel: src/ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o
 ortos_kernel: src/CMakeFiles/ortos_kernel.dir/build.make
 .PHONY : ortos_kernel
 

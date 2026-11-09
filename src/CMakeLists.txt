@@ -54,6 +54,7 @@ set(ORTOS_KERNEL_C_SOURCES
     ${ORTOS_INTERRUPT_SOURCES}
 
     "${ORTOS_SOURCE_DIR}/kernel/core/print.c"
+    "${ORTOS_SOURCE_DIR}/apps/shell/shell.c"
     "${ORTOS_SOURCE_DIR}/kernel/main.c"
     "${ORTOS_SOURCE_DIR}/kernel/memory/memory.c"
 )
@@ -75,6 +76,7 @@ endforeach()
 file(GLOB_RECURSE ORTOS_KERNEL_HEADERS CONFIGURE_DEPENDS
     "${ORTOS_INCLUDE_DIR}/core/*.h"
     "${ORTOS_INCLUDE_DIR}/drivers/*.h"
+    "${ORTOS_INCLUDE_DIR}/apps/shell/shell.h"
 )
 
 # ============================================================================

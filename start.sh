@@ -1,10 +1,8 @@
 #!/bin/sh
 set -eu
 
-if command -v docker >/dev/null 2>&1; then
-    docker run --rm -v "$PWD:/root/env" -w /root/env ort-build \
-        sh -lc 'cmake -S . -B build-docker && cmake --build build-docker --parallel'
-else
-    cmake -S . -B build
-    cmake --build build --parallel
-fi
+rm -xf build-docker/OrangeteaOS.iso 
+sleep 1
+docker run --rm -v "$PWD:/root/env" -w /root/env ort-build sh -lc 'cmake -S . -B build-docker && cmake --build build-docker -j2 --verbose'
+
+qemu-system-x86_64 -m 4G -cdrom build-docker/OrangeTeaOS.iso -vga std

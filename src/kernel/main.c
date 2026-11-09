@@ -3,6 +3,7 @@
 #include "core/print.h"
 #include "core/irq.h"
 #include "core/memory.h"
+#include "apps/shell/shell.h"
 
 static void halt(void)
 {
@@ -18,24 +19,23 @@ void kmain(uint64_t multiboot_magic,
     if (multiboot_magic == 0x36d76289u &&
         multiboot_info_addr != 0)
     {
-        print_str("Orange Tea OS minimal kernel\n");
-        print_str("Multiboot2 information received.\n");
+        print_str("=============================================\n");
+        print_str("======================ORT====================\n");
+        print_str("=============================================\n");
     }
     else
     {
         print_str("ERROR: invalid multiboot2 information.\n");
+        
         halt();
     }
 
     memory_init();
     irq_init();
 
-    print_str("Memory initialized. Exception handling enabled.\n");
-    print_str("Kernel halted; VGA text output is ready.\n");
-
-    print_str("=============================================\n");
-    print_str("======================ORT====================\n");
-    print_str("=============================================\n");
-    
+    print_str("Orange Tea OS kernel\n");
+    print_str("Multiboot2 information received.\n");
+    print_newline();
+    shell_load();
     halt();
 }

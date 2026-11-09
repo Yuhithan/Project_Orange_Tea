@@ -71,8 +71,7 @@ setup_page_tables:
 	or eax, 0b11 ; present, writable
 	mov [page_table_l4], eax
 	
-	; Identity-map the low 4 GiB. QEMU's linear framebuffer is commonly placed
-	; near 0xFD000000, above the original 1 GiB mapping.
+	; Identity-map the low 4 GiB for kernel and device memory.
 	mov eax, page_table_l2
 	or eax, 0b11 ; present, writable
 	mov [page_table_l3], eax

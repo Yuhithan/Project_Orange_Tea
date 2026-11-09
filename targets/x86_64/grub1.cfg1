@@ -1,8 +1,7 @@
 set timeout=5
 set default=0
-set gfxmode=auto
-set gfxpayload=keep
-set gfxmode=1920x1080x32
+set gfxmode=text
+set gfxpayload=text
 
 menuentry "Run Orange Tea OS" {
 

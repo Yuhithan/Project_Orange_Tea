@@ -2,14 +2,12 @@
 #include "keyboard.h"
 #include "imp.h"
 #include "storage.h"
+#include "desktop_storage.h"
 #include "vfs.h"
 #include "network.h"
 #include "boot_mode.h"
-#include "desktop.h"
-#include "desktop_apps.h"
 #include "drivers/audio.h"
 #include "core/audio_reader.h"
-#include "ui/bmp.h"
 
 #define MAX_CMD 128
 #define MAX_HISTORY 16
@@ -371,11 +369,8 @@ static void shell_print_help(void)
     imp_text("  env         - variables d'environnement\n");
     imp_text("  ping        - test réseau (ping <host> [eth|wifi])\n");
     imp_text("  wifi        - wifi connect/disconnect/status\n");
-    imp_text("  gui         - ouvre l'environnement graphique ORgui\n");
-    imp_text("  notify      - affiche une notification graphique\n");
     imp_text("  i_use_arch_btw - blague fun pour les utilisateurs Arch\n");
     imp_text("  opsec       - Special command\n");
-    imp_text("  bmp //dev testing");
 }
 
 static void shell_set_current_dir(const char* path)
@@ -1559,44 +1554,6 @@ static void shell_execute_command(void)
             imp_char('\n');
         }
     }
-    else if (shell_starts_with(cmd, "notify"))
-    {
-        const char *cursor = shell_skip_spaces(cmd + 6);
-        char name[MAX_CMD];
-        char message[MAX_CMD];
-        int quoted = *cursor == '"';
-        if (quoted) cursor++;
-        int name_length = 0;
-        while (*cursor && ((quoted && *cursor != '"') || (!quoted && !shell_is_space(*cursor))) && name_length < MAX_CMD - 1)
-            name[name_length++] = *cursor++;
-        name[name_length] = '\0';
-        if (quoted && *cursor == '"') cursor++;
-        cursor = shell_skip_spaces(cursor);
-        quoted = *cursor == '"';
-        if (quoted) cursor++;
-        int message_length = 0;
-        while (*cursor && ((quoted && *cursor != '"') || (!quoted && !shell_is_space(*cursor))) && message_length < MAX_CMD - 1)
-            message[message_length++] = *cursor++;
-        message[message_length] = '\0';
-        if (quoted && *cursor == '"') cursor++;
-        cursor = shell_skip_spaces(cursor);
-        if (name[0] == '\0' || message[0] == '\0' || *cursor != '\0')
-            imp_text("Usage: notify \"name\" \"message\"\n");
-        else {
-            desktop_notify(name, message);
-            imp_text("Notification sent\n");
-        }
-    }
-    else if (shell_streq(cmd, "desktop") || shell_streq(cmd, "gui"))
-    {
-        ortos_boot_mode_set(ORTOS_BOOT_MODE_GUI);
-        imp_text("Switching to GUI mode...\n");
-        desktop_init(0);
-        desktop_run();
-        ortos_boot_mode_set(ORTOS_BOOT_MODE_SHELL);
-        imp_cls();
-        imp_text("Returned from ORgui.\n");
-    }
     else if (shell_streq(cmd, "ospec"))
     {
         imp_text("ORTOS Special Command Executed!\n");
@@ -1675,9 +1632,6 @@ static void shell_execute_command(void)
     {
         imp_text("Exiting shell...\n");
         asm volatile ("cli; hlt");
-    }
-    else if (shell_streq(cmd, "bmp")) {
-        bmp_test();
     }
     else
     {

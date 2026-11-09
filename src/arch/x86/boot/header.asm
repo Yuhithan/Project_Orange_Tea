@@ -14,15 +14,6 @@ header_start:
     ; Checksum
     dd 0x100000000 - (0xe85250d6 + 0 + (header_end - header_start))
 
-    ; Request a linear RGB framebuffer. GRUB may choose the best available mode.
-    align 8
-    dw 5
-    dw 1
-    dd 20
-    dd 0
-    dd 0
-    dd 32
-
     ; End tag.
     align 8
     dw 0

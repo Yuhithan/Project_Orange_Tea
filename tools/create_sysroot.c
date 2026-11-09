@@ -1,13 +1,11 @@
 #define _POSIX_C_SOURCE 200809L
 
-#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -192,36 +190,6 @@ static int add_file(struct image *image, const char *path, const char *source)
         }
     }
     return 0;
-}
-
-static int is_font(const char *name)
-{
-    size_t length = strlen(name);
-    if (length < 4) return 0;
-    const char *extension = name + length - 4;
-    return strcasecmp(extension, ".ttf") == 0 || strcasecmp(extension, ".otf") == 0;
-}
-
-static int add_font_directory(struct image *image, const char *sysroot, const char *family)
-{
-    char directory[MAX_PATH];
-    if (snprintf(directory, sizeof(directory), "%s/fonts/%s", sysroot, family) >= (int)sizeof(directory))
-        return -1;
-    DIR *handle = opendir(directory);
-    if (!handle) return errno == ENOENT ? 0 : -1;
-    struct dirent *entry;
-    while ((entry = readdir(handle)) != 0) {
-        if (!is_font(entry->d_name)) continue;
-        char source[MAX_PATH];
-        char destination[MAX_PATH];
-        if (snprintf(source, sizeof(source), "%s/%s", directory, entry->d_name) >= (int)sizeof(source) ||
-            snprintf(destination, sizeof(destination), "Windows/Fonts/%s", entry->d_name) >= (int)sizeof(destination) ||
-            add_file(image, destination, source) != 0) {
-            closedir(handle);
-            return -1;
-        }
-    }
-    return closedir(handle) == 0 ? 0 : -1;
 }
 
 static uint8_t short_checksum(const uint8_t alias[11])
@@ -432,29 +400,9 @@ static int render_directory(struct image *image, int index)
     return 0;
 }
 
-static int add_sysroot_assets(struct image *image, const char *sysroot,
+static int add_sysroot_assets(struct image *image,
     const char *kernel, const char *grub, const char *example)
 {
-    char source[MAX_PATH], destination[MAX_PATH];
-    if (snprintf(source, sizeof(source), "%s/cursor/cursor_arrow.cur", sysroot) >= (int)sizeof(source))
-        return -1;
-    if (access(source, R_OK) == 0 &&
-        add_file(image, "Windows/Resources/cursor_arrow.cur", source) != 0) return -1;
-
-    static const char *const families[] = { "envycode", "heavydata", "orangefonts" };
-    for (size_t index = 0; index < sizeof(families) / sizeof(families[0]); index++)
-        if (add_font_directory(image, sysroot, families[index]) != 0) return -1;
-
-    static const char *const backgrounds[] = { "background.png", "test.png" };
-    for (size_t index = 0; index < sizeof(backgrounds) / sizeof(backgrounds[0]); index++) {
-        if (snprintf(source, sizeof(source), "%s/desktop_background/%s", sysroot,
-            backgrounds[index]) >= (int)sizeof(source)) return -1;
-        if (access(source, R_OK) != 0) continue;
-        if (snprintf(destination, sizeof(destination), "Users/Default/Pictures/%s",
-            backgrounds[index]) >= (int)sizeof(destination) ||
-            add_file(image, destination, source) != 0) return -1;
-    }
-
     if (kernel && access(kernel, R_OK) == 0) {
         if (add_file(image, "Boot/Kernel/kernel.bin", kernel) != 0 ||
             add_file(image, "Windows/System32/Core/kernel.bin", kernel) != 0) return -1;
@@ -585,7 +533,7 @@ int main(int argc, char **argv)
     int result = 0;
     for (size_t index = 0; index < sizeof(directories) / sizeof(directories[0]); index++)
         if (ensure_directory(&image, directories[index]) < 0) result = -1;
-    if (!result && add_sysroot_assets(&image, argv[2], argv[3], argv[4], argv[5]) != 0)
+    if (!result && add_sysroot_assets(&image, argv[3], argv[4], argv[5]) != 0)
         result = -1;
     if (!result && format_image(&image) != 0) result = -1;
     if (result) fprintf(stderr, "FAT32 sysroot image creation failed: %s\n", strerror(errno));

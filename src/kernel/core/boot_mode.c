@@ -1,7 +1,7 @@
 #include "boot_mode.h"
 #include <stdint.h>
 
-static ortos_boot_mode_t current_mode = ORTOS_BOOT_MODE_GUI;
+static ortos_boot_mode_t current_mode = ORTOS_BOOT_MODE_SHELL;
 
 void ortos_boot_mode_set(ortos_boot_mode_t mode)
 {

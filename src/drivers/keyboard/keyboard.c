@@ -144,7 +144,7 @@ static void kb_push(int c) {
 }
 
 /* Polling is intentional: ORTos has no IRQ dispatcher yet. Keep all PS/2
- * decoding in one place so shell and ORgui observe identical input. */
+ * decoding in one place so all kernel input consumers observe identical input. */
 static void keyboard_poll(void) {
     if (!kb_enabled) return;
 

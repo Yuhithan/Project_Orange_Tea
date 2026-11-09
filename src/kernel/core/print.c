@@ -1,13 +1,9 @@
 #include "imp.h"
-#include "imp_b.h"
+#include "drivers/vga.h"
 
 #define NUM_COLS 80
 #define NUM_ROWS 25
 #define SCROLLBACK_LINES 200
-
-static const imp_backend_t *backend = NULL;
-
-
 
 struct Char {
     uint8_t character;
@@ -23,6 +19,11 @@ static struct Char scroll_view[NUM_ROWS][NUM_COLS];
 static size_t scrollback_count = 0;
 static size_t scroll_offset = 0;
 static int scroll_view_active = 0;
+
+static void update_cursor(void)
+{
+    vga_set_cursor(col, row);
+}
 
 static void render_scrollback(void)
 {
@@ -59,11 +60,6 @@ static void return_to_bottom(void)
     }
 }
 
-void imp_set_backend(const imp_backend_t *b)
-{
-    backend = b;
-}
-
 void clear_row(size_t row) {
     struct Char empty = (struct Char) {
         character: ' ',
@@ -76,11 +72,6 @@ void clear_row(size_t row) {
 }
 
 void imp_cls() {
-    if (backend && backend->active()) {
-    backend->clear();
-    return;
-    }
-
     col = 0;
     row = 0;
     scrollback_count = 0;
@@ -90,6 +81,7 @@ void imp_cls() {
     for (size_t i = 0; i < NUM_ROWS; i++) {
         clear_row(i);
     }
+    update_cursor();
 }
 
 void imp_Nl() {
@@ -97,6 +89,7 @@ void imp_Nl() {
 
     if (row < NUM_ROWS - 1) {
         row++;
+        update_cursor();
         return;
     }
 
@@ -122,11 +115,11 @@ void imp_Nl() {
         }
     }
     clear_row(NUM_ROWS - 1);
+    update_cursor();
 }
 
 void imp_scroll_up(size_t lines)
 {
-    if (backend && backend->active()) return;
     if (!scroll_view_active) {
         for (size_t screen_row = 0; screen_row < NUM_ROWS; screen_row++) {
             for (size_t screen_col = 0; screen_col < NUM_COLS; screen_col++) {
@@ -138,11 +131,11 @@ void imp_scroll_up(size_t lines)
     if (lines > scrollback_count - scroll_offset) lines = scrollback_count - scroll_offset;
     scroll_offset += lines;
     render_scrollback();
+    update_cursor();
 }
 
 void imp_scroll_down(size_t lines)
 {
-    if (backend && backend->active()) return;
     if (lines > scroll_offset) lines = scroll_offset;
     scroll_offset -= lines;
     if (scroll_offset == 0) {
@@ -150,14 +143,10 @@ void imp_scroll_down(size_t lines)
     } else {
         render_scrollback();
     }
+    update_cursor();
 }
 
 void imp_char(char character) {
-    if (backend && backend->active()) {
-    backend->put_char(character);
-    return;
-    }
-
     return_to_bottom();
 
     if (character == '\n') {
@@ -177,6 +166,7 @@ void imp_char(char character) {
             character: ' ',
             color: color,
         };
+        update_cursor();
         return;
     }
 
@@ -197,6 +187,7 @@ void imp_char(char character) {
     };
 
     col++;
+    update_cursor();
 }
 
 void imp_text(const char* str) {
@@ -242,7 +233,4 @@ void imp_uint64_hex(uint64_t value) {
 
 void imp_color(uint8_t foreground, uint8_t background) {
     color = foreground + (background << 4);
-    if (backend && backend->active()) {
-    backend->set_color(foreground, background);
-    }
 }

@@ -1,20 +1,10 @@
 #include "apps/shell/shell.h"
 #include "drivers/printf.h"
 
-int shell_loop(){
-    char *line;
-    char **args;
-    int status;
-    
-    do {
-        print_str("> ");
-        line = lsh_split_line();
-        args = lsh_split_line(line);
-        status = lsh_execute(args);
+#define BLUE "\033[1;34m"
+#define RESET "\033[0m"
 
-        free(line);
-        free(args);
-    } while (status);
-    
-    //print_str("Test shell....");
+int shell_loop(void) {
+    printf_(BLUE "TestShell> " RESET);
+    return 0;
 }

@@ -55,7 +55,7 @@ set(ORTOS_KERNEL_C_SOURCES
     "${ORTOS_SOURCE_DIR}/drivers/printf.c"
     "${ORTOS_SOURCE_DIR}/kernel/main.c"
     "${ORTOS_SOURCE_DIR}/kernel/memory/memory.c"
-
+    "${ORTOS_SOURCE_DIR}/apps/shell/shell.c"
     "${ORTOS_SOURCE_DIR}/drivers/port.c"
     "${ORTOS_SOURCE_DIR}/drivers/rtc.c"
     "${ORTOS_SOURCE_DIR}/drivers/pic.c"
@@ -81,7 +81,7 @@ endforeach()
 file(GLOB_RECURSE ORTOS_KERNEL_HEADERS CONFIGURE_DEPENDS
     "${ORTOS_INCLUDE_DIR}/core/*.h"
     "${ORTOS_INCLUDE_DIR}/drivers/*.h"
-    "${ORTOS_INCLUDE_DIR}/apps/shell/*.h"
+    "${ORTOS_INCLUDE_DIR}apps/shell/shell.h"
     "${ORTOS_INCLUDE_DIR}/${ORTOS_BOOT_ARCH}/*.h"
 )
 
@@ -295,6 +295,5 @@ message(STATUS "Architecture: ${ORTOS_BOOT_ARCH}")
 message(STATUS "C compiler: ${ORTOS_C_COMPILER}")
 message(STATUS "Assembler: ${ORTOS_ASSEMBLER}")
 message(STATUS "Kernel C files: ${ORTOS_KERNEL_C_SOURCES}")
-message(STATUS "Shell: excluded")
 message(STATUS "GUI: excluded")
 message(STATUS "Display: VGA")

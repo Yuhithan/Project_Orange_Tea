@@ -28,7 +28,6 @@ set(OLD_GLOB
   "/root/env/include/core/bool.h"
   "/root/env/include/core/irq.h"
   "/root/env/include/core/memory.h"
-  "/root/env/include/core/print.h"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")
@@ -39,6 +38,7 @@ endif()
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/root/env/include/drivers/*.h")
 set(OLD_GLOB
   "/root/env/include/drivers/keyboard.h"
+  "/root/env/include/drivers/printf.h"
   "/root/env/include/drivers/vga.h"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
@@ -55,7 +55,6 @@ set(OLD_GLOB
   "/root/env/include/x86_64/port copy.h"
   "/root/env/include/x86_64/port.h"
   "/root/env/include/x86_64/ps2.h"
-  "/root/env/include/x86_64/rtc copy.h"
   "/root/env/include/x86_64/rtc.h"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")

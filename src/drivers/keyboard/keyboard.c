@@ -1,6 +1,6 @@
 #include <stddef.h>
-#include "bool.h"
-#include "keyboard.h"
+#include "core/bool.h"
+#include "drivers/keyboard.h"
 #include "x86_64/idt.h"
 #include "x86_64/ps2.h"
 

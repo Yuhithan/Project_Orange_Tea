@@ -52,7 +52,7 @@ file(GLOB ORTOS_INTERRUPT_SOURCES CONFIGURE_DEPENDS
 set(ORTOS_KERNEL_C_SOURCES
     ${ORTOS_INTERRUPT_SOURCES}
 
-    "${ORTOS_SOURCE_DIR}/kernel/core/print.c"
+    "${ORTOS_SOURCE_DIR}/drivers/printf.c"
     "${ORTOS_SOURCE_DIR}/kernel/main.c"
     "${ORTOS_SOURCE_DIR}/kernel/memory/memory.c"
 
@@ -95,6 +95,7 @@ set(ORTOS_BOOT_ASM_SOURCES
     "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/boot/main.asm"
     "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/boot/main64.asm"
     "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/port.asm"
+    "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/idt_.asm"
 )
 
 foreach(source IN LISTS ORTOS_BOOT_ASM_SOURCES)

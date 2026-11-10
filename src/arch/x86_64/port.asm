@@ -1,4 +1,4 @@
-global port_intb
+global port_inb
 global port_outb
 
 port_inb:

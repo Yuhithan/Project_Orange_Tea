@@ -18,6 +18,7 @@ file(REMOVE_RECURSE
   "ortos-objects/ps2_b0bfb0325045a72496dbd53322fdd566.o"
   "ortos-objects/rtc_2ee448772987b277ac1c574689178ef8.o"
   "ortos-objects/shell_f87241dd3c49f7b61a048067ee0f65cf.o"
+  "ortos-objects/text_257a4f1c40b68f9f1b81ab69c0be4875.o"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -62,6 +62,7 @@ set(ORTOS_KERNEL_C_SOURCES
     "${ORTOS_SOURCE_DIR}/drivers/idt.c"
     "${ORTOS_SOURCE_DIR}/drivers/ps2.c"
     "${ORTOS_SOURCE_DIR}/drivers/keyboard/keyboard.c"
+    "${ORTOS_SOURCE_DIR}/custom/text.c"
 )
 
 # ============================================================================
@@ -81,8 +82,9 @@ endforeach()
 file(GLOB_RECURSE ORTOS_KERNEL_HEADERS CONFIGURE_DEPENDS
     "${ORTOS_INCLUDE_DIR}/core/*.h"
     "${ORTOS_INCLUDE_DIR}/drivers/*.h"
-    "${ORTOS_INCLUDE_DIR}apps/shell/shell.h"
+    "${ORTOS_INCLUDE_DIR}/apps/shell/shell.h"
     "${ORTOS_INCLUDE_DIR}/${ORTOS_BOOT_ARCH}/*.h"
+    "${ORTOS_INCLUDE_DIR}/custom/text.h"
 )
 
 # ============================================================================

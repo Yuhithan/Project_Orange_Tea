@@ -7,7 +7,7 @@
 #include "apps/shell/shell.h"
 #include "x86_64/port.h"
 #include "custom/text.h"
-
+#include <stdbool.h>
 
 
 void kmain(uint64_t multiboot_magic,

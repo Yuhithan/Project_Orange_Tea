@@ -1,6 +1,5 @@
 #include "apps/shell/shell.h"
 #include "drivers/printf.h"
-#include "x86_64/rtc.h"
 #include "drivers/keyboard.h"
 #include "custom/text.h"
 
@@ -13,11 +12,8 @@
 
 static void shell_handle_keyboard(struct KeyboardEvent event)
 {
-    if (event.type != KEYBOARD_EVENT_TYPE_MAKE) {
-        return;
-    }
-
-    if (event.code == KEY_CODE_ENTER) {
+    if (event.type == KEYBOARD_EVENT_TYPE_MAKE &&
+        event.code == KEY_CODE_ENTER) {
         printf_(NEWLINE);
         printf_(BLUE SHELL_PROMPT RESET);
     } else {

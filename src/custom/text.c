@@ -23,39 +23,66 @@ size_t console_row;
 size_t console_column;
 
 
-char to_ascii(uint16_t code) {
+bool l_shift_pressed = false;
+bool r_shift_pressed = false;
+
+
+char to_ascii(uint16_t code, bool shift_pressed) {
     switch (code) {
-        case KEY_CODE_A: return 'a';
-        case KEY_CODE_B: return 'b';
-        case KEY_CODE_C: return 'c';
-        case KEY_CODE_D: return 'd';
-        case KEY_CODE_E: return 'e';
-        case KEY_CODE_F: return 'f';
-        case KEY_CODE_G: return 'g';
-        case KEY_CODE_H: return 'h';
-        case KEY_CODE_I: return 'i';
-        case KEY_CODE_J: return 'j';
-        case KEY_CODE_K: return 'k';
-        case KEY_CODE_L: return 'l';
-        case KEY_CODE_M: return 'm';
-        case KEY_CODE_N: return 'n';
-        case KEY_CODE_O: return 'o';
-        case KEY_CODE_P: return 'p';
-        case KEY_CODE_Q: return 'q';
-        case KEY_CODE_R: return 'r';
-        case KEY_CODE_S: return 's';
-        case KEY_CODE_T: return 't';
-        case KEY_CODE_U: return 'u';
-        case KEY_CODE_V: return 'v';
-        case KEY_CODE_W: return 'w';
-        case KEY_CODE_X: return 'x';
-        case KEY_CODE_Y: return 'y';
-        case KEY_CODE_Z: return 'z';
+        case KEY_CODE_A: return shift_pressed ? 'A' : 'a';
+        case KEY_CODE_B: return shift_pressed ? 'B' : 'b';
+        case KEY_CODE_C: return shift_pressed ? 'C' : 'c';
+        case KEY_CODE_D: return shift_pressed ? 'D' : 'd';
+        case KEY_CODE_E: return shift_pressed ? 'E' : 'e';
+        case KEY_CODE_F: return shift_pressed ? 'F' : 'f';
+        case KEY_CODE_G: return shift_pressed ? 'G' : 'g';
+        case KEY_CODE_H: return shift_pressed ? 'H' : 'h';
+        case KEY_CODE_I: return shift_pressed ? 'I' : 'i';
+        case KEY_CODE_J: return shift_pressed ? 'J' : 'j';
+        case KEY_CODE_K: return shift_pressed ? 'K' : 'k';
+        case KEY_CODE_L: return shift_pressed ? 'L' : 'l';
+        case KEY_CODE_M: return shift_pressed ? 'M' : 'm';
+        case KEY_CODE_N: return shift_pressed ? 'N' : 'n';
+        case KEY_CODE_O: return shift_pressed ? 'O' : 'o';
+        case KEY_CODE_P: return shift_pressed ? 'P' : 'p';
+        case KEY_CODE_Q: return shift_pressed ? 'Q' : 'q';
+        case KEY_CODE_R: return shift_pressed ? 'R' : 'r';
+        case KEY_CODE_S: return shift_pressed ? 'S' : 's';
+        case KEY_CODE_T: return shift_pressed ? 'T' : 't';
+        case KEY_CODE_U: return shift_pressed ? 'U' : 'u';
+        case KEY_CODE_V: return shift_pressed ? 'V' : 'v';
+        case KEY_CODE_W: return shift_pressed ? 'W' : 'w';
+        case KEY_CODE_X: return shift_pressed ? 'X' : 'x';
+        case KEY_CODE_Y: return shift_pressed ? 'Y' : 'y';
+        case KEY_CODE_Z: return shift_pressed ? 'Z' : 'z';
+
+        case KEY_CODE_1: return shift_pressed ? '!' : '1';
+        case KEY_CODE_2: return shift_pressed ? '@' : '2';
+        case KEY_CODE_3: return shift_pressed ? '#' : '3';
+        case KEY_CODE_4: return shift_pressed ? '$' : '4';
+        case KEY_CODE_5: return shift_pressed ? '%' : '5';
+        case KEY_CODE_6: return shift_pressed ? '^' : '6';
+        case KEY_CODE_7: return shift_pressed ? '&' : '7';
+        case KEY_CODE_8: return shift_pressed ? '*' : '8';
+        case KEY_CODE_9: return shift_pressed ? '(' : '9';
+        case KEY_CODE_0: return shift_pressed ? ')' : '0';
+        case KEY_CODE_MINUS: return shift_pressed ? '_' : '-';
+        case KEY_CODE_EQUALS: return shift_pressed ? '+' : '=';
+        case KEY_CODE_L_BRACKET: return shift_pressed ? '{' : '[';
+        case KEY_CODE_R_BRACKET: return shift_pressed ? '}' : ']';
+        case KEY_CODE_SEMICOLON: return shift_pressed ? ':' : ';';
+        case KEY_CODE_APOSTROPHE: return shift_pressed ? '"' : '\'';
+        case KEY_CODE_GRAVE: return shift_pressed ? '~' : '`';
+        case KEY_CODE_BACKSLASH: return shift_pressed ? '|' : '\\';
+        case KEY_CODE_COMMA: return shift_pressed ? '<' : ',';
+        case KEY_CODE_PERIOD: return shift_pressed ? '>' : '.';
+        case KEY_CODE_SLASH: return shift_pressed ? '?' : '/';
+
         case KEY_CODE_SPACE: return ' ';
         case KEY_CODE_ENTER: return '\n';
         case KEY_CODE_DELETE: return '\b';
-    }    
-    
+    }
+
     return '?';
 }
 
@@ -251,9 +278,66 @@ void putchar_(char character)
     console_update_cursor();
 }
 
-void handle_input(struct KeyboardEvent event) {
+void handle_input(struct KeyboardEvent event)
+{
+    if (event.code == KEY_CODE_L_SHIFT) {
+        if (event.type == KEYBOARD_EVENT_TYPE_MAKE) {
+            l_shift_pressed = true;
+        } else if (event.type == KEYBOARD_EVENT_TYPE_BREAK) {
+            l_shift_pressed = false;
+        }
+        return;
+    }
+
+    if (event.code == KEY_CODE_R_SHIFT) {
+        if (event.type == KEYBOARD_EVENT_TYPE_MAKE) {
+            r_shift_pressed = true;
+        } else if (event.type == KEYBOARD_EVENT_TYPE_BREAK) {
+            r_shift_pressed = false;
+        }
+        return;
+    }
+
     if (event.type == KEYBOARD_EVENT_TYPE_MAKE) {
-        printf_("%c", to_ascii(event.code));
+        bool shift = l_shift_pressed || r_shift_pressed;
+        printf_("%c", to_ascii(event.code, shift));
+    }
+}
+
+void test_handle_input(struct KeyboardEvent event)
+{
+    /* LEFT SHIFT */
+    if (event.code == KEY_CODE_L_SHIFT) {
+        if (event.type == KEYBOARD_EVENT_TYPE_MAKE) {
+            l_shift_pressed = true;
+            printf_("LEFT SHIFT: DOWN\n");
+        }
+        else if (event.type == KEYBOARD_EVENT_TYPE_BREAK) {
+            l_shift_pressed = false;
+            printf_("LEFT SHIFT: UP\n");
+        }
+        return;
+    }
+
+    /* RIGHT SHIFT */
+    if (event.code == KEY_CODE_R_SHIFT) {
+        if (event.type == KEYBOARD_EVENT_TYPE_MAKE) {
+            r_shift_pressed = true;
+            printf_("RIGHT SHIFT: DOWN\n");
+        }
+        else if (event.type == KEYBOARD_EVENT_TYPE_BREAK) {
+            r_shift_pressed = false;
+            printf_("RIGHT SHIFT: UP\n");
+        }
+        return;
+    }
+
+    /* NORMAL KEYBOARD INPUT */
+    if (event.type == KEYBOARD_EVENT_TYPE_MAKE) {
+        bool shift_pressed =
+            l_shift_pressed || r_shift_pressed;
+
+        printf_("%c", to_ascii(event.code, shift_pressed));
     }
 }
 

@@ -19,7 +19,7 @@ void keyboard_handler(void)
     uint8_t scan_code = ps2_read_scan_code();
 
     /* Debug raw scancode */
-   // printf_("RAW SCANCODE: 0x%x\n", scan_code);
+    // printf_("RAW SCANCODE: 0x%x\n", scan_code);
 
     if (scan_code == KEYBOARD_EXTENDED_SCAN_CODE) {
         is_extended = true;

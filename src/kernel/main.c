@@ -4,7 +4,7 @@
 #include "core/memory.h"
 #include "x86_64/rtc.h"
 #include "drivers/keyboard.h"
-#include "apps/shell/shell.h"
+#include "userland/shell/shell.h"
 #include "x86_64/port.h"
 #include "custom/text.h"
 #include <stdbool.h>

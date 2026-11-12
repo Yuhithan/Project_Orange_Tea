@@ -55,7 +55,7 @@ set(ORTOS_KERNEL_C_SOURCES
     "${ORTOS_SOURCE_DIR}/drivers/printf.c"
     "${ORTOS_SOURCE_DIR}/kernel/main.c"
     "${ORTOS_SOURCE_DIR}/kernel/memory/memory.c"
-    "${ORTOS_SOURCE_DIR}/apps/shell/shell.c"
+    "${ORTOS_SOURCE_DIR}/userland/shell/shell.c"
     "${ORTOS_SOURCE_DIR}/drivers/port.c"
     "${ORTOS_SOURCE_DIR}/drivers/rtc.c"
     "${ORTOS_SOURCE_DIR}/drivers/pic.c"
@@ -64,6 +64,20 @@ set(ORTOS_KERNEL_C_SOURCES
     "${ORTOS_SOURCE_DIR}/drivers/keyboard/keyboard.c"
     "${ORTOS_SOURCE_DIR}/custom/text.c"
 )
+
+# ============================================================================
+# LibC
+# ============================================================================
+
+#    set(ORTOS_LIBC_DIR_SOURCE_musllib
+#        ${ORTOS_LIBC_DIR_SOURCE}
+#        "${ORTOS_LIBC_DIR_SOURCE}/stdio/stdio.c"
+#    )
+#
+#    set(ORTOS_LIBC_DIR_INCLUDE_musllib
+#        ${ORTOS_LIBC_DIR_INCLUDE}
+#        "${ORTOS_LIBC_DIR_INCLUDE}/stdio.c"
+#    )
 
 # ============================================================================
 # Validate source files

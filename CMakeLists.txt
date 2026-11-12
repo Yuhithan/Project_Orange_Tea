@@ -6,5 +6,7 @@ set(ORTOS_ARCH x86_64 CACHE STRING "ORTos target architecture")
 set(ORTOS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(ORTOS_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(ORTOS_TARGET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/targets/${ORTOS_ARCH}")
+#set(ORTOS_LIBC_DIR_INCLUDE "${ORTOS_SOURCE_DIR}/libc/musl-1.2.6/include")
+#set(ORTOS_LIBC_DIR_SOURCE "${ORTOS_SOURCE_DIR}/libc/musl-1.2.6/src")
 
 add_subdirectory(src)

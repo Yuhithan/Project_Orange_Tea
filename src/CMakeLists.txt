@@ -56,6 +56,7 @@ set(ORTOS_KERNEL_C_SOURCES
     "${ORTOS_SOURCE_DIR}/kernel/main.c"
     "${ORTOS_SOURCE_DIR}/kernel/memory/memory.c"
     "${ORTOS_SOURCE_DIR}/userland/shell/shell.c"
+    "${ORTOS_SOURCE_DIR}/userland/shell/string.c"
     "${ORTOS_SOURCE_DIR}/drivers/port.c"
     "${ORTOS_SOURCE_DIR}/drivers/rtc.c"
     "${ORTOS_SOURCE_DIR}/drivers/pic.c"

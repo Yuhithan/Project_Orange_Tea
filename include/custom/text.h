@@ -87,6 +87,9 @@ void console_apply_ansi(void);
 
 void putchar_(char character);
 
+int getchar(void);
+void console_input_push(char character);
+
 char en_us_read_character(struct KeyboardEvent event);
 
 void en_us_handle_input(struct KeyboardEvent event);

@@ -18,6 +18,7 @@ file(REMOVE_RECURSE
   "ortos-objects/ps2_b0bfb0325045a72496dbd53322fdd566.o"
   "ortos-objects/rtc_2ee448772987b277ac1c574689178ef8.o"
   "ortos-objects/shell_6898503a68cb2ed7270eb93a990f2e81.o"
+  "ortos-objects/string_f8329df1f0cd819f82c256a17db36f1b.o"
   "ortos-objects/text_257a4f1c40b68f9f1b81ab69c0be4875.o"
 )
 

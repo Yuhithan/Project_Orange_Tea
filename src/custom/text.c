@@ -21,9 +21,44 @@ uint8_t ansi_has_value = 0;
 size_t console_row;
 size_t console_column;
 
+#define CONSOLE_INPUT_BUFFER_SIZE 128
+
+static volatile unsigned char console_input_buffer[CONSOLE_INPUT_BUFFER_SIZE];
+static volatile uint16_t console_input_head;
+static volatile uint16_t console_input_tail;
 
 bool l_shift_pressed = false;
 bool r_shift_pressed = false;
+
+void console_input_push(char character)
+{
+    uint16_t head = console_input_head;
+
+    if ((uint16_t)(head - console_input_tail) >=
+        CONSOLE_INPUT_BUFFER_SIZE) {
+        return;
+    }
+
+    console_input_buffer[head & (CONSOLE_INPUT_BUFFER_SIZE - 1)] =
+        (unsigned char)character;
+    console_input_head = (uint16_t)(head + 1);
+}
+
+int getchar(void)
+{
+    for (;;) {
+        uint16_t tail = console_input_tail;
+
+        if (tail != console_input_head) {
+            int character =
+                console_input_buffer[tail & (CONSOLE_INPUT_BUFFER_SIZE - 1)];
+            console_input_tail = (uint16_t)(tail + 1);
+            return character;
+        }
+
+        __asm__ volatile ("sti; hlt" ::: "memory");
+    }
+}
 
 
 char en_us_to_ascii(uint16_t code, bool shift_pressed) {
@@ -309,6 +344,7 @@ void en_us_handle_input(struct KeyboardEvent event)
 {
     char character = en_us_read_character(event);
     if (character != '\0') {
+        console_input_push(character);
         printf_("%c", character);
     }
 }

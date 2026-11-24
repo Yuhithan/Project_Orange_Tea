@@ -1,0 +1,25 @@
+
+FROM randomdude/gcc-cross-x86_64-elf
+
+RUN apt-get update && apt-get upgrade -y
+
+RUN apt-get install -y \
+    grub-common \
+    grub-pc-bin \
+    xorriso \
+    nasm \
+    cmake \
+    curl \
+    build-essential
+
+# Install Rust using rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Add Rust to PATH
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install Rust components
+RUN rustup component add rust-src llvm-tools-preview
+
+VOLUME ["/root/env"]
+WORKDIR /root/env

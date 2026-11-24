@@ -11,7 +11,7 @@ fi
 
 if command -v qemu-system-x86_64 >/dev/null 2>&1; then
     exec qemu-system-x86_64 -m 256 -cdrom "$ISO" -boot order=d \
-        -display curses -no-reboot
+        -vga std -no-reboot
 fi
 
 printf '%s\n' "QEMU is unavailable; install qemu-system-x86_64 to run the ISO." >&2

@@ -3,19 +3,20 @@
 #include "stdbool.h"
 #include "drivers/keyboard.h"
 
-#define VGA_COLUMNS 80
-#define VGA_ROWS 25
-#define VGA_MEMORY ((volatile uint16_t *)0xB8000)
-#define VGA_ATTRIBUTE 0x0F00
-#define VGA_CURSOR_COMMAND 0x3D4
-#define VGA_CURSOR_DATA 0x3D5
+#define VIDEO_COLUMNS 80
+#define VIDEO_ROWS 25
+#define VIDEO_MEMORY ((volatile uint16_t *)0xB8000)
+#define VIDEO_ATTRIBUTE 0x0F00
+#define VIDEO_CURSOR_COMMAND 0x3D4
+#define VIDEO_CURSOR_DATA 0x3D5
 #define RED "\033[1;31m"
 #define GREEN "\033[1;32m"
 #define YELLOW "\033[1;33m"
 #define BLUE "\033[1;34m"
+//#define ORANGE "\033[38;5;208m"
 #define RESET "\033[0m"
 #define NEWLINE "\n"
-#define VGA_DEFAULT_FOREGROUND 0x0F
+#define VIDEO_DEFAULT_FOREGROUND 0x0F
 
 
 //Lang CODE
@@ -97,3 +98,5 @@ void en_us_handle_input(struct KeyboardEvent event);
 void test_handle_input(struct KeyboardEvent event);
 
 void halt(void);
+
+void cli(void);

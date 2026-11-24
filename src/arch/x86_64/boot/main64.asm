@@ -7,7 +7,6 @@ section .text
 bits 64
 
 long_mode_start:
-    ; Enter the kernel with the Multiboot2 handoff values.
     mov ax, 0
     mov ss, ax
     mov ds, ax
@@ -15,10 +14,8 @@ long_mode_start:
     mov fs, ax
     mov gs, ax
 
-    mov rax, [boot_magic]
-    mov rdi, rax
-    mov rax, [boot_info]
-    mov rsi, rax
+    mov rdi, [boot_magic]
+    mov rsi, [boot_info]
     call kmain
 
 .halt:

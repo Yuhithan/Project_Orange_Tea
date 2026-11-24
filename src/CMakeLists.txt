@@ -57,12 +57,15 @@ set(ORTOS_KERNEL_C_SOURCES
     "${ORTOS_SOURCE_DIR}/kernel/memory/memory.c"
     "${ORTOS_SOURCE_DIR}/userland/shell/shell.c"
     "${ORTOS_SOURCE_DIR}/userland/shell/string.c"
+    #"${ORTOS_SOURCE_DIR}/userland/shell/readDisk.c"
+    #"${ORTOS_SOURCE_DIR}/drivers/disk.c"
     "${ORTOS_SOURCE_DIR}/drivers/port.c"
     "${ORTOS_SOURCE_DIR}/drivers/rtc.c"
     "${ORTOS_SOURCE_DIR}/drivers/pic.c"
     "${ORTOS_SOURCE_DIR}/drivers/idt.c"
     "${ORTOS_SOURCE_DIR}/drivers/ps2.c"
     "${ORTOS_SOURCE_DIR}/drivers/keyboard/keyboard.c"
+    "${ORTOS_SOURCE_DIR}/drivers/framebuffer.c"
     "${ORTOS_SOURCE_DIR}/custom/text.c"
 )
 
@@ -111,6 +114,8 @@ set(ORTOS_BOOT_ASM_SOURCES
     "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/boot/interrupts.asm"
     "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/boot/main.asm"
     "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/boot/main64.asm"
+    "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/boot/x86_64.asm"
+    #"${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/fs/ntfs.asm"
     "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/port.asm"
     "${ORTOS_SOURCE_DIR}/arch/${ORTOS_BOOT_ARCH}/idt_.asm"
 )
@@ -312,5 +317,5 @@ message(STATUS "Architecture: ${ORTOS_BOOT_ARCH}")
 message(STATUS "C compiler: ${ORTOS_C_COMPILER}")
 message(STATUS "Assembler: ${ORTOS_ASSEMBLER}")
 message(STATUS "Kernel C files: ${ORTOS_KERNEL_C_SOURCES}")
-message(STATUS "GUI: excluded")
-message(STATUS "Display: VGA")
+message(STATUS "Framebuffer: 1280x720x32")
+message(STATUS "Display: Linear graphics")

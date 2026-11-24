@@ -1,46 +1,34 @@
-FROM debian:12
 
-# STEP 1: Set up gcc-cross-x86_64-elf
-# Adapted from https://github.com/randomdude/gcc-cross-x86_64-elf/blob/master/Dockerfile
+FROM randomdude/gcc-cross-x86_64-elf
 
-ARG BINUTILS_VERSION=2.41
-ARG GCC_VERSION=13.2.0
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN set -x \
-	&& apt-get update \
-	&& apt-get install -y wget gcc libgmp3-dev libmpfr-dev libisl-dev libmpc-dev texinfo bison flex make bzip2 patch build-essential
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    grub-common \
+    grub-pc-bin \
+    xorriso \
+    nasm \
+    cmake \
+    curl \
+    ca-certificates \
+    qemu-system-x86 \
+    make \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN set -x \
-	&& mkdir -p /usr/local/src \
-	&& cd /usr/local/src \
-	&& wget -q https://ftpmirror.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz \
-	&& wget -q https://ftpmirror.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.gz \
-	&& tar zxf binutils-${BINUTILS_VERSION}.tar.gz \
-	&& tar zxf gcc-${GCC_VERSION}.tar.gz \
-	&& rm binutils-${BINUTILS_VERSION}.tar.gz gcc-${GCC_VERSION}.tar.gz \
-	&& chown -R root:root binutils-${BINUTILS_VERSION} \
-	&& chown -R root:root gcc-${GCC_VERSION} \
-	&& chmod -R o-w,g+w binutils-${BINUTILS_VERSION} \
-	&& chmod -R o-w,g+w gcc-${GCC_VERSION}
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+    sh -s -- -y --profile minimal
 
-COPY src /usr/local/src/
+# Install Rust bare-metal target
+RUN rustup target add x86_64-unknown-none
 
-COPY gcc/t-x86_64-elf /usr/local/src/gcc-${GCC_VERSION}/gcc/config/i386/
-COPY gcc/config.gcc.patch /usr/local/src/gcc-${GCC_VERSION}/gcc/
+# Verify tools
+RUN x86_64-elf-gcc --version && \
+    nasm -v && \
+    cmake --version && \
+    qemu-system-x86_64 --version && \
+    cargo --version
 
-RUN set -x \
-	&& cd /usr/local/src \
-	&& bash build-binutils.sh ${BINUTILS_VERSION} \
-	&& bash build-gcc.sh ${GCC_VERSION}
-	
-# STEP 2: Set up build environment
-
-RUN apt-get update 
-RUN apt-get upgrade -y
-RUN apt-get install -y nasm
-RUN apt-get install -y xorriso
-RUN apt-get install -y grub-pc-bin
-RUN apt-get install -y grub-common
-
-VOLUME /root/env
+VOLUME ["/root/env"]
 WORKDIR /root/env

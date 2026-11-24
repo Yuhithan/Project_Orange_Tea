@@ -1,68 +1,39 @@
+
 #include "userland/shell/shell.h"
 #include "custom/text.h"
-#include <limits.h>
+#include "fat/string.h"
 
-int string_read_input(void)
+int string_read_line(char *buffer, size_t capacity)
 {
-    for (;;) {
-        unsigned int magnitude = 0;
-        unsigned int limit;
-        int negative = 0;
-        int has_digits = 0;
-        int trailing_whitespace = 0;
-        int invalid = 0;
-        int c;
+    size_t length = 0;
+    size_t overflow_length = 0;
+    int c;
 
-        do {
-            c = getchar();
-        } while (c == ' ' || c == '\t' || c == '\r' ||
-                 c == '\v' || c == '\f');
+    while ((c = getchar()) != '\n') {
+        if (c == '\r')
+            continue;
 
-        if (c == '+' || c == '-') {
-            negative = c == '-';
-            c = getchar();
-            if (c == ' ' || c == '\t' || c == '\r' ||
-                c == '\v' || c == '\f') {
-                invalid = 1;
+        if (c == '\b') {
+            if (overflow_length > 0) {
+                overflow_length--;
+                printf_("\b");
+            } else if (length > 0) {
+                length--;
+                buffer[length] = '\0';
+                printf_("\b");
             }
-        }
-
-        limit = (unsigned int)INT_MAX + (negative ? 1U : 0U);
-
-        while (c != '\n') {
-            if (c >= '0' && c <= '9' && !trailing_whitespace) {
-                unsigned int digit = (unsigned int)(c - '0');
-
-                has_digits = 1;
-                if (magnitude > (limit - digit) / 10U) {
-                    invalid = 1;
-                } else if (!invalid) {
-                    magnitude = magnitude * 10U + digit;
-                }
-            } else if (c == ' ' || c == '\t' || c == '\r' ||
-                       c == '\v' || c == '\f') {
-                if (has_digits) {
-                    trailing_whitespace = 1;
-                }
-            } else {
-                invalid = 1;
-            }
-
-            c = getchar();
-        }
-
-        if (!has_digits || invalid) {
-            printf_("Invalid integer input. Please try again.\n");
             continue;
         }
 
-        if (negative) {
-            if (magnitude == (unsigned int)INT_MAX + 1U) {
-                return INT_MIN;
-            }
-            return -(int)magnitude;
+        if (capacity > 0 && length < capacity - 1) {
+            buffer[length++] = (char)c;
+        } else {
+            overflow_length++;
         }
-
-        return (int)magnitude;
     }
+
+    if (capacity > 0)
+        buffer[length] = '\0';
+
+    return capacity > 0 && overflow_length == 0;
 }

@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "ortos-objects/boot_main64_ba2483b78033103f456e72f07df4c49e.o"
   "ortos-objects/boot_main_860698b57555b2ca1a95238089798c43.o"
   "ortos-objects/boot_port_3bac6938651790e6ac23d012af104c5c.o"
+  "ortos-objects/boot_x86_64_f0aae9baa25b0d0d76450da99fe80b18.o"
+  "ortos-objects/framebuffer_43e6b8a0dba4d65707ac08abc584792d.o"
   "ortos-objects/idt_9da26d5e2d8c699a5a4ad73faa1772a1.o"
   "ortos-objects/irq_7355f64db8800d4e8a77d77a28c59321.o"
   "ortos-objects/keyboard_c61c887baa3a65f59c312df80553a306.o"

@@ -6,9 +6,10 @@
 #include "drivers/keyboard.h"
 #include "x86_64/port.h"
 #include "custom/text.h"
+#include "drivers/framebuffer.h"
 
 
-uint8_t console_foreground = VGA_DEFAULT_FOREGROUND;
+uint8_t console_foreground = VIDEO_DEFAULT_FOREGROUND;
 uint8_t console_bold = 0;
 
 /* ANSI escape parser states */
@@ -122,33 +123,50 @@ char en_us_to_ascii(uint16_t code, bool shift_pressed) {
 
 void console_update_cursor(void)
 {
-    uint16_t position = (uint16_t)(console_row * VGA_COLUMNS + console_column);
-    port_outb(VGA_CURSOR_COMMAND, 0x0F);
-    port_outb(VGA_CURSOR_DATA, (uint8_t)position);
-    port_outb(VGA_CURSOR_COMMAND, 0x0E);
-    port_outb(VGA_CURSOR_DATA, (uint8_t)(position >> 8));
+    if (framebuffer_is_ready()) {
+        return;
+    }
+
+    uint16_t position = (uint16_t)(console_row * VIDEO_COLUMNS + console_column);
+    port_outb(VIDEO_CURSOR_COMMAND, 0x0F);
+    port_outb(VIDEO_CURSOR_DATA, (uint8_t)position);
+    port_outb(VIDEO_CURSOR_COMMAND, 0x0E);
+    port_outb(VIDEO_CURSOR_DATA, (uint8_t)(position >> 8));
 }
 
 void console_scroll(void)
 {
-    for (size_t row = 1; row < VGA_ROWS; row++) {
-        for (size_t column = 0; column < VGA_COLUMNS; column++) {
-            VGA_MEMORY[(row - 1) * VGA_COLUMNS + column] =
-                VGA_MEMORY[row * VGA_COLUMNS + column];
+    if (framebuffer_is_ready()) {
+        framebuffer_scroll(8);
+        console_row = (framebuffer_height() / 8) - 1;
+        return;
+    }
+
+    for (size_t row = 1; row < VIDEO_ROWS; row++) {
+        for (size_t column = 0; column < VIDEO_COLUMNS; column++) {
+            VIDEO_MEMORY[(row - 1) * VIDEO_COLUMNS + column] =
+                VIDEO_MEMORY[row * VIDEO_COLUMNS + column];
         }
     }
 
-    for (size_t column = 0; column < VGA_COLUMNS; column++) {
-        VGA_MEMORY[(VGA_ROWS - 1) * VGA_COLUMNS + column] =
-            VGA_ATTRIBUTE | ' ';
+    for (size_t column = 0; column < VIDEO_COLUMNS; column++) {
+        VIDEO_MEMORY[(VIDEO_ROWS - 1) * VIDEO_COLUMNS + column] =
+            VIDEO_ATTRIBUTE | ' ';
     }
-    console_row = VGA_ROWS - 1;
+    console_row = VIDEO_ROWS - 1;
 }
 
 void console_clear(void)
 {
-    for (size_t i = 0; i < VGA_COLUMNS * VGA_ROWS; i++) {
-        VGA_MEMORY[i] = VGA_ATTRIBUTE | ' ';
+    if (framebuffer_is_ready()) {
+        framebuffer_clear(0x000000);
+        console_row = 0;
+        console_column = 0;
+        return;
+    }
+
+    for (size_t i = 0; i < VIDEO_COLUMNS * VIDEO_ROWS; i++) {
+        VIDEO_MEMORY[i] = VIDEO_ATTRIBUTE | ' ';
     }
     console_row = 0;
     console_column = 0;
@@ -168,7 +186,7 @@ uint16_t console_attribute(void)
 
 void console_reset_color(void)
 {
-    console_foreground = VGA_DEFAULT_FOREGROUND;
+    console_foreground = VIDEO_DEFAULT_FOREGROUND;
     console_bold = 0;
 }
 
@@ -188,7 +206,7 @@ void console_apply_ansi(void)
              * ANSI: black, red, green, yellow,
              *       blue, magenta, cyan, white
              *
-             * VGA:  black, blue, green, cyan,
+             * Video:  black, blue, green, cyan,
              *       red, magenta, brown, light grey
              */
             const uint8_t colors[8] = {
@@ -288,24 +306,51 @@ void putchar_(char character)
     else if (character == '\b') {
         if (console_column > 0) {
             console_column--;
-
-            VGA_MEMORY[console_row * VGA_COLUMNS + console_column] =
-                console_attribute() | ' ';
+            if (framebuffer_is_ready()) {
+                framebuffer_draw_char(
+                    console_column * 8,
+                    console_row * 8,
+                    ' ',
+                    0x000000);
+            }
+            else {
+                VIDEO_MEMORY[console_row * VIDEO_COLUMNS + console_column] =
+                    console_attribute() | ' ';
+            }
         }
     }
     else {
-        VGA_MEMORY[console_row * VGA_COLUMNS + console_column] =
-            console_attribute() | (uint8_t)character;
+        if (framebuffer_is_ready()) {
+            framebuffer_draw_char(
+                console_column * 8,
+                console_row * 8,
+                character,
+                0x00C8FF);
+            console_column++;
 
-        console_column++;
+            if (console_column >= framebuffer_width() / 8) {
+                console_column = 0;
+                console_row++;
+            }
+        }
+        else {
+            VIDEO_MEMORY[console_row * VIDEO_COLUMNS + console_column] =
+                console_attribute() | (uint8_t)character;
 
-        if (console_column == VGA_COLUMNS) {
-            console_column = 0;
-            console_row++;
+            console_column++;
+
+            if (console_column == VIDEO_COLUMNS) {
+                console_column = 0;
+                console_row++;
+            }
         }
     }
 
-    if (console_row >= VGA_ROWS) {
+    if (framebuffer_is_ready() &&
+        console_row >= framebuffer_height() / 8) {
+        console_scroll();
+    }
+    else if (!framebuffer_is_ready() && console_row >= VIDEO_ROWS) {
         console_scroll();
     }
 
@@ -390,5 +435,11 @@ void halt(void)
 {
     for (;;) {
         __asm__ volatile ("hlt");
+    }
+}
+
+void cli(void) {
+    for (;;) {
+        __asm__ volatile ("cli");
     }
 }

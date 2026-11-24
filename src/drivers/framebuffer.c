@@ -120,15 +120,33 @@ static uint64_t font_rows(char character)
 }
 
 void framebuffer_draw_char(uint32_t x, uint32_t y,
-                           char character, uint32_t color)
+                          char character, uint32_t color,
+                          uint32_t scale)
 {
+    if (scale == 0)
+        return;
+
     uint64_t glyph = font_rows(character);
 
-    for (uint32_t row = 0; row < 8; row++) {
+    for (uint32_t row = 0; row < 8; row++)
+    {
         uint8_t bits = (uint8_t)((glyph >> (row * 8)) & 0xFFu);
-        for (uint32_t column = 0; column < 8; column++) {
-            if ((bits & (1u << column)) != 0) {
-                framebuffer_set_pixel(x + column, y + row, color);
+
+        for (uint32_t column = 0; column < 8; column++)
+        {
+            if (bits & (1u << column))
+            {
+                for (uint32_t sy = 0; sy < scale; sy++)
+                {
+                    for (uint32_t sx = 0; sx < scale; sx++)
+                    {
+                        framebuffer_set_pixel(
+                            x + column * scale + sx,
+                            y + row * scale + sy,
+                            color
+                        );
+                    }
+                }
             }
         }
     }

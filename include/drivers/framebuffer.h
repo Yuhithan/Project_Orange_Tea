@@ -12,7 +12,8 @@ bool framebuffer_is_ready(void);
 void framebuffer_clear(uint32_t color);
 void framebuffer_set_pixel(uint32_t x, uint32_t y, uint32_t color);
 void framebuffer_draw_char(uint32_t x, uint32_t y,
-                           char character, uint32_t color);
+                          char character, uint32_t color,
+                          uint32_t scale);
 void framebuffer_scroll(uint32_t rows);
 
 uint32_t framebuffer_width(void);

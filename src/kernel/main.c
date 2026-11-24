@@ -70,7 +70,7 @@ void kmain(uint64_t multiboot_magic,
         parse_framebuffer_tag(multiboot_info_addr);
         console_clear();
         printf_(GREEN "###################################################\n" RESET);
-        printf_(GREEN "####           ORTOS             3.3.9         ####\n" RESET);
+        printf_(GREEN "####           ORTOS             3.4.5         ####\n" RESET);
         printf_(GREEN "####        Copyright (c) 2026 Yuhithan.       ####\n" RESET);
         printf_(GREEN "####                   MIT                     ####\n" RESET);
         printf_(GREEN "###################################################\n" RESET);

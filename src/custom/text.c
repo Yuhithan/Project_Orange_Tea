@@ -308,10 +308,10 @@ void putchar_(char character)
             console_column--;
             if (framebuffer_is_ready()) {
                 framebuffer_draw_char(
-                    console_column * 8,
-                    console_row * 8,
+                    console_column * 16,
+                    console_row * 16,
                     ' ',
-                    0x000000);
+                    0x000000, 2);
             }
             else {
                 VIDEO_MEMORY[console_row * VIDEO_COLUMNS + console_column] =
@@ -322,10 +322,10 @@ void putchar_(char character)
     else {
         if (framebuffer_is_ready()) {
             framebuffer_draw_char(
-                console_column * 8,
-                console_row * 8,
+                console_column * 16,
+                console_row * 16,
                 character,
-                0x00C8FF);
+                0x66FF33, 2);
             console_column++;
 
             if (console_column >= framebuffer_width() / 8) {
